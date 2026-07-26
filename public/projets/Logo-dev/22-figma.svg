@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" role="img" viewBox="0 0 240 240">
+  <title>Figma</title>
+  <path fill="#F24E1E" d="M60 20h60v60H90a30 30 0 0 1 0-60z"/>
+  <path fill="#FF7262" d="M120 20h30a30 30 0 0 1 0 60h-30z"/>
+  <path fill="#A259FF" d="M60 80h60v60H90a30 30 0 0 1 0-60z"/>
+  <circle fill="#1ABCFE" cx="150" cy="110" r="30"/>
+  <path fill="#0ACF83" d="M60 140h60v30a30 30 0 1 1-60 0z"/>
+</svg>

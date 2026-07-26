@@ -1,0 +1,122 @@
+---
+import type { ProjectItem, ProjectVideo } from '../lib/wp';
+
+const { project, video = project.video, showInfo = true } = Astro.props as {
+  project: ProjectItem;
+  video?: ProjectVideo;
+  showInfo?: boolean;
+};
+
+const parseVideo = (url?: string) => {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    const host = parsed.hostname.replace(/^www\./, '');
+    if (host === 'youtu.be') return { provider: 'youtube', id: parsed.pathname.split('/').filter(Boolean)[0] };
+    if (host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')) {
+      return { provider: 'youtube', id: parsed.searchParams.get('v') ?? parsed.pathname.match(/\/(?:embed|shorts)\/([^/?]+)/)?.[1] };
+    }
+    if (host === 'vimeo.com' || host.endsWith('.vimeo.com')) {
+      const id = parsed.pathname.split('/').filter(Boolean).pop();
+      return id && /^\d+$/.test(id) ? { provider: 'vimeo', id } : null;
+    }
+  } catch { return null; }
+  return null;
+};
+
+const source = parseVideo(video?.url);
+---
+
+<section class:list={['video-project', { 'video-only': !showInfo }]} style={`--accent:${project.accent};--ratio:${video?.aspectRatio ?? '16 / 9'}`} data-video-root data-provider={source?.provider} data-id={source?.id} data-title={video?.title ?? project.title}>
+  {showInfo && <div class="information">
+    <div>
+      <p class="kicker">{project.slug === 'autonomy' ? 'Event' : 'Projet vidéo'}</p>
+      <h1>{project.title}</h1>
+      <p class="subtitle">{project.subtitle}</p>
+      <h2>{project.detailTitle}</h2>
+      <p class="description">{project.description}</p>
+    </div>
+    {(project.client || project.year) && (
+      <dl>
+        {project.client && <div><dt>Client</dt><dd>{project.client}</dd></div>}
+        {project.year && <div><dt>Année</dt><dd>{project.year}</dd></div>}
+      </dl>
+    )}
+    <div class="tags">{project.tags.map((tag) => <span>{tag.label}</span>)}</div>
+    {!source && <p class="error" role="alert">URL vidéo absente ou invalide. Ajoutez un lien YouTube ou Vimeo dans <code>wp.ts</code>.</p>}
+  </div>}
+
+  <div class="video-zone" data-video-zone>
+    {source ? <>
+      <div class="mount" data-mount></div>
+    </> : <div class="unavailable">Vidéo indisponible</div>}
+  </div>
+</section>
+
+<script>
+  const loadApi = (src: string, test: () => boolean) => new Promise<void>((resolve, reject) => {
+    if (test()) return resolve();
+
+    const waitUntilReady = () => {
+      const startedAt = Date.now();
+      const timer = window.setInterval(() => {
+        if (test()) {
+          window.clearInterval(timer);
+          resolve();
+        } else if (Date.now() - startedAt > 10000) {
+          window.clearInterval(timer);
+          reject(new Error('API vidéo indisponible'));
+        }
+      }, 50);
+    };
+
+    const existingScript = document.querySelector(`script[src="${src}"]`);
+    if (existingScript) {
+      waitUntilReady();
+      return;
+    }
+
+    const script = Object.assign(document.createElement('script'), { src, async: true });
+    script.onload = waitUntilReady;
+    script.onerror = () => reject(new Error('Chargement du script vidéo impossible'));
+    document.head.append(script);
+  });
+  document.querySelectorAll<HTMLElement>('[data-video-root]').forEach((root) => {
+    const provider = root.dataset.provider; const id = root.dataset.id;
+    if (!provider || !id) return;
+    const mount = root.querySelector<HTMLElement>('[data-mount]')!;
+    let player: any;
+    const start = async () => {
+      try {
+        if (provider === 'youtube') {
+          await loadApi('https://www.youtube.com/iframe_api', () => Boolean((window as any).YT?.Player));
+          const YT = (window as any).YT;
+          player = new YT.Player(mount, { width: '100%', height: '100%', host: 'https://www.youtube-nocookie.com', videoId: id, playerVars: { enablejsapi: 1, playsinline: 1, controls: 1 }, events: {
+            onReady: () => {
+              const iframe = player.getIframe();
+              iframe.title = `Vidéo du projet : ${root.dataset.title ?? ''}`;
+              iframe.style.display = 'block';
+              iframe.style.width = '100%';
+              iframe.style.height = '100%';
+              iframe.setAttribute('allowfullscreen', '');
+              iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+            },
+          }});
+        } else {
+          await loadApi('https://player.vimeo.com/api/player.js', () => Boolean((window as any).Vimeo?.Player));
+          player = new (window as any).Vimeo.Player(mount, { id, controls: true, playsinline: true });
+          await player.ready();
+          const iframe = player.element as HTMLIFrameElement;
+          iframe.title = `Vidéo du projet : ${root.dataset.title ?? ''}`;
+          iframe.setAttribute('allowfullscreen', '');
+          iframe.setAttribute('allow', 'autoplay; encrypted-media; fullscreen; picture-in-picture');
+        }
+      } catch { mount.textContent = 'Chargement de la vidéo impossible'; }
+    };
+    start();
+  });
+</script>
+
+<style>
+  .video-project{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.35fr);min-height:520px;overflow:hidden;border-radius:36px;background:var(--accent,#242424);color:#fff}.video-project.video-only{display:block;min-height:0;background:#000}.information{position:relative;z-index:1;display:flex;min-width:0;flex-direction:column;justify-content:space-between;gap:2rem;padding:clamp(1.5rem,3vw,3rem)}.kicker{margin:0 0 .75rem;text-transform:uppercase;letter-spacing:.2em;font-size:.75rem}h1{max-width:100%;margin:0;font-size:clamp(2.2rem,4vw,4rem);line-height:.95;letter-spacing:-.04em;overflow-wrap:anywhere;word-break:break-word}.subtitle{margin:.75rem 0 2rem;font-weight:600}h2{margin:0 0 1rem;font-size:clamp(1.5rem,2.5vw,2.5rem);line-height:1.05}.description{line-height:1.6;opacity:.78}dl{display:grid;gap:.5rem;margin:0}dl div{display:grid;grid-template-columns:1fr;gap:.25rem}dt{opacity:.62}dd{margin:0}.tags,.buttons{display:flex;flex-wrap:wrap;gap:.5rem}.tags span,button{padding:.6rem .9rem;border:1px solid currentColor;border-radius:999px;background:transparent;color:inherit}.controls{display:grid;gap:.7rem}button{min-height:44px;cursor:pointer}button:hover{background:#fff;color:#222}button:focus-visible,input:focus-visible{outline:3px solid #fff;outline-offset:3px}label{display:grid;grid-template-columns:5rem 1fr;align-items:center;gap:.75rem;font-size:.8rem}input{width:100%;accent-color:#fff}.times{display:flex;justify-content:space-between;font-size:.8rem}.video-zone{position:relative;z-index:0;min-width:0;align-self:center;aspect-ratio:var(--ratio,16 / 9);overflow:hidden;margin-right:clamp(1rem,2vw,2rem);border-radius:28px;background:#000}.video-only .video-zone{width:100%;margin:0;border-radius:inherit}.mount,.mount :global(iframe),:global(.video-zone > iframe){display:block;width:100%;height:100%;border:0}.poster{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:1rem;width:100%;height:100%;border:0;border-radius:0;background:#111;overflow:hidden}.poster[hidden]{display:none}.poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.7}.poster span{position:relative}.play-icon{display:grid;place-items:center;width:70px;height:70px;border-radius:50%;background:#fff;color:#111}.unavailable{display:grid;place-items:center;height:100%}.error{padding:1rem;border:1px solid currentColor;border-radius:16px}.video-zone:fullscreen{width:100vw;height:100vh;border-radius:0;background:#000}@media(max-width:850px){.video-project{grid-template-columns:1fr}.video-zone{width:calc(100% - 2rem);margin:0 1rem 1rem}.video-only .video-zone{width:100%;margin:0}}
+</style>

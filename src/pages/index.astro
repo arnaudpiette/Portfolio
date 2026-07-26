@@ -1,17 +1,479 @@
 ---
+// Données utilisées pour construire les cartes et les boutons de filtre.
+import { fallbackProjects, filters } from '../lib/wp';
+
+const projects = fallbackProjects;
+
+// Remplace cette adresse si ton identifiant GitHub est différent.
+const githubUrl = 'https://github.com/arnaudpiette';
+
+const getProjectUrl = (project: (typeof projects)[number]) => `/projets/${project.slug}`;
+
+const devLogos = [
+	['01-html5.svg', 'HTML5'],
+	['02-css3.svg', 'CSS3'],
+	['03-javascript.svg', 'JavaScript'],
+	['04-sass.svg', 'Sass'],
+	['05-react.svg', 'React'],
+	['06-jsx.svg', 'JSX'],
+	['07-react-router.svg', 'React Router'],
+	['08-nextjs.svg', 'Next.js'],
+	['09-astro.svg', 'Astro'],
+	['10-json.svg', 'JSON'],
+	['11-nodejs.svg', 'Node.js'],
+	['12-expressjs.svg', 'Express.js'],
+	['13-jwt.svg', 'JWT'],
+	['14-bcrypt.svg', 'bcrypt'],
+	['15-multer.svg', 'Multer'],
+	['16-sharp.svg', 'Sharp'],
+	['17-mongodb.svg', 'MongoDB'],
+	['18-mongoose.svg', 'Mongoose'],
+	['19-git.svg', 'Git'],
+	['20-github.svg', 'GitHub'],
+	['21-npm.svg', 'npm'],
+	['22-figma.svg', 'Figma'],
+	['23-lighthouse.svg', 'Lighthouse'],
+	['24-api-rest.svg', 'API REST'],
+] as const;
 
 ---
 
-<html lang="en">
+<html lang="fr">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
+		<title>Arnaud Piette — Portfolio</title>
+		<meta
+			name="description"
+			content="Portfolio de projets en direction artistique, identité de marque, développement et web."
+		/>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<!-- En-tête principal du portfolio -->
+		<header class="site-header">
+			<div class="brand-block">
+				<h1>Arnaud Piette</h1>
+				<p class="eyebrow">DC/DA | Graphisme | Web Design | Web Dev</p>
+				<p class="intro"> </p>
+			</div>
+			<nav class="site-nav" aria-label="Navigation principale">
+				<a href="#projects">Projets</a>
+				<a href={githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
+				<a href="#contact">Contact</a>
+			</nav>
+		</header>
+
+		<main id="projects">
+			<!-- Introduction placée au-dessus de la galerie -->
+			<section class="hero-card">
+				<div>
+					<p class="eyebrow">Actuellement en formation mais toujours dispo</p>
+					<h2>Développeur Web avec Openclassrooms <br>jusqu'au 10/10/2026</h2>
+				</div>
+				<div class="dev-logo-grid" aria-label="Technologies et outils de développement">
+					{devLogos.map(([file, label]) => (
+						<div class="dev-logo">
+							<img src={`/projets/Logo-dev/${file}`} alt={label} loading="lazy" />
+						</div>
+					))}
+				</div>
+			</section>
+
+			<!-- Boutons permettant de filtrer les cartes par expertise -->
+			<section class="filters" aria-label="Filtres de projets">
+				{filters.map((filter) => (
+					<button
+						class:list={['filter-pill', { active: filter.id === 'all' }]}
+						data-filter={filter.id}
+						type="button"
+					>
+						{filter.label}
+					</button>
+				))}
+			</section>
+
+			<!-- Grille des projets : chaque carte mène vers /projets/slug-du-projet -->
+			<section class="project-grid" aria-label="Galerie de projets">
+				{projects.map((project) => (
+					<article
+						class="project-card"
+						data-project-card
+						data-categories={project.tags.map((tag) => tag.id).join(' ')}
+					>
+						<a class="project-link" href={getProjectUrl(project)} aria-label={`Voir le projet ${project.title}`}>
+							<div class="project-media" style={`background:${project.accent};`}>
+								{project.isNew && <span class="new-badge">New</span>}
+								{project.cover && <img src={project.cover} alt={`Aperçu du projet ${project.title}`} loading="lazy" />}
+							</div>
+							<div class="project-content">
+								<div class="project-tags">
+									{project.tags.map((tag) => <span>{tag.label}</span>)}
+								</div>
+								<h3>{project.title}</h3>
+								<p class="project-subtitle">{project.subtitle}</p>
+								<p>{project.description}</p>
+							</div>
+						</a>
+					</article>
+				))}
+			</section>
+		</main>
+
+		<footer id="contact" class="site-footer">
+			<p>Contact — hello@arnaudpiette.com</p>
+		</footer>
+
+		<script>
+			// FILTRAGE DES PROJETS
+			// Les attributs data-* relient les boutons aux tags définis dans wp.ts.
+			const buttons = document.querySelectorAll('[data-filter]');
+			const cards = document.querySelectorAll('[data-project-card]');
+
+			buttons.forEach((button) => {
+				button.addEventListener('click', () => {
+					const filter = button.getAttribute('data-filter');
+
+					buttons.forEach((item) => item.classList.remove('active'));
+					button.classList.add('active');
+
+					cards.forEach((card) => {
+						const categories = card.getAttribute('data-categories')?.split(' ') ?? [];
+						const match = filter === 'all' || categories.includes(filter ?? '');
+						card.classList.toggle('is-hidden', !match);
+					});
+				});
+			});
+
+		</script>
 	</body>
 </html>
+
+<style>
+	/* =========================
+	   BASE GLOBALE DE LA PAGE
+	   ========================= */
+	:root {
+		color-scheme: light;
+		font-family: Inter, 'Segoe UI', sans-serif;
+		background: #ffffff;
+		color: #242424;
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		background: #ffffff;
+		color: #242424;
+	}
+
+	header,
+	main,
+	footer {
+		width: min(1180px, calc(100% - 2rem));
+		margin: 0 auto;
+	}
+
+	/* =========================
+	   EN-TÊTE ET NAVIGATION
+	   ========================= */
+	.site-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding: 2rem 0 1.5rem;
+		gap: 1rem;
+	}
+
+	.brand-block h1 {
+		margin: 0 0 0.35rem;
+		font-size: clamp(3.6rem, 6vw, 5.2rem);
+		line-height: 0.95;
+		letter-spacing: -0.045em;
+	}
+
+	.brand-block .eyebrow {
+		margin-bottom: 0.5rem;
+		font-size: clamp(0.62rem, 1.35vw, 0.95rem);
+		line-height: 1.35;
+	}
+
+	.intro,
+	.hero-copy,
+	.project-content p,
+	.site-footer p {
+		color: #bdb7b0;
+		line-height: 1.6;
+	}
+
+	.eyebrow {
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 0.24em;
+		font-size: 0.78rem;
+		color: #ff8a5b;
+	}
+
+	.site-nav {
+		display: flex;
+		gap: 1rem;
+		margin-top: clamp(0.8rem, 1.5vw, 1.3rem);
+	}
+
+	.site-nav a {
+		color: #242424;
+		text-decoration: none;
+		padding: 0.6rem 0.9rem;
+		border: 1px solid rgba(36, 36, 36, 0.16);
+		border-radius: 999px;
+	}
+
+	/* =========================
+	   INTRODUCTION DE LA GALERIE
+	   ========================= */
+	.hero-card {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 2rem;
+		padding: 1.5rem;
+		border: 1px solid rgba(36, 36, 36, 0.1);
+		border-radius: 32px;
+		background: #fafafa;
+		margin-bottom: 2.5rem;
+	}
+
+	.hero-card h2 {
+		font-size: clamp(1.4rem, 2.2vw, 2rem);
+		margin: 0;
+		padding-top: 1rem;
+		max-width: 650px;
+	}
+
+	.hero-copy {
+		max-width: 320px;
+		margin: 0;
+	}
+
+	.dev-logo-grid {
+		display: grid;
+		grid-template-columns: repeat(12, minmax(0, 1fr));
+		align-items: center;
+		gap: 1rem;
+		width: 100%;
+	}
+
+	.dev-logo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 54px;
+		min-width: 0;
+	}
+
+	.dev-logo img {
+		display: block;
+		width: 100%;
+		height: 38px;
+		object-fit: contain;
+		filter: grayscale(1);
+		transition: filter 0.25s ease;
+	}
+
+	.dev-logo:hover img {
+		filter: grayscale(0);
+	}
+
+	/* =========================
+	   FILTRES
+	   ========================= */
+	.filters {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-bottom: 1.25rem;
+	}
+
+	.filter-pill {
+		border: 1px solid rgba(36, 36, 36, 0.16);
+		background: transparent;
+		color: #242424;
+		padding: 0.7rem 1rem;
+		border-radius: 999px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.filter-pill:hover,
+	.filter-pill.active {
+		background: #242424;
+		color: #ffffff;
+	}
+
+	/* =========================
+	   CARTES DES PROJETS
+	   Modifie ici la grille, les cartes, images, textes et tags.
+	   ========================= */
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+		padding-bottom: 2rem;
+	}
+
+	@media (max-width: 900px) {
+		.project-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	.project-card {
+		display: flex;
+		flex-direction: column;
+		min-height: 320px;
+		border-radius: 24px;
+		overflow: hidden;
+		border: 1px solid rgba(36, 36, 36, 0.12);
+		background: #ffffff;
+		transition: transform 0.2s ease, border-color 0.2s ease;
+	}
+
+	.project-card:hover {
+		transform: translateY(-4px);
+		border-color: rgba(36, 36, 36, 0.24);
+	}
+
+	.project-link {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.project-card.is-hidden {
+		display: none;
+	}
+
+	.project-media {
+		position: relative;
+		aspect-ratio: 1 / 1;
+		width: calc(100% - 20px);
+		margin: 10px;
+		border-radius: 14px;
+		overflow: hidden;
+	}
+
+	.new-badge {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		z-index: 1;
+		padding: 0.55rem 0.85rem;
+		border: 1px solid rgba(255, 255, 255, 0.65);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.92);
+		color: #242424;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+	}
+
+	.project-media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.project-content {
+		padding: 1rem 10px 1.2rem;
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+	}
+
+	.project-tags {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
+		margin-bottom: 0.55rem;
+	}
+
+	.project-tags span {
+		margin: 0;
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+		color: #ff8a5b;
+	}
+
+	.project-content h3 {
+		margin: 0;
+		font-size: clamp(1.45rem, 2vw, 1.75rem);
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+		color: #1f1f1f;
+	}
+
+	.project-subtitle {
+		margin: -0.2rem 0 0;
+		font-weight: 600;
+		color: #4a4a4a;
+	}
+
+	/* Description placée juste sous le sous-titre de la card. */
+	.project-content > p:last-child {
+		margin: 0.1rem 0 0;
+	}
+
+	/* Pied de page */
+	.site-footer {
+		padding: 0 0 2.5rem;
+	}
+
+	/* Adaptation pour téléphone et petite tablette */
+	@media (max-width: 760px) {
+		.site-header,
+		.hero-card {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.site-header {
+			gap: 0.75rem;
+			padding-bottom: 2rem;
+		}
+
+		.hero-copy {
+			max-width: none;
+		}
+
+		.site-nav {
+			margin-top: 0;
+		}
+
+		.dev-logo-grid {
+			grid-template-columns: repeat(6, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 560px) {
+		.dev-logo-grid {
+			grid-template-columns: repeat(4, minmax(0, 1fr));
+			gap: 0.75rem;
+		}
+
+		.project-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

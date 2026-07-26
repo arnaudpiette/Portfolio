@@ -1,0 +1,316 @@
+---
+import type { ProjectItem, ProjectMedia } from '../lib/wp';
+
+const { project, showIntro = true } = Astro.props as { project: ProjectItem; showIntro?: boolean };
+
+const isIllustrationsProject = project.slug === 'illustrations';
+const isDrMilouApp = project.slug === 'drmilou-app';
+const isCallOfLight = project.slug === 'call-of-light';
+const isCostermans = project.slug === 'costermans';
+const isIbm = project.slug === 'ibm';
+// Sélection volontairement irrégulière de sept visuels mis en avant sur deux colonnes.
+const featuredIllustrationIndexes = new Set([2, 7, 13, 20, 28, 36, 43]);
+const lightBackgroundIllustrations = [
+  'Portrait-Sinan',
+  'Portrait-friends',
+  'D19',
+  'Manga-Girl',
+  'Tintin-',
+  'Pirate',
+];
+const imageGallery = project.media.filter((media) => media.src);
+
+const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
+  if (media.layout) return media.layout;
+  if (total === 1) return 'hero';
+  if (total === 2) return 'large';
+  const pattern = ['large', 'portrait', 'square', 'wide', 'square', 'portrait', 'landscape'];
+  return pattern[index % pattern.length];
+};
+---
+
+<section class:list={['mosaic', { 'single-media': project.media.length === 1, 'illustrations-grid': isIllustrationsProject, 'drmilou-grid': isDrMilouApp, 'calloflight-grid': isCallOfLight, 'costermans-grid': isCostermans, 'ibm-grid': isIbm }]} style={`--project-background:${project.accent};`} aria-label={`Médias du projet ${project.title}`}>
+  {showIntro && (
+    <article class="intro-tile">
+      <div>
+        <h1>{isCostermans ? <>Coster<br />mans</> : project.title}</h1>
+        <p class="subtitle">{project.subtitle}</p>
+        <h2>{project.detailTitle}</h2>
+        <p class="description">{project.description}</p>
+      </div>
+      <div class="intro-bottom">
+        {(project.client || project.year) && (
+          <dl>
+            {project.client && <div><dt>Client</dt><dd>{project.client}</dd></div>}
+            {project.year && <div><dt>Année</dt><dd>{project.year}</dd></div>}
+          </dl>
+        )}
+        <div class="tags">{project.tags.map((tag) => <span>{tag.label}</span>)}</div>
+      </div>
+    </article>
+  )}
+
+  {project.media.map((media, index) => {
+    const layout = automaticLayout(media, index, project.media.length);
+    return (
+      <figure class:list={[
+        'media-tile',
+        `layout-${layout}`,
+        {
+          contained: media.fit === 'contain',
+          'illustration-featured': isIllustrationsProject && featuredIllustrationIndexes.has(index),
+          'illustration-last': isIllustrationsProject && index === project.media.length - 1,
+          'illustration-tintin': isIllustrationsProject && media.src?.includes('Tintin-'),
+          'illustration-light-background': isIllustrationsProject
+            && lightBackgroundIllustrations.some((name) => media.src?.includes(name)),
+        },
+      ]}>
+        {media.src ? (
+          <button
+            class="media-open"
+            type="button"
+            data-gallery-open={imageGallery.findIndex((item) => item === media)}
+            aria-label={`Agrandir : ${media.alt}`}
+          >
+            <img
+              src={media.src}
+              alt={media.alt}
+              loading={index < 2 ? 'eager' : 'lazy'}
+              decoding="async"
+              style={`object-position:${media.position ?? 'center'};`}
+            />
+          </button>
+        ) : (
+          <div class="media-placeholder" style={`background:${media.background ?? project.accent}`} role="img" aria-label={media.alt}></div>
+        )}
+        {(media.title || media.text) && (
+          <figcaption>
+            {media.title && <strong>{media.title}</strong>}
+            {media.text && <span>{media.text}</span>}
+          </figcaption>
+        )}
+      </figure>
+    );
+  })}
+</section>
+
+{imageGallery.length > 0 && (
+  <div class="project-gallery" data-project-gallery data-images={JSON.stringify(imageGallery.map(({ src, alt }) => ({ src, alt })))}>
+    <dialog class="gallery-dialog" aria-label={`Galerie du projet ${project.title}`}>
+      <div class="gallery-stage" data-gallery-stage>
+        <button class="gallery-close" type="button" data-gallery-close aria-label="Fermer le slideshow">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <button class="gallery-arrow gallery-previous" type="button" data-gallery-previous aria-label="Image précédente">
+          <span aria-hidden="true"></span>
+        </button>
+        <img class="gallery-image" data-gallery-image src="" alt="" />
+        <button class="gallery-arrow gallery-next" type="button" data-gallery-next aria-label="Image suivante">
+          <span aria-hidden="true"></span>
+        </button>
+        <p class="gallery-count" data-gallery-count aria-live="polite"></p>
+      </div>
+    </dialog>
+  </div>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-project-gallery]').forEach((gallery) => {
+    const dialog = gallery.querySelector<HTMLDialogElement>('.gallery-dialog');
+    const image = gallery.querySelector<HTMLImageElement>('[data-gallery-image]');
+    const count = gallery.querySelector<HTMLElement>('[data-gallery-count]');
+    const images = JSON.parse(gallery.dataset.images ?? '[]') as Array<{ src: string; alt: string }>;
+    const mosaic = gallery.previousElementSibling;
+    let currentIndex = 0;
+    let touchStartX = 0;
+    let opener: HTMLElement | null = null;
+
+    if (!dialog || !image || images.length === 0) return;
+
+    const displayImage = (index: number) => {
+      currentIndex = (index + images.length) % images.length;
+      image.src = images[currentIndex].src;
+      image.alt = images[currentIndex].alt;
+      if (count) count.textContent = `${currentIndex + 1} / ${images.length}`;
+    };
+
+    const closeGallery = () => {
+      dialog.close();
+      opener?.focus();
+    };
+
+    mosaic?.querySelectorAll<HTMLElement>('[data-gallery-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        opener = button;
+        displayImage(Number(button.dataset.galleryOpen ?? 0));
+        dialog.showModal();
+      });
+    });
+
+    dialog.querySelector('[data-gallery-close]')?.addEventListener('click', closeGallery);
+    dialog.querySelector('[data-gallery-previous]')?.addEventListener('click', () => displayImage(currentIndex - 1));
+    dialog.querySelector('[data-gallery-next]')?.addEventListener('click', () => displayImage(currentIndex + 1));
+    dialog.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (target === dialog || target.hasAttribute('data-gallery-stage')) closeGallery();
+    });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') displayImage(currentIndex - 1);
+      if (event.key === 'ArrowRight') displayImage(currentIndex + 1);
+    });
+    dialog.addEventListener('touchstart', (event) => { touchStartX = event.changedTouches[0].clientX; }, { passive: true });
+    dialog.addEventListener('touchend', (event) => {
+      const distance = event.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(distance) < 50) return;
+      displayImage(currentIndex + (distance < 0 ? 1 : -1));
+    }, { passive: true });
+  });
+</script>
+
+<style>
+  :root { --project-radius: clamp(16px, 2vw, 30px); --project-gap: clamp(8px, 1vw, 16px); --project-padding: clamp(18px, 3vw, 48px); }
+  .mosaic { --project-row-height: clamp(260px, 25vw, 390px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: var(--project-row-height); grid-auto-flow: dense; gap: var(--project-gap); width: 100%; }
+  .intro-tile, .media-tile { overflow: hidden; border-radius: var(--project-radius); }
+  .intro-tile { grid-column: span 2; grid-row: span 1; display: flex; min-width: 0; min-height: 0; flex-direction: column; justify-content: space-between; gap: clamp(.75rem, 1.5vw, 1.35rem); padding: clamp(18px, 2.5vw, 36px) clamp(12px, 1.5vw, 22px) clamp(18px, 2.5vw, 36px) clamp(18px, 2.5vw, 36px); background: var(--project-background); color: #fff; }
+  .intro-tile > div { min-width: 0; }
+  h1, h2 { max-width: 100%; overflow-wrap: anywhere; }
+  h1 { margin: 0; font-size: clamp(2.4rem, 5vw, 5.2rem); line-height: .9; letter-spacing: -.055em; }
+  .subtitle { margin: .6rem 0 clamp(.8rem, 1.5vw, 1.4rem); font-weight: 650; }
+  h2 { margin: 0 0 .65rem; padding-right: 0; font-size: clamp(1.2rem, 2vw, 2.1rem); line-height: 1.05; }
+  .description { margin: 0; max-width: 100%; font-size: clamp(.78rem, 1vw, .95rem); line-height: 1.45; opacity: .82; }
+  .intro-bottom { display: grid; gap: .75rem; }
+  dl { display: grid; gap: .5rem; margin: 0; }
+  dl div { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem; }
+  dt { opacity: .62; } dd { margin: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .tags span { padding: .4rem .65rem; border: 1px solid currentColor; border-radius: 999px; font-size: .72rem; }
+  .media-tile { position: relative; grid-column: span 1; grid-row: span 1; margin: 0; background: #f2f2f2; }
+  .media-open { display: block; width: 100%; height: 100%; padding: 0; overflow: hidden; border: 0; background: transparent; cursor: zoom-in; }
+  .layout-hero, .layout-large { grid-column: span 2; grid-row: span 2; }
+  .layout-three-columns { grid-column: span 3; grid-row: span 1; }
+  .layout-wide, .layout-landscape { grid-column: span 2; grid-row: span 1; }
+  .layout-portrait { grid-column: span 1; grid-row: span 2; }
+  .layout-square { grid-column: span 1; grid-row: span 1; }
+  .media-tile img, .media-placeholder { display: block; width: 100%; min-width: 100%; height: 100%; object-fit: cover; object-position: center; }
+  .media-tile.contained img { object-fit: cover; }
+  figcaption { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; display: grid; gap: .25rem; padding: .8rem; border-radius: 14px; background: rgba(255,255,255,.88); color: #242424; backdrop-filter: blur(10px); }
+  figcaption span { font-size: .85rem; line-height: 1.4; }
+  .media-tile img { transition: transform .35s ease; }
+  .media-tile:hover img { transform: none; }
+
+  .mosaic.calloflight-grid .intro-tile { grid-column: span 1; }
+  .mosaic.calloflight-grid .intro-tile { gap: .65rem; padding: 20px 12px 20px 20px; }
+  .mosaic.calloflight-grid .intro-tile .subtitle { padding-top: .75rem; }
+  .mosaic.calloflight-grid .intro-tile h2 { font-size: clamp(1.05rem, 1.45vw, 1.45rem); }
+  .mosaic.calloflight-grid .intro-tile .description { font-size: .76rem; line-height: 1.35; }
+
+  /* Introduction DrMilou sur deux colonnes, icône sur la troisième. */
+  .mosaic.drmilou-grid .intro-tile { grid-column: span 2; grid-row: span 1; color: #34405a; }
+  .mosaic.drmilou-grid .media-tile:first-of-type { grid-column: span 1; grid-row: span 1; }
+  .mosaic.drmilou-grid .media-tile img {
+    min-width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Grille éditoriale propre à la page Illustrations. */
+  .mosaic.illustrations-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
+  .illustrations-grid .intro-tile { grid-column: span 2; grid-row: span 1; min-height: 0; }
+  .illustrations-grid .media-tile { grid-column: span 1; grid-row: span 1; width: 100%; height: 100%; aspect-ratio: auto; }
+  .illustrations-grid .media-tile.illustration-featured { grid-column: span 2; aspect-ratio: auto; }
+  .illustrations-grid .media-tile.illustration-last { grid-column: span 2; aspect-ratio: auto; }
+  .illustrations-grid .media-tile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+  .illustrations-grid .media-tile.illustration-tintin img { min-width: 100%; }
+  .illustrations-grid .media-tile.illustration-light-background::after {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border: 1px solid rgba(36, 36, 36, 0.16);
+    border-radius: inherit;
+    pointer-events: none;
+    content: '';
+  }
+
+  .gallery-dialog { box-sizing: border-box; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: clamp(16px, 3vw, 40px); border: 0; background: transparent; color: #fff; }
+  .gallery-dialog::backdrop { background: rgba(14, 14, 16, .88); backdrop-filter: blur(8px); }
+  .gallery-stage { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
+  .gallery-image { display: block; width: auto; max-width: min(86vw, 1500px); min-width: 0; height: auto; max-height: 88dvh; object-fit: contain; border-radius: clamp(10px, 1.2vw, 20px); box-shadow: 0 24px 80px rgba(0, 0, 0, .38); }
+  .gallery-close, .gallery-arrow { position: absolute; z-index: 3; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid rgba(255, 255, 255, .35); border-radius: 50%; background: rgba(20, 20, 22, .58); color: #fff; cursor: pointer; backdrop-filter: blur(8px); }
+  .gallery-close:hover, .gallery-arrow:hover { background: #fff; color: #242424; }
+  .gallery-close { top: 0; right: 0; }
+  .gallery-close span { position: absolute; width: 20px; height: 2px; border-radius: 2px; background: currentColor; transform: rotate(45deg); }
+  .gallery-close span:last-child { transform: rotate(-45deg); }
+  .gallery-arrow { top: 50%; transform: translateY(-50%); }
+  .gallery-previous { left: 0; }
+  .gallery-next { right: 0; }
+  .gallery-arrow span { width: 12px; height: 12px; border-bottom: 2px solid currentColor; border-left: 2px solid currentColor; }
+  .gallery-previous span { transform: translateX(3px) rotate(45deg); }
+  .gallery-next span { transform: translateX(-3px) rotate(225deg); }
+  .gallery-count { position: absolute; bottom: 0; left: 50%; margin: 0; padding: .45rem .75rem; border-radius: 999px; background: rgba(20, 20, 22, .58); font-size: .82rem; transform: translateX(-50%); backdrop-filter: blur(8px); }
+
+  .mosaic.single-media .intro-tile { grid-column: span 2; }
+  .mosaic.single-media .media-tile { grid-column: span 1; }
+  .mosaic.single-media .media-tile img { object-fit: cover; }
+  .mosaic.ibm-grid .intro-tile,
+  .mosaic.ibm-grid .media-tile { grid-column: span 2; grid-row: span 1; }
+  .mosaic.ibm-grid .media-tile::after {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border: 1px solid rgba(36, 36, 36, .18);
+    border-radius: inherit;
+    pointer-events: none;
+    content: '';
+  }
+
+  @media (min-width: 901px) {
+    .mosaic.single-media.costermans-grid .intro-tile { grid-column: span 1; grid-row: span 2; }
+    .mosaic.single-media.costermans-grid .media-tile { grid-column: span 3; grid-row: span 2; }
+    .mosaic.costermans-grid .intro-tile h1 { line-height: .76; }
+  }
+
+  @media (max-width: 900px) {
+    .mosaic { --project-row-height: clamp(300px, 58vw, 480px); grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .intro-tile { grid-column: span 2; grid-row: span 1; }
+    .mosaic.calloflight-grid .intro-tile { grid-column: span 2; }
+    .layout-hero, .layout-wide, .layout-large, .layout-landscape, .layout-three-columns { grid-column: span 2; }
+    .layout-portrait, .layout-square { grid-column: span 1; }
+    .mosaic.single-media .intro-tile,
+    .mosaic.single-media .media-tile { grid-column: span 2; }
+    .mosaic.ibm-grid .intro-tile,
+    .mosaic.ibm-grid .media-tile { grid-column: span 1; grid-row: span 1; }
+    .mosaic.drmilou-grid .intro-tile,
+    .mosaic.drmilou-grid .media-tile:first-of-type { grid-column: span 2; }
+    .mosaic.illustrations-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .illustrations-grid .intro-tile { grid-column: span 2; }
+    .illustrations-grid .media-tile.illustration-last { grid-column: 1 / -1; aspect-ratio: auto; }
+  }
+
+  @media (max-width: 560px) {
+    .mosaic { --project-row-height: min(118vw, 520px); display: grid; grid-template-columns: 1fr; grid-auto-rows: var(--project-row-height); }
+    .intro-tile, .media-tile { grid-column: auto; grid-row: auto; }
+    .intro-tile { min-height: 0; }
+    .media-tile,
+    .layout-portrait,
+    .layout-square,
+    .layout-wide,
+    .layout-landscape,
+    .layout-three-columns,
+    .layout-hero { grid-column: auto; grid-row: auto; aspect-ratio: auto; }
+    .mosaic.drmilou-grid .intro-tile,
+    .mosaic.drmilou-grid .media-tile:first-of-type { grid-column: auto; grid-row: auto; }
+    .mosaic.illustrations-grid { grid-template-columns: 1fr; }
+    .illustrations-grid .intro-tile,
+    .illustrations-grid .media-tile,
+    .illustrations-grid .media-tile.illustration-featured,
+    .illustrations-grid .media-tile.illustration-last { grid-column: auto; aspect-ratio: auto; }
+  }
+
+  @media (prefers-reduced-motion: reduce) { .media-tile img { transition: none; } }
+</style>
