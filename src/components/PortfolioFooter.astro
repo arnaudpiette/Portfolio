@@ -1,0 +1,30 @@
+---
+interface Props {
+  theme?: 'light' | 'dark';
+}
+
+const { theme = 'light' } = Astro.props;
+---
+
+<footer class:list={['portfolio-footer', `footer-${theme}`]}>
+  <p>Copyright 2026 - arno.piette@gmail.com - arnaudpiette.com</p>
+</footer>
+
+<style>
+  .portfolio-footer {
+    box-sizing: border-box;
+    width: calc(100% - clamp(2rem, 5vw, 6rem));
+    margin: 0 auto;
+    padding: 1.25rem 0 2.5rem;
+    text-align: center;
+  }
+  .portfolio-footer p {
+    margin: 0;
+    color: var(--footer-color);
+    font-size: .72rem;
+    line-height: 1.5;
+    letter-spacing: .08em;
+  }
+  .footer-light { --footer-color: #8f8983; }
+  .footer-dark { --footer-color: #858585; }
+</style>

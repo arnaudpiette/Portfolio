@@ -2,6 +2,8 @@
 import { fallbackProjects } from '../../lib/wp';
 import ProjectMosaic from '../../components/ProjectMosaic.astro';
 import ExternalVideoPlayer from '../../components/ExternalVideoPlayer.astro';
+import MusicPlayButton from '../../components/MusicPlayButton.astro';
+import { ClientRouter } from 'astro:transitions';
 
 export function getStaticPaths() {
   return fallbackProjects.map((project) => ({
@@ -11,7 +13,6 @@ export function getStaticPaths() {
 }
 
 const { project } = Astro.props;
-const githubUrl = 'https://github.com/arnaudpiette';
 const projectVideos = project.videos ?? (project.video ? [project.video] : []);
 const isIbm = project.slug === 'ibm';
 ---
@@ -21,22 +22,23 @@ const isIbm = project.slug === 'ibm';
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
-    <title>{project.title} — Arnaud Piette</title>
+    <ClientRouter fallback="swap" />
+    <title>{project.title} — arno.piette@gmail.com</title>
     <meta name="description" content={project.description} />
   </head>
   <body>
     <header>
-      <a class="back-link" href="/"><span class="chevron" aria-hidden="true"></span>Retour</a>
+      <a class="back-link" href="/creative"><span class="chevron" aria-hidden="true"></span>Retour</a>
       <div class="header-right">
-        <a class="brand" href="/">Arnaud Piette</a>
+        <a class="brand" href="/" data-astro-reload>arno.piette@gmail.com</a>
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="project-navigation" aria-label="Ouvrir le menu">
           <span></span><span></span><span></span>
         </button>
         <nav id="project-navigation" class="site-nav" aria-label="Navigation principale">
-          <a href="/#projects">Projets</a>
-          <a href={githubUrl} target="_blank" rel="noopener noreferrer">GitHub</a>
-          <a href="/#contact">Contact</a>
+          <a href="/creative#projects">Projets</a>
+          <a href="/creative#contact">Contact</a>
         </nav>
+        <MusicPlayButton theme="creative" />
       </div>
     </header>
 
@@ -64,7 +66,7 @@ const isIbm = project.slug === 'ibm';
     </main>
 
     <nav class="bottom-navigation" aria-label="Retour aux projets">
-      <a class="back-link" href="/"><span class="chevron" aria-hidden="true"></span>Retour</a>
+      <a class="back-link" href="/creative"><span class="chevron" aria-hidden="true"></span>Retour</a>
     </nav>
 
     <script>
@@ -93,47 +95,45 @@ const isIbm = project.slug === 'ibm';
 </html>
 
 <style>
-  :root { font-family: Inter, 'Segoe UI', sans-serif; color: #242424; background: #fff; }
+  :root { font-family: Inter, 'Segoe UI', sans-serif; color: #0000FF; background: #fff; }
   * { box-sizing: border-box; }
   body { margin: 0; }
-  header, main, .bottom-navigation { width: min(1440px, calc(100% - 2rem)); margin: 0 auto; }
+  header, main, .bottom-navigation { width: calc(100% - clamp(2rem, 5vw, 6rem)); margin: 0 auto; }
   header { position: relative; display: flex; justify-content: space-between; align-items: center; padding: 2rem 0 1.5rem; }
   a { color: inherit; text-decoration: none; }
-  .back-link { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem .9rem; border: 1px solid #242424; border-radius: 999px; background: #242424; color: #fff; transition: color .2s ease, background .2s ease, border-color .2s ease; }
-  .back-link:hover { background: #fff; color: #242424; }
-  .back-link:active { border-color: #ff8a5b; background: #ff8a5b; color: #242424; }
+  .back-link { display: inline-flex; align-items: center; gap: .6rem; padding: .6rem .9rem; border: 1px solid #0000FF; border-radius: 999px; background: #0000FF; color: #fff; transition: color .2s ease, background .2s ease, border-color .2s ease; }
+  .back-link:hover { background: #fff; color: #0000FF; }
+  .back-link:active { border-color: #ff8a5b; background: #ff8a5b; color: #0000FF; }
   .back-link:focus-visible { outline: 3px solid #ff8a5b; outline-offset: 3px; }
   .chevron { width: 10px; height: 10px; border-left: 2px solid currentColor; border-bottom: 2px solid currentColor; border-radius: 1.5px; transform: rotate(45deg); }
-  .brand { color: #9b9691; font-size: 1.8rem; font-weight: 500; }
+  .brand { color: #9b9691; font-size: 1rem; font-weight: 500; }
   .header-right, .site-nav { display: flex; align-items: center; }
   .header-right { gap: 1.25rem; }
   .site-nav { gap: 1rem; }
-  .site-nav a { color: #242424; padding: .6rem .9rem; border: 1px solid rgba(36, 36, 36, .16); border-radius: 999px; text-decoration: none; }
+  .site-nav a { display: inline-flex; align-items: center; justify-content: center; width: 112px; height: 42px; color: #0000FF; padding: 0; border: 1px solid rgba(0, 0, 255, .16); border-radius: 999px; text-decoration: none; }
   .site-nav a:focus-visible { outline: 3px solid #ff8a5b; outline-offset: 3px; }
-  .menu-toggle { position: relative; display: none !important; flex: 0 0 42px; width: 42px; height: 42px; padding: 0; appearance: none; border: 1px solid rgba(36, 36, 36, .16); border-radius: 50%; background: #fff; cursor: pointer; }
-  .menu-toggle span { position: absolute; right: 10px; left: 10px; display: block; height: 2px; margin: 0; border-radius: 2px; background: #242424; transition: top .2s ease, transform .2s ease, opacity .2s ease; }
+  .menu-toggle { position: relative; display: none !important; flex: 0 0 42px; width: 42px; height: 42px; padding: 0; appearance: none; border: 1px solid rgba(0, 0, 255, .16); border-radius: 50%; background: #fff; cursor: pointer; }
+  .menu-toggle span { position: absolute; right: 10px; left: 10px; display: block; height: 2px; margin: 0; border-radius: 2px; background: #0000FF; transition: top .2s ease, transform .2s ease, opacity .2s ease; }
   .menu-toggle span:nth-child(1) { top: 12px; }
   .menu-toggle span:nth-child(2) { top: 19px; }
   .menu-toggle span:nth-child(3) { top: 26px; }
-  main { padding-bottom: clamp(2rem, 5vw, 6rem); }
+  main { padding-top: clamp(.75rem, 1.5vw, 1.5rem); padding-bottom: clamp(2rem, 5vw, 6rem); }
   .bottom-navigation { display: flex; justify-content: flex-start; padding-bottom: clamp(2rem, 5vw, 5rem); }
   .secondary-media { margin-top: clamp(10px, 1vw, 16px); }
   .additional-videos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(10px, 1vw, 16px); margin-top: clamp(10px, 1vw, 16px); }
   .ibm-videos { display: grid; grid-template-columns: 1fr; gap: clamp(10px, 1vw, 16px); margin-top: clamp(10px, 1vw, 16px); }
   @media (max-width: 760px) {
     .additional-videos { grid-template-columns: 1fr; }
-    .header-right { gap: .75rem; }
+    .header-right { gap: .75rem; padding-right: 58px; }
+    .header-right > :global(.music-player-control) { position: absolute; top: 2rem; right: 0; }
     .menu-toggle { display: inline-block !important; }
-    .site-nav { position: absolute; z-index: 10; top: calc(100% - .75rem); right: 0; display: none; min-width: 190px; align-items: stretch; flex-direction: column; gap: .6rem; padding: .8rem; border: 1px solid rgba(36, 36, 36, .12); border-radius: 20px; background: #fff; box-shadow: 0 16px 40px rgba(36, 36, 36, .12); }
+    .site-nav { position: absolute; z-index: 10; top: calc(100% - .75rem); right: 0; display: none; min-width: 190px; align-items: stretch; flex-direction: column; gap: .6rem; padding: .8rem; border: 1px solid rgba(0, 0, 255, .12); border-radius: 20px; background: #fff; box-shadow: 0 16px 40px rgba(0, 0, 255, .12); }
     .site-nav.is-open { display: flex; }
     .site-nav a { text-align: center; }
     .menu-toggle[aria-expanded='true'] span:nth-child(1) { top: 19px; transform: rotate(45deg); }
     .menu-toggle[aria-expanded='true'] span:nth-child(2) { opacity: 0; }
     .menu-toggle[aria-expanded='true'] span:nth-child(3) { top: 19px; transform: rotate(-45deg); }
   }
-  @media (max-width: 560px) {
-    header, main, .bottom-navigation { width: min(100% - 1rem, 1440px); }
-    .brand { font-size: 1.2rem; }
-  }
+  @media (max-width: 560px) { .brand { font-size: .67rem; } }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 </style>

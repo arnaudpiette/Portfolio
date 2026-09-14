@@ -1,0 +1,94 @@
+---
+import ContactForm from './ContactForm.astro';
+import SkillsShowcase from './SkillsShowcase.astro';
+
+interface SkillLogo {
+  src: string;
+  label: string;
+  className?: string;
+}
+
+interface SkillGroup {
+  title: string;
+  logos: SkillLogo[];
+}
+
+interface Props {
+  theme: 'light' | 'dark';
+  logos?: SkillLogo[];
+  groups?: SkillGroup[];
+}
+
+const { theme, logos = [], groups = [] } = Astro.props;
+---
+
+<dialog id="portfolio-skills-dialog" class:list={['portfolio-overlay', `overlay-${theme}`]} aria-labelledby="portfolio-skills-title">
+  <div class="overlay-panel">
+    <button class="overlay-close" type="button" data-overlay-close aria-label="Fermer la fenêtre">×</button>
+    <h2 id="portfolio-skills-title">Compétences</h2>
+    <SkillsShowcase theme={theme} logos={logos} groups={groups} />
+  </div>
+</dialog>
+
+<dialog id="portfolio-contact-dialog" class:list={['portfolio-overlay', `overlay-${theme}`]} aria-labelledby="portfolio-contact-title">
+  <div class="overlay-panel contact-panel">
+    <button class="overlay-close" type="button" data-overlay-close aria-label="Fermer la fenêtre">×</button>
+    <h2 id="portfolio-contact-title" class="sr-only">Contact</h2>
+    <ContactForm theme={theme} sectionId="portfolio-contact-form" showFooter={false} />
+  </div>
+</dialog>
+
+<script>
+  const setupPortfolioOverlays = () => {
+    document.querySelectorAll<HTMLButtonElement>('[data-overlay-open]').forEach((button) => {
+      if (button.dataset.overlayReady) return;
+      button.dataset.overlayReady = 'true';
+      button.addEventListener('click', () => {
+        const dialog = document.getElementById(button.dataset.overlayOpen ?? '');
+        if (dialog instanceof HTMLDialogElement) dialog.showModal();
+      });
+    });
+
+    document.querySelectorAll<HTMLDialogElement>('.portfolio-overlay').forEach((dialog) => {
+      if (dialog.dataset.overlayReady) return;
+      dialog.dataset.overlayReady = 'true';
+      dialog.querySelector<HTMLButtonElement>('[data-overlay-close]')?.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('click', (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+    });
+  };
+
+  setupPortfolioOverlays();
+  document.addEventListener('astro:page-load', setupPortfolioOverlays);
+</script>
+
+<style>
+  .portfolio-overlay {
+    width: min(1180px, calc(100% - 2rem));
+    max-width: none;
+    max-height: calc(100dvh - 2rem);
+    padding: 0;
+    overflow: auto;
+    border: 0;
+    border-radius: 32px;
+    background: transparent;
+    color: var(--overlay-text);
+  }
+  .portfolio-overlay::backdrop { background: rgba(3, 9, 8, .8); backdrop-filter: blur(6px); }
+  .overlay-light { --overlay-background: #fff; --overlay-text: #0000FF; --overlay-accent: #ff8a5b; --overlay-border: rgba(0, 0, 255, .12); }
+  .overlay-dark { --overlay-background: #07100d; --overlay-text: #f5f5f5; --overlay-accent: #9af57f; --overlay-border: #213d32; }
+  .overlay-panel { position: relative; min-height: 220px; padding: clamp(1.25rem, 3vw, 2.5rem); border: 1px solid var(--overlay-border); border-radius: 32px; background: var(--overlay-background); }
+  .overlay-panel > h2 { margin: 0; font-size: clamp(1.7rem, 4vw, 3.5rem); line-height: 1; }
+  .overlay-close { position: sticky; z-index: 5; top: 0; float: right; display: grid; width: 46px; height: 46px; padding: 0; place-items: center; border: 1px solid currentColor; border-radius: 50%; background: var(--overlay-background); color: var(--overlay-accent); font: 300 2rem/1 Arial, sans-serif; cursor: pointer; }
+  .overlay-close:hover { background: var(--overlay-accent); color: var(--overlay-background); }
+  .overlay-close:focus-visible { outline: 3px solid var(--overlay-accent); outline-offset: 3px; }
+  .contact-panel { padding: 0; overflow: hidden; }
+  .contact-panel .overlay-close { top: 1.25rem; right: 1.25rem; margin: 1.25rem 1.25rem 0 0; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  @media (max-width: 600px) {
+    .portfolio-overlay { width: calc(100% - 1rem); max-height: calc(100dvh - 1rem); border-radius: 22px; }
+    .overlay-panel { padding: 1rem; border-radius: 22px; }
+    .contact-panel { padding: 0; }
+  }
+</style>

@@ -1,0 +1,123 @@
+---
+interface Props {
+  mode: 'creative' | 'dev';
+  preserveScroll?: boolean;
+}
+
+const { mode, preserveScroll = false } = Astro.props;
+const href = mode === 'creative' ? '/dev' : '/creative';
+const targetLabel = mode === 'creative' ? 'Passer au portfolio DEV' : 'Passer au portfolio CRÉA';
+---
+
+<a
+  class:list={['mode-switch', `is-${mode}`]}
+  href={href}
+  aria-label={targetLabel}
+  title={targetLabel}
+  data-preserve-scroll={preserveScroll ? '' : undefined}
+>
+  <span class="mode-label mode-da">CRÉA</span>
+  <span class="mode-label mode-dev">DEV</span>
+</a>
+
+<script>
+  let preservedSwitchTop: number | null = null;
+  const switchPositionKey = 'portfolio-switch-top';
+
+  const restoreSwitchPosition = () => {
+    const savedPosition = sessionStorage.getItem(switchPositionKey);
+    if (savedPosition === null) return;
+
+    sessionStorage.removeItem(switchPositionKey);
+    const switchElement = document.querySelector('[data-preserve-scroll]');
+    if (!(switchElement instanceof HTMLElement)) return;
+
+    const positionDifference = switchElement.getBoundingClientRect().top - Number(savedPosition);
+    window.scrollBy(0, positionDifference);
+  };
+
+  requestAnimationFrame(() => requestAnimationFrame(restoreSwitchPosition));
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+
+    const switchElement = target.closest('[data-preserve-scroll]');
+    if (!(switchElement instanceof HTMLElement)) return;
+
+    preservedSwitchTop = switchElement.getBoundingClientRect().top;
+    sessionStorage.setItem(switchPositionKey, String(preservedSwitchTop));
+  });
+
+  document.addEventListener('astro:after-swap', () => {
+    if (preservedSwitchTop === null) return;
+
+    const switchElement = document.querySelector('[data-preserve-scroll]');
+    if (switchElement instanceof HTMLElement) {
+      const positionDifference = switchElement.getBoundingClientRect().top - preservedSwitchTop;
+      window.scrollBy(0, positionDifference);
+    }
+
+    preservedSwitchTop = null;
+    sessionStorage.removeItem(switchPositionKey);
+  });
+</script>
+
+<style>
+  .mode-switch {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex: 0 0 182px;
+    width: 182px;
+    height: 55px;
+    padding: 4px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: rgba(255, 138, 91, .16);
+    color: #242424;
+    text-decoration: none;
+    font-size: .884rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: .08em;
+    transition: background-color .2s ease, border-color .2s ease;
+  }
+  .mode-label {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    height: 100%;
+    border-radius: 999px;
+    opacity: 1;
+    transition: color .2s ease, background-color .2s ease, opacity .2s ease;
+  }
+  .mode-dev { color: #0000FF; }
+  .is-creative .mode-dev,
+  .is-dev .mode-da { opacity: .2; }
+  .is-creative {
+    border-color: rgba(255, 138, 91, .38);
+    background: rgba(255, 138, 91, .16);
+    color: #242424;
+  }
+  .is-creative .mode-da {
+    background: #ff8a5b;
+    color: #fff;
+  }
+  .is-dev {
+    border-color: rgba(154, 245, 127, .48);
+    background: rgba(154, 245, 127, .12);
+    color: #fff;
+  }
+  .is-dev .mode-dev {
+    background: #9af57f;
+    color: #0000FF;
+  }
+  .mode-switch:focus-visible { outline: 3px solid #ff8a5b; outline-offset: 5px; border-radius: 999px; }
+  .mode-switch.is-dev:focus-visible { outline-color: #9af57f; }
+
+</style>

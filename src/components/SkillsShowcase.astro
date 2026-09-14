@@ -1,0 +1,164 @@
+---
+interface SkillLogo {
+  src: string;
+  label: string;
+  className?: string;
+}
+
+interface SkillGroup {
+  title: string;
+  logos: SkillLogo[];
+}
+
+interface Props {
+  theme?: 'light' | 'dark';
+  groups?: SkillGroup[];
+  logos?: SkillLogo[];
+}
+
+const { theme = 'light', groups = [], logos = [] } = Astro.props;
+---
+
+<section class:list={['skills-card', `skills-${theme}`]} aria-label="Compétences">
+  {groups.length > 0 ? (
+    <div class="skills-groups">
+      {groups.map((group) => (
+        <section class="skills-group" aria-label={group.title}>
+          <h3>{group.title}</h3>
+          <div class="skills-logo-grid">
+            {group.logos.map((logo) => (
+              <div class:list={['skill-logo', logo.className]} title={logo.label}>
+                <img src={logo.src} alt={logo.label} loading="lazy" decoding="async" />
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  ) : (
+    <div class="skills-logo-grid skills-logo-grid-single">
+      {logos.map((logo) => (
+        <div class:list={['skill-logo', logo.className]} title={logo.label}>
+          <img src={logo.src} alt={logo.label} loading="lazy" decoding="async" />
+        </div>
+      ))}
+    </div>
+  )}
+</section>
+
+<style>
+  .skills-card {
+    --skills-background: #fafafa;
+    --skills-border: rgba(0, 0, 255, .1);
+    --skills-inner-background: #fff;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 3rem 0 1rem;
+    padding: clamp(1.5rem, 4vw, 3rem);
+    overflow: hidden;
+    border: 1px solid var(--skills-border);
+    border-radius: 32px;
+    background: var(--skills-background);
+  }
+
+  .skills-dark {
+    --skills-background: #07100d;
+    --skills-border: #213d32;
+    --skills-inner-background: #07100d;
+    padding: 0;
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  .skills-groups {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(1rem, 2vw, 2rem);
+  }
+
+  .skills-group {
+    min-width: 0;
+    padding: clamp(1rem, 2vw, 1.75rem);
+    border: 1px solid var(--skills-border);
+    border-radius: 24px;
+    background: var(--skills-inner-background);
+  }
+
+  .skills-group h3 {
+    margin: 0 0 1.5rem;
+    color: #ff8a5b;
+    font-size: .78rem;
+    line-height: 1;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+  }
+
+  .skills-dark .skills-group h3 { color: #9af57f; }
+
+  .skills-logo-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .skills-logo-grid-single { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+
+  .skill-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    height: 62px;
+  }
+
+  .skill-logo img {
+    display: block;
+    width: 100%;
+    height: 42px;
+    object-fit: contain;
+    filter: grayscale(1);
+    transition: filter .65s ease-in-out;
+  }
+
+  .skill-logo:hover img { filter: grayscale(0); }
+  .skills-light .skill-logo img { animation: dev-logo-native 4s ease-in-out infinite alternate; }
+  .skills-dark .skill-logo img { animation: dev-logo-native 4s ease-in-out infinite alternate; }
+  .skills-dark .logo-hover-blue img { animation-name: dev-logo-blue; }
+  .skills-dark .logo-hover-native img { animation-name: dev-logo-light-native; }
+  .logo-enlarged img { transform: scale(1.2); }
+  .logo-extra-enlarged img { transform: scale(1.44); }
+
+  @keyframes dev-logo-native {
+    0%, 35% { filter: grayscale(1); }
+    100% { filter: grayscale(0); }
+  }
+
+  @keyframes dev-logo-blue {
+    0%, 35% { filter: brightness(0) saturate(100%) invert(78%) sepia(0%) saturate(0%) hue-rotate(248deg) brightness(100%) contrast(100%) grayscale(1); }
+    100% { filter: brightness(0) saturate(100%) invert(8%) sepia(100%) saturate(7497%) hue-rotate(248deg) brightness(97%) contrast(143%) grayscale(0); }
+  }
+
+  @keyframes dev-logo-light-native {
+    0%, 35% { filter: grayscale(1) brightness(0) invert(.78); }
+    100% { filter: grayscale(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .skills-light .skill-logo img,
+    .skills-dark .skill-logo img { animation: none; filter: grayscale(0); }
+  }
+
+  @media (max-width: 700px) {
+    .skills-groups { grid-template-columns: 1fr; }
+    .skills-logo-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .skills-logo-grid-single { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .5rem; }
+  }
+
+  @media (max-width: 480px) {
+    .skills-logo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .skills-logo-grid-single { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: .25rem; }
+  }
+</style>

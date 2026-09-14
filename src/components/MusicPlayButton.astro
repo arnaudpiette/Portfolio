@@ -1,0 +1,87 @@
+---
+interface Props {
+  theme: 'creative' | 'dev';
+  fixed?: boolean;
+}
+
+const { theme, fixed = false } = Astro.props;
+const audioSrc = theme === 'dev'
+  ? '/sounds/Hot Butter Popcorn.mp3'
+  : '/sounds/Dimitri From Paris - Sacré Français.mp3';
+---
+
+<div class:list={['music-player-control', `is-${theme}`, { 'is-fixed': fixed }]} transition:persist={`portfolio-music-${theme}`}>
+  <button class="music-play-button" data-audio-src={audioSrc} type="button" aria-label="Lire la musique" aria-pressed="false">
+    <span class="play-icon" aria-hidden="true"></span>
+    <span class="pause-icon" aria-hidden="true"><i></i><i></i></span>
+  </button>
+</div>
+
+<script>
+  const setupMusicPlayer = () => {
+    const win = window as typeof window & {
+      portfolioAudio?: HTMLAudioElement;
+      portfolioDevAudioFocusReady?: boolean;
+    };
+    const button = document.querySelector<HTMLButtonElement>('.music-play-button');
+    if (!button || button.dataset.musicReady) return;
+
+    const source = new URL(button.dataset.audioSrc ?? '', window.location.href).href;
+    if (!win.portfolioAudio || win.portfolioAudio.src !== source) {
+      win.portfolioAudio?.pause();
+      win.portfolioAudio = new Audio(source);
+      win.portfolioAudio.loop = true;
+    }
+
+    const audio = win.portfolioAudio;
+    const updateButton = () => {
+      const playing = !audio.paused;
+      button.classList.toggle('is-playing', playing);
+      button.setAttribute('aria-pressed', String(playing));
+      button.setAttribute('aria-label', playing ? 'Mettre la musique en pause' : 'Lire la musique');
+    };
+
+    button.dataset.musicReady = 'true';
+    button.addEventListener('click', async () => {
+      if (audio.paused) await audio.play();
+      else audio.pause();
+      updateButton();
+    });
+    audio.addEventListener('play', updateButton);
+    audio.addEventListener('pause', updateButton);
+
+    const isDevPlayer = button.parentElement?.classList.contains('is-dev');
+    if (isDevPlayer && !win.portfolioDevAudioFocusReady) {
+      win.portfolioDevAudioFocusReady = true;
+      const pauseWhenInactive = () => audio.pause();
+      window.addEventListener('blur', pauseWhenInactive);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) pauseWhenInactive();
+      });
+    }
+
+    updateButton();
+  };
+
+  setupMusicPlayer();
+  document.addEventListener('astro:page-load', setupMusicPlayer);
+</script>
+
+<style>
+  .music-player-control { position: relative; z-index: 20; flex: 0 0 42px; width: 42px; height: 42px; }
+  .music-player-control.is-fixed { position: fixed; top: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem); }
+  .music-play-button { display: grid; width: 42px; height: 42px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: currentColor; cursor: pointer; transition: transform .2s ease, opacity .2s ease; }
+  .music-play-button:hover { transform: scale(1.06); }
+  .music-play-button:focus-visible { outline: 3px solid #ff8a5b; outline-offset: 4px; }
+  .is-creative { color: #0000FF; }
+  .is-dev { color: #0000FF; }
+  .play-icon { width: 0; height: 0; margin-left: 2.7px; border-top: 7.2px solid transparent; border-bottom: 7.2px solid transparent; border-left: 11.7px solid #fff; }
+  .pause-icon { display: none; gap: 4.5px; }
+  .pause-icon i { display: block; width: 3.6px; height: 14.4px; border-radius: 2px; background: #fff; }
+  .is-creative .music-play-button { background: #0000FF; }
+  .is-dev .music-play-button { background: #fff; }
+  .is-dev .play-icon { border-left-color: #0000FF; }
+  .is-dev .pause-icon i { background: #0000FF; }
+  .music-play-button.is-playing .play-icon { display: none; }
+  .music-play-button.is-playing .pause-icon { display: flex; }
+</style>

@@ -8,6 +8,9 @@ const isDrMilouApp = project.slug === 'drmilou-app';
 const isCallOfLight = project.slug === 'call-of-light';
 const isCostermans = project.slug === 'costermans';
 const isIbm = project.slug === 'ibm';
+const isLogosProject = project.slug === 'logos';
+const isMessieurs = project.slug === 'messieurs';
+const usesSinglePrintLayout = ['costermans', 'loterie', 'harley', 'messieurs'].includes(project.slug);
 // Sélection volontairement irrégulière de sept visuels mis en avant sur deux colonnes.
 const featuredIllustrationIndexes = new Set([2, 7, 13, 20, 28, 36, 43]);
 const lightBackgroundIllustrations = [
@@ -18,7 +21,7 @@ const lightBackgroundIllustrations = [
   'Tintin-',
   'Pirate',
 ];
-const imageGallery = project.media.filter((media) => media.src);
+const imageGallery = project.media.filter((media) => media.src && !media.href);
 
 const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
   if (media.layout) return media.layout;
@@ -29,8 +32,8 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
 };
 ---
 
-<section class:list={['mosaic', { 'single-media': project.media.length === 1, 'illustrations-grid': isIllustrationsProject, 'drmilou-grid': isDrMilouApp, 'calloflight-grid': isCallOfLight, 'costermans-grid': isCostermans, 'ibm-grid': isIbm }]} style={`--project-background:${project.accent};`} aria-label={`Médias du projet ${project.title}`}>
-  {showIntro && (
+<section class:list={['mosaic', { 'single-media': project.media.length === 1, 'illustrations-grid': isIllustrationsProject, 'drmilou-grid': isDrMilouApp, 'calloflight-grid': isCallOfLight, 'costermans-grid': usesSinglePrintLayout, 'messieurs-grid': isMessieurs, 'ibm-grid': isIbm, 'logos-grid': isLogosProject }]} style={`--project-background:${project.accent};`} aria-label={`Médias du projet ${project.title}`}>
+  {showIntro && !isLogosProject && (
     <article class="intro-tile">
       <div>
         <h1>{isCostermans ? <>Coster<br />mans</> : project.title}</h1>
@@ -64,8 +67,25 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
           'illustration-light-background': isIllustrationsProject
             && lightBackgroundIllustrations.some((name) => media.src?.includes(name)),
         },
-      ]}>
-        {media.src ? (
+      ]} data-media-number={index + 1}>
+        {media.src && media.href ? (
+          <a
+            class="media-open"
+            href={media.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Visiter le site : ${media.alt}`}
+          >
+            <img
+              src={media.src}
+              alt={media.alt}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              fetchpriority={index === 0 ? 'high' : 'auto'}
+              decoding="async"
+              style={`object-position:${media.position ?? 'center'};`}
+            />
+          </a>
+        ) : media.src ? (
           <button
             class="media-open"
             type="button"
@@ -75,7 +95,8 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
             <img
               src={media.src}
               alt={media.alt}
-              loading={index < 2 ? 'eager' : 'lazy'}
+              loading={index === 0 ? 'eager' : 'lazy'}
+              fetchpriority={index === 0 ? 'high' : 'auto'}
               decoding="async"
               style={`object-position:${media.position ?? 'center'};`}
             />
@@ -104,7 +125,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
         <button class="gallery-arrow gallery-previous" type="button" data-gallery-previous aria-label="Image précédente">
           <span aria-hidden="true"></span>
         </button>
-        <img class="gallery-image" data-gallery-image src="" alt="" />
+        <img class="gallery-image" data-gallery-image src="" alt="" decoding="async" />
         <button class="gallery-arrow gallery-next" type="button" data-gallery-next aria-label="Image suivante">
           <span aria-hidden="true"></span>
         </button>
@@ -193,12 +214,17 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
   .layout-square { grid-column: span 1; grid-row: span 1; }
   .media-tile img, .media-placeholder { display: block; width: 100%; min-width: 100%; height: 100%; object-fit: cover; object-position: center; }
   .media-tile.contained img { object-fit: cover; }
-  figcaption { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; display: grid; gap: .25rem; padding: .8rem; border-radius: 14px; background: rgba(255,255,255,.88); color: #242424; backdrop-filter: blur(10px); }
+  figcaption { position: absolute; right: 1rem; bottom: 1rem; left: 1rem; display: grid; gap: .25rem; padding: .8rem; border-radius: 14px; background: rgba(255,255,255,.88); color: #0000FF; backdrop-filter: blur(10px); }
   figcaption span { font-size: .85rem; line-height: 1.4; }
   .media-tile img { transition: transform .35s ease; }
   .media-tile:hover img { transform: none; }
 
-  .mosaic.calloflight-grid .intro-tile { grid-column: span 1; }
+  .mosaic.calloflight-grid { grid-auto-flow: dense; }
+  .mosaic.calloflight-grid .intro-tile,
+  .mosaic.calloflight-grid .media-tile { grid-column: span 2; grid-row: span 1; }
+  .mosaic.calloflight-grid [data-media-number='1'],
+  .mosaic.calloflight-grid [data-media-number='14'],
+  .mosaic.calloflight-grid [data-media-number='27'] { grid-column: span 2; grid-row: span 2; }
   .mosaic.calloflight-grid .intro-tile { gap: .65rem; padding: 20px 12px 20px 20px; }
   .mosaic.calloflight-grid .intro-tile .subtitle { padding-top: .75rem; }
   .mosaic.calloflight-grid .intro-tile h2 { font-size: clamp(1.05rem, 1.45vw, 1.45rem); }
@@ -231,7 +257,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
     position: absolute;
     z-index: 2;
     inset: 0;
-    border: 1px solid rgba(36, 36, 36, 0.16);
+    border: 1px solid rgba(0, 0, 255, 0.16);
     border-radius: inherit;
     pointer-events: none;
     content: '';
@@ -240,9 +266,9 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
   .gallery-dialog { box-sizing: border-box; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: clamp(16px, 3vw, 40px); border: 0; background: transparent; color: #fff; }
   .gallery-dialog::backdrop { background: rgba(14, 14, 16, .88); backdrop-filter: blur(8px); }
   .gallery-stage { position: relative; display: grid; place-items: center; width: 100%; height: 100%; }
-  .gallery-image { display: block; width: auto; max-width: min(86vw, 1500px); min-width: 0; height: auto; max-height: 88dvh; object-fit: contain; border-radius: clamp(10px, 1.2vw, 20px); box-shadow: 0 24px 80px rgba(0, 0, 0, .38); }
+  .gallery-image { display: block; width: auto; max-width: min(86vw, 1500px); min-width: 0; height: auto; max-height: 88dvh; object-fit: contain; border-radius: clamp(10px, 1.2vw, 20px); box-shadow: 0 24px 80px rgba(0, 0, 255, .38); }
   .gallery-close, .gallery-arrow { position: absolute; z-index: 3; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid rgba(255, 255, 255, .35); border-radius: 50%; background: rgba(20, 20, 22, .58); color: #fff; cursor: pointer; backdrop-filter: blur(8px); }
-  .gallery-close:hover, .gallery-arrow:hover { background: #fff; color: #242424; }
+  .gallery-close:hover, .gallery-arrow:hover { background: #fff; color: #0000FF; }
   .gallery-close { top: 0; right: 0; }
   .gallery-close span { position: absolute; width: 20px; height: 2px; border-radius: 2px; background: currentColor; transform: rotate(45deg); }
   .gallery-close span:last-child { transform: rotate(-45deg); }
@@ -263,13 +289,36 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
     position: absolute;
     z-index: 2;
     inset: 0;
-    border: 1px solid rgba(36, 36, 36, .18);
+    border: 1px solid rgba(0, 0, 255, .18);
     border-radius: inherit;
     pointer-events: none;
     content: '';
   }
+  .mosaic.logos-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: auto;
+  }
+  .mosaic.logos-grid .media-tile {
+    grid-column: span 1;
+    grid-row: span 1;
+    aspect-ratio: 1;
+    padding: 10px;
+    border: 1px solid rgba(0, 0, 255, .12);
+    border-radius: 24px;
+    background: #fff;
+  }
+  .mosaic.logos-grid .media-open {
+    border-radius: 14px;
+  }
+  .mosaic.logos-grid .media-tile img {
+    object-fit: cover;
+  }
 
   @media (min-width: 901px) {
+    .mosaic.messieurs-grid .intro-tile h1 {
+      font-size: clamp(2.2rem, 3vw, 3.6rem);
+      white-space: nowrap;
+    }
     .mosaic.single-media.costermans-grid .intro-tile { grid-column: span 1; grid-row: span 2; }
     .mosaic.single-media.costermans-grid .media-tile { grid-column: span 3; grid-row: span 2; }
     .mosaic.costermans-grid .intro-tile h1 { line-height: .76; }
@@ -288,6 +337,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
     .mosaic.drmilou-grid .intro-tile,
     .mosaic.drmilou-grid .media-tile:first-of-type { grid-column: span 2; }
     .mosaic.illustrations-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mosaic.logos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .illustrations-grid .intro-tile { grid-column: span 2; }
     .illustrations-grid .media-tile.illustration-last { grid-column: 1 / -1; aspect-ratio: auto; }
   }
@@ -306,10 +356,17 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
     .mosaic.drmilou-grid .intro-tile,
     .mosaic.drmilou-grid .media-tile:first-of-type { grid-column: auto; grid-row: auto; }
     .mosaic.illustrations-grid { grid-template-columns: 1fr; }
+    .mosaic.logos-grid { grid-template-columns: 1fr; grid-auto-rows: auto; }
     .illustrations-grid .intro-tile,
     .illustrations-grid .media-tile,
     .illustrations-grid .media-tile.illustration-featured,
     .illustrations-grid .media-tile.illustration-last { grid-column: auto; aspect-ratio: auto; }
+    .mosaic.calloflight-grid { grid-auto-rows: auto; }
+    .mosaic.calloflight-grid .intro-tile { grid-column: auto; grid-row: auto; }
+    .mosaic.calloflight-grid .media-tile { grid-column: auto; grid-row: auto; aspect-ratio: 16 / 9; }
+    .mosaic.calloflight-grid [data-media-number='1'],
+    .mosaic.calloflight-grid [data-media-number='14'],
+    .mosaic.calloflight-grid [data-media-number='27'] { grid-column: auto; grid-row: auto; aspect-ratio: 1; }
   }
 
   @media (prefers-reduced-motion: reduce) { .media-tile img { transition: none; } }

@@ -1,0 +1,82 @@
+---
+interface Props {
+  theme?: 'light' | 'dark';
+}
+
+const { theme = 'light' } = Astro.props;
+---
+
+<h1 class:list={['portfolio-signature', `signature-${theme}`]}>
+  <span class="signature-intro"><span class="signature-intro-part">Think it.</span>{' '}<span class="signature-intro-part">Design it.</span></span>
+  {' '}
+  <span class="signature-build">Build it.</span>
+</h1>
+
+<style>
+  .portfolio-signature {
+    box-sizing: border-box;
+    width: 100%;
+    margin: calc(clamp(2rem, 4vw, 3rem) + 20px) auto calc(clamp(.5rem, 1.5vw, 1rem) + 20px);
+    color: var(--signature-color);
+    font-size: clamp(3.15rem, 9vw, 100px);
+    line-height: .95;
+    letter-spacing: -.055em;
+    text-align: center;
+  }
+  .signature-light { --signature-color: #0000FF; color: #0000FF; -webkit-text-fill-color: #0000FF; }
+  .signature-dark { --signature-color: #f5f5f5; color: #f5f5f5; -webkit-text-fill-color: #f5f5f5; }
+  .signature-intro {
+    display: inline-flex;
+    width: fit-content;
+    margin: 0 -.02em -.16em;
+    padding: 0 .02em .16em;
+    gap: .08em;
+  }
+  .signature-intro-part { display: inline; }
+  .signature-build {
+    display: block;
+    width: fit-content;
+    margin: .12em auto 0;
+  }
+  .signature-light .signature-intro {
+    background-image: linear-gradient(90deg, #0000FF 0%, #ff8a5b 68%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  .signature-light .signature-build {
+    display: inline-block;
+    margin: 0;
+    color: #0000FF;
+    -webkit-text-fill-color: #0000FF;
+  }
+  .signature-dark .signature-intro { color: #f5f5f5; -webkit-text-fill-color: #f5f5f5; }
+  .signature-dark .signature-build {
+    background-image: linear-gradient(90deg, #9af57f 0%, #9af57f 35%, #0000FF 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+  }
+  @media (max-width: 560px) {
+    .portfolio-signature { margin-top: 16px; }
+    .signature-intro,
+    .signature-build {
+      width: fit-content;
+      margin-right: auto;
+      margin-left: auto;
+    }
+    .signature-intro {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .signature-light .signature-build {
+      display: block;
+      margin-right: auto;
+      margin-left: auto;
+    }
+    .signature-intro-part { display: block; }
+  }
+</style>

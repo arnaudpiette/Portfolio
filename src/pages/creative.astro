@@ -1,0 +1,514 @@
+---
+// Données utilisées pour construire les cartes et les boutons de filtre.
+import { fallbackProjects, filters } from '../lib/wp';
+import { ClientRouter } from 'astro:transitions';
+import '../styles/portfolio-shared.css';
+import ModeSwitch from '../components/ModeSwitch.astro';
+import PortfolioFooter from '../components/PortfolioFooter.astro';
+import PortfolioHeader from '../components/PortfolioHeader.astro';
+import PortfolioOverlays from '../components/PortfolioOverlays.astro';
+import PortfolioSignature from '../components/PortfolioSignature.astro';
+
+const projects = fallbackProjects;
+
+const getProjectUrl = (project: (typeof projects)[number]) => `/projets/${project.slug}`;
+
+const creativeLogos = [
+	['01-photoshop.svg', 'Photoshop'],
+	['02-illustrator.svg', 'Illustrator'],
+	['03-indesign.svg', 'InDesign'],
+	['04-figma.svg', 'Figma'],
+	['05-canva.svg', 'Canva'],
+	['06-powerpoint.svg', 'PowerPoint'],
+	['07-word.svg', 'Word'],
+].map(([file, label]) => ({ src: `/projets/Logo-crea/${file}`, label }));
+
+---
+
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<ClientRouter fallback="swap" />
+		<title>arno.piette@gmail.com — Portfolio</title>
+		<meta
+			name="description"
+			content="Portfolio de projets en direction artistique, identité de marque, développement et web."
+		/>
+	</head>
+	<body>
+		<!-- En-tête principal du portfolio -->
+		<PortfolioHeader mode="creative" />
+
+		<main id="projects">
+			<PortfolioSignature theme="light" />
+			<!-- Boutons permettant de filtrer les cartes par expertise -->
+			<div class="filter-toolbar">
+				<div class="filter-controls">
+					<ModeSwitch mode="creative" preserveScroll />
+					<button class="filter-toggle" data-filter-toggle type="button" aria-expanded="false" aria-controls="creative-filters" aria-label="Afficher les filtres">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="14" cy="17" r="2"/></svg>
+					</button>
+				</div>
+				<div id="creative-filters" class="filter-list" data-filter-panel aria-hidden="true" inert>
+					<section class="filters" aria-label="Filtres de projets">
+						{filters.map((filter) => (
+							<button class:list={['filter-pill', { active: filter.id === 'all' }]} data-filter={filter.id} type="button">{filter.label}</button>
+						))}
+					</section>
+				</div>
+			</div>
+
+			<!-- Grille des projets : chaque carte mène vers /projets/slug-du-projet -->
+			<section class="project-grid" aria-label="Galerie de projets">
+				{projects.map((project) => (
+					<article
+						class="project-card"
+						data-project-card
+						data-categories={project.tags.map((tag) => tag.id).join(' ')}
+					>
+						<a class="project-link" href={getProjectUrl(project)} aria-label={`Voir le projet ${project.title}`}>
+							<div class="project-media" style={`background:${project.accent};`}>
+								{project.isNew && <span class="new-badge">New</span>}
+								{project.cover && (
+									<img
+										src={project.cover}
+										alt={`Aperçu du projet ${project.title}`}
+										loading="lazy"
+										decoding="async"
+									/>
+								)}
+							</div>
+							<div class="project-content">
+								<div class="project-tags">
+									{project.tags.map((tag) => <span>{tag.label}</span>)}
+								</div>
+								<h3>{project.title}</h3>
+								<span class="project-cta">Voir le projet ↗</span>
+							</div>
+						</a>
+					</article>
+				))}
+			</section>
+
+		</main>
+
+		<PortfolioFooter theme="light" />
+		<PortfolioOverlays theme="light" logos={creativeLogos} />
+
+		<script>
+			// FILTRAGE DES PROJETS
+			// Les attributs data-* relient les boutons aux tags définis dans wp.ts.
+			const creativeFilterKey = 'portfolio-creative-filter';
+			const creativeReturnKey = 'portfolio-creative-return-to-filters';
+
+			const setupProjectFilters = () => {
+				const buttons = document.querySelectorAll('[data-filter]');
+				const cards = document.querySelectorAll('[data-project-card]');
+				const toolbar = document.querySelector<HTMLElement>('.filter-toolbar');
+				if (!toolbar || buttons.length === 0) return;
+
+				buttons.forEach((button) => {
+					if (!(button instanceof HTMLButtonElement) || button.dataset.filterReady) return;
+					button.dataset.filterReady = 'true';
+					button.addEventListener('click', () => {
+					const filter = button.getAttribute('data-filter');
+					if (filter) sessionStorage.setItem(creativeFilterKey, filter);
+
+					buttons.forEach((item) => item.classList.remove('active'));
+					button.classList.add('active');
+
+					cards.forEach((card) => {
+						const categories = card.getAttribute('data-categories')?.split(' ') ?? [];
+						const match = filter === 'all' || categories.includes(filter ?? '');
+						card.classList.toggle('is-hidden', !match);
+					});
+					});
+				});
+
+				const savedFilter = sessionStorage.getItem(creativeFilterKey) ?? 'all';
+				const savedButton = Array.from(buttons).find((button) => button.getAttribute('data-filter') === savedFilter);
+				if (savedButton instanceof HTMLButtonElement) savedButton.click();
+
+				document.querySelectorAll<HTMLAnchorElement>('.project-link').forEach((link) => {
+					if (link.dataset.returnReady) return;
+					link.dataset.returnReady = 'true';
+					link.addEventListener('click', () => sessionStorage.setItem(creativeReturnKey, 'true'));
+				});
+
+				if (sessionStorage.getItem(creativeReturnKey) === 'true') {
+					sessionStorage.removeItem(creativeReturnKey);
+					requestAnimationFrame(() => requestAnimationFrame(() => {
+						toolbar.scrollIntoView({ block: 'start' });
+					}));
+				}
+			};
+
+			setupProjectFilters();
+			document.addEventListener('astro:page-load', setupProjectFilters);
+
+			const setupFilterToggle = () => {
+				const toggle = document.querySelector<HTMLButtonElement>('[data-filter-toggle]');
+				const panel = document.querySelector<HTMLElement>('[data-filter-panel]');
+				if (!toggle || !panel || toggle.dataset.toggleReady) return;
+				toggle.dataset.toggleReady = 'true';
+				toggle.addEventListener('click', () => {
+					const isOpen = panel.classList.toggle('is-open');
+					toggle.setAttribute('aria-expanded', String(isOpen));
+					toggle.setAttribute('aria-label', isOpen ? 'Masquer les filtres' : 'Afficher les filtres');
+					panel.setAttribute('aria-hidden', String(!isOpen));
+					panel.toggleAttribute('inert', !isOpen);
+				});
+			};
+
+			setupFilterToggle();
+			document.addEventListener('astro:page-load', setupFilterToggle);
+
+		</script>
+	</body>
+</html>
+
+<style>
+	/* =========================
+	   BASE GLOBALE DE LA PAGE
+	   ========================= */
+	:root {
+		color-scheme: light;
+		font-family: Inter, 'Segoe UI', sans-serif;
+		background: #ffffff;
+		color: #0000FF;
+	}
+
+	html { scrollbar-gutter: stable; }
+
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		margin: 0;
+		background: #ffffff;
+		color: #0000FF;
+	}
+
+	header,
+	main,
+	footer {
+		width: calc(100% - clamp(2rem, 5vw, 6rem));
+		margin: 0 auto;
+	}
+
+	/* =========================
+	   EN-TÊTE ET NAVIGATION
+	   ========================= */
+	.site-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding: 2rem 0 1.5rem;
+		gap: 1rem;
+	}
+
+	.brand-block h1 {
+		margin: 0 0 0.35rem;
+		line-height: 0.95;
+		letter-spacing: -0.045em;
+	}
+
+	.brand-block .eyebrow {
+		margin-bottom: 0.5rem;
+		line-height: 1.35;
+	}
+
+	.intro,
+	.hero-copy,
+	.project-content p,
+	.site-footer p {
+		color: #bdb7b0;
+		line-height: 1.6;
+	}
+
+	.eyebrow {
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 0.24em;
+		font-size: 0.78rem;
+		color: #ff8a5b;
+	}
+
+	.site-nav {
+		display: flex;
+		gap: 1rem;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		min-height: 42px;
+		margin-top: clamp(0.8rem, 1.5vw, 1.3rem);
+	}
+
+	.site-nav a {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 112px;
+		height: 42px;
+		color: #0000FF;
+		text-decoration: none;
+		padding: 0;
+		border: 1px solid rgba(0, 0, 255, 0.16);
+		border-radius: 999px;
+	}
+
+	/* =========================
+	   INTRODUCTION DE LA GALERIE
+	   ========================= */
+	.hero-card {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		gap: 2rem;
+		width: 100%;
+		min-width: 0;
+		padding: clamp(1.5rem, 4vw, 3rem);
+		border: 1px solid rgba(0, 0, 255, 0.1);
+		border-radius: 32px;
+		background: #fafafa;
+		margin: 2rem 0 5rem;
+	}
+
+	.hero-card h2 {
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		padding-top: 1rem;
+	}
+
+	.hero-copy {
+		max-width: 320px;
+		margin: 0;
+	}
+
+	/* =========================
+	   FILTRES
+	   ========================= */
+	.filters {
+		display: grid;
+		grid-template-columns: repeat(11, minmax(0, 1fr));
+		gap: 0.75rem;
+		width: 100%;
+		margin: 0;
+	}
+	.filter-list { width: 100%; max-height: 0; overflow: hidden; opacity: 0; transform: scaleX(0); transform-origin: left center; pointer-events: none; transition: max-height .45s ease, opacity .3s ease, transform .45s ease; }
+	.filter-list.is-open { max-height: 400px; opacity: 1; transform: scaleX(1); pointer-events: auto; }
+
+	.filter-toolbar { display: flex; flex-direction: column; align-items: stretch; gap: 2rem; margin: calc(2rem - 100px) 0 0; padding: 70px 0 2rem; scroll-margin-top: 50px; }
+	.filter-controls { display: flex; align-items: center; justify-content: center; gap: .75rem; }
+	.filter-controls > :global(.mode-switch) { flex: 0 0 auto; width: 182px; height: 55px; }
+	.filter-toggle { display: grid; flex: 0 0 55px; width: 55px; height: 55px; padding: 0; place-items: center; border: 1px solid rgba(0,0,255,.24); border-radius: 50%; background: #fff; color: #0000FF; cursor: pointer; }
+	.filter-toggle svg { width: 32.5px; height: 32.5px; overflow: visible; fill: #fff; stroke: currentColor; stroke-width: 1; stroke-linecap: round; }
+	.filter-toggle:hover, .filter-toggle[aria-expanded='true'] { background: #0000FF; color: #fff; }
+	.filter-toggle:hover svg, .filter-toggle[aria-expanded='true'] svg { fill: #0000FF; }
+	.filter-toggle:focus-visible { outline: 2px solid #0000FF; outline-offset: 3px; }
+
+	.filter-pill {
+		display: inline-flex;
+		width: 100%;
+		min-width: 0;
+		height: 42px;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		border: 1px solid rgba(0, 0, 255, 0.16);
+		background: transparent;
+		color: rgba(0,0,255,.5);
+		font: inherit;
+		font-size: clamp(.65rem, 1.1vw, .83rem);
+		white-space: nowrap;
+		padding: 0.7rem 0.25rem;
+		border-radius: 999px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	@media (max-width: 1100px) { .filters { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+	@media (max-width: 700px) { .filters { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+	.filter-pill:hover,
+	.filter-pill.active {
+		background: #0000FF;
+		color: #ffffff;
+	}
+
+	/* =========================
+	   CARTES DES PROJETS
+	   Modifie ici la grille, les cartes, images, textes et tags.
+	   ========================= */
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(5, minmax(0, 1fr));
+		gap: .6rem;
+		padding-bottom: 2rem;
+	}
+
+	.project-card {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		aspect-ratio: 1 / 1;
+		border-radius: 24px;
+		overflow: hidden;
+		border: 1px solid rgba(0, 0, 255, 0.12);
+		background: #ffffff;
+		transition: transform 0.2s ease, border-color 0.2s ease;
+	}
+
+	.project-card:hover {
+		transform: translateY(-4px);
+		border-color: rgba(0, 0, 255, 0.24);
+	}
+
+	.project-link {
+		position: relative;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.project-card.is-hidden {
+		display: none;
+	}
+
+	.project-media {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		margin: 0;
+		border-radius: 0;
+		overflow: hidden;
+	}
+
+	.new-badge {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		z-index: 1;
+		padding: 0.55rem 0.85rem;
+		border: 1px solid rgba(255, 255, 255, 0.65);
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.92);
+		color: #0000FF;
+		font-size: 0.72rem;
+		font-weight: 700;
+		letter-spacing: 0.16em;
+		text-transform: uppercase;
+		box-shadow: 0 4px 16px rgba(0, 0, 255, 0.12);
+	}
+
+	.project-media img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.project-content {
+		position: absolute;
+		z-index: 2;
+		inset: 0;
+		justify-content: flex-end;
+		padding: clamp(1rem, 2vw, 1.5rem);
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		background: rgba(0, 0, 255, .8);
+		color: #fff;
+		opacity: 0;
+		transform: translateY(12px);
+		transition: opacity .25s ease, transform .25s ease;
+	}
+
+	.project-card:hover .project-content,
+	.project-link:focus-visible .project-content { opacity: 1; transform: none; }
+
+	.project-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.35rem 0.75rem;
+	}
+
+	.project-tags span {
+		margin: 0;
+		font-size: 0.64rem;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		color: #ff8a5b;
+	}
+
+	.project-content h3 {
+		max-width: 100%;
+		min-width: 0;
+		margin: 0.9rem 0 0.4rem;
+		font-size: clamp(.8rem, 1.7vw, 1.7rem);
+		line-height: 1.05;
+		color: #fff;
+		overflow-wrap: anywhere;
+		word-break: break-word;
+		hyphens: auto;
+	}
+
+	.project-cta { margin-top: auto; padding-top: 1rem; color: #fff; font-size: 0.82rem; }
+
+	/* Pied de page */
+	.site-footer {
+		padding: 0 0 2.5rem;
+	}
+
+	/* Adaptation pour téléphone et petite tablette */
+	@media (max-width: 760px) {
+		.site-header,
+		.hero-card {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.site-header {
+			gap: 0.75rem;
+			padding-bottom: 2rem;
+		}
+
+		.hero-copy {
+			max-width: none;
+		}
+
+		.site-nav {
+			margin-top: 0;
+		}
+
+		.header-actions {
+			width: 100%;
+			align-items: flex-start;
+			justify-content: space-between;
+			margin-top: 0;
+		}
+
+	}
+
+	@media (max-width: 560px) {
+		.project-grid {
+			grid-template-columns: repeat(3, minmax(0, 1fr));
+		}
+	}
+
+	@media (hover: none) {
+		.project-content { opacity: 1; transform: none; }
+	}
+</style>

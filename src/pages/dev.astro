@@ -1,0 +1,202 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { devFilters, devProjects } from '../lib/dev';
+import '../styles/portfolio-shared.css';
+import ModeSwitch from '../components/ModeSwitch.astro';
+import PortfolioFooter from '../components/PortfolioFooter.astro';
+import PortfolioHeader from '../components/PortfolioHeader.astro';
+import PortfolioOverlays from '../components/PortfolioOverlays.astro';
+import PortfolioSignature from '../components/PortfolioSignature.astro';
+
+const logo = (file: string, label: string, className?: string) => ({
+  src: `/projets/Logo-dev/${file}`,
+  label,
+  className,
+});
+
+const devSkillGroups = [
+  {
+    title: 'Front-end',
+    logos: [
+      logo('01-html5.svg', 'HTML5'),
+      logo('02-css3.svg', 'CSS3', 'logo-enlarged'),
+      logo('03-javascript.svg', 'JavaScript'),
+      logo('04-sass.svg', 'Sass'),
+      logo('05-react.svg', 'React'),
+      logo('06-jsx.svg', 'JSX', 'logo-extra-enlarged'),
+      logo('07-react-router.svg', 'React Router'),
+      logo('08-nextjs.svg', 'Next.js', 'logo-dev-light logo-hover-blue'),
+      logo('09-astro.svg', 'Astro'),
+      logo('19-git.svg', 'Git'),
+      logo('22-figma.svg', 'Figma', 'logo-enlarged'),
+      logo('23-lighthouse.svg', 'Lighthouse'),
+    ],
+  },
+  {
+    title: 'Back-end',
+    logos: [
+      logo('10-json.svg', 'JSON', 'logo-enlarged logo-dev-light logo-hover-blue'),
+      logo('11-nodejs.svg', 'Node.js'),
+      logo('12-expressjs.svg', 'Express.js', 'logo-extra-enlarged logo-dev-light logo-hover-blue'),
+      logo('13-jwt.svg', 'JWT'),
+      logo('14-bcrypt.svg', 'bcrypt', 'logo-extra-enlarged'),
+      logo('15-multer.svg', 'Multer'),
+      logo('16-sharp.svg', 'Sharp'),
+      logo('17-mongodb.svg', 'MongoDB'),
+      logo('18-mongoose.svg', 'Mongoose', 'logo-extra-enlarged logo-dev-light logo-hover-native'),
+      logo('20-github.svg', 'GitHub', 'logo-dev-light logo-hover-blue'),
+      logo('21-npm.svg', 'npm'),
+      logo('24-api-rest.svg', 'API REST'),
+    ],
+  },
+];
+---
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <ClientRouter fallback="swap" />
+    <title>arno.piette@gmail.com — DEV</title>
+    <meta name="description" content="Projets de développement web d’arno.piette@gmail.com." />
+  </head>
+  <body>
+    <PortfolioHeader mode="dev" />
+
+    <main id="projects">
+      <PortfolioSignature theme="dark" />
+      <div class="filter-toolbar">
+        <div class="filter-controls">
+          <ModeSwitch mode="dev" preserveScroll />
+          <button class="filter-toggle" data-filter-toggle type="button" aria-expanded="false" aria-controls="dev-filters" aria-label="Afficher les filtres">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="14" cy="17" r="2"/></svg>
+          </button>
+        </div>
+        <div id="dev-filters" class="filter-list" data-filter-panel aria-hidden="true" inert>
+          <section class="filters" aria-label="Filtres des projets DEV">
+            {devFilters.map(([id, label]) => <button class:list={['filter-pill', { active: id === 'all' }]} data-filter={id} type="button">{label}</button>)}
+          </section>
+        </div>
+      </div>
+
+      <section class="project-grid" aria-label="Repositories GitHub">
+        {devProjects.map((project, index) => (
+          <article class="project-card" data-project-card data-categories={project.filters.join(' ')}>
+            <a href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`Voir ${project.name} sur GitHub`}>
+              <div class="project-visual">
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <span class="repo-mark">&lt;/&gt;</span>
+              </div>
+              <div class="project-content">
+                <div class="project-tags">{project.stack.map((tag) => <span>{tag}</span>)}</div>
+                <h3>{project.name}</h3>
+                <span class="github-link">Voir sur GitHub ↗</span>
+              </div>
+            </a>
+          </article>
+        ))}
+      </section>
+
+    </main>
+
+    <PortfolioFooter theme="dark" />
+    <PortfolioOverlays theme="dark" groups={devSkillGroups} />
+    <script>
+      const setupProjectFilters = () => {
+        const buttons = document.querySelectorAll('[data-filter]');
+        const cards = document.querySelectorAll('[data-project-card]');
+
+        buttons.forEach((button) => {
+          if (!(button instanceof HTMLButtonElement) || button.dataset.filterReady) return;
+          button.dataset.filterReady = 'true';
+          button.addEventListener('click', () => {
+            const filter = button.getAttribute('data-filter');
+            buttons.forEach((item) => item.classList.remove('active'));
+            button.classList.add('active');
+            cards.forEach((card) => {
+              const categories = card.getAttribute('data-categories')?.split(' ') ?? [];
+              card.classList.toggle('is-hidden', filter !== 'all' && !categories.includes(filter ?? ''));
+            });
+          });
+        });
+      };
+
+      setupProjectFilters();
+      document.addEventListener('astro:page-load', setupProjectFilters);
+
+      const setupFilterToggle = () => {
+        const toggle = document.querySelector<HTMLButtonElement>('[data-filter-toggle]');
+        const panel = document.querySelector<HTMLElement>('[data-filter-panel]');
+        if (!toggle || !panel || toggle.dataset.toggleReady) return;
+        toggle.dataset.toggleReady = 'true';
+        toggle.addEventListener('click', () => {
+          const isOpen = panel.classList.toggle('is-open');
+          toggle.setAttribute('aria-expanded', String(isOpen));
+          toggle.setAttribute('aria-label', isOpen ? 'Masquer les filtres' : 'Afficher les filtres');
+          panel.setAttribute('aria-hidden', String(!isOpen));
+          panel.toggleAttribute('inert', !isOpen);
+        });
+      };
+
+      setupFilterToggle();
+      document.addEventListener('astro:page-load', setupFilterToggle);
+
+    </script>
+  </body>
+</html>
+
+<style>
+  :root { font-family: Inter, 'Segoe UI', sans-serif; color: #f5f5f5; background: #030908; color-scheme: dark; }
+  html { scrollbar-gutter: stable; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(circle at 75% 0%, rgba(0,0,255,.14), transparent 34rem), #030908; color: #f5f5f5; }
+  header, main, footer { width: calc(100% - clamp(2rem, 5vw, 6rem)); margin: 0 auto; }
+  .site-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; padding: 2rem 0 1.5rem; }
+  h1 { margin: 0 0 .35rem; line-height: .95; letter-spacing: -.045em; }
+  .eyebrow { margin: 0; color: #0000FF; font-size: .78rem; text-transform: uppercase; letter-spacing: .22em; }
+  .brand-block .eyebrow { margin-bottom: .5rem; line-height: 1.35; }
+  .header-actions, .site-nav { display: flex; align-items: center; gap: 1rem; }
+  .header-actions { min-height: 42px; margin-top: clamp(.8rem, 1.5vw, 1.3rem); }
+  .site-nav a { display: inline-flex; align-items: center; justify-content: center; width: 112px; height: 42px; padding: 0; border: 1px solid #303030; border-radius: 999px; color: #f5f5f5; text-decoration: none; }
+  .hero-card { width: 100%; min-width: 0; margin: 2rem 0 5rem; padding: clamp(1.5rem, 4vw, 3rem); overflow: hidden; border: 1px solid #213d32; border-radius: 32px; background: #07100d; }
+  .hero-card h2 { width: 100%; max-width: 100%; margin: 0; padding-top: 1rem; letter-spacing: -.02em; }
+  .hero-card > p:last-child, .project-content p, footer { color: #858585; line-height: 1.55; }
+  .filters { display: grid; grid-template-columns: repeat(9,minmax(0,1fr)); gap: 15px; width: 100%; margin: 0; }
+  .filter-list { width: 100%; max-height: 0; overflow: hidden; opacity: 0; transform: scaleX(0); transform-origin: left center; pointer-events: none; transition: max-height .45s ease, opacity .3s ease, transform .45s ease; }
+  .filter-list.is-open { max-height: 400px; opacity: 1; transform: scaleX(1); pointer-events: auto; }
+  .filter-toolbar { display: flex; flex-direction: column; align-items: stretch; gap: 2rem; margin: calc(2rem - 100px) 0 0; padding: 70px 0 2rem; }
+  .filter-controls { display: flex; align-items: center; justify-content: center; gap: .75rem; }
+  .filter-controls > :global(.mode-switch) { flex: 0 0 auto; width: 182px; height: 55px; }
+  .filter-toggle { display: grid; flex: 0 0 55px; width: 55px; height: 55px; padding: 0; place-items: center; border: 1px solid rgba(154,245,127,.48); border-radius: 50%; background: #07100d; color: #9af57f; cursor: pointer; }
+  .filter-toggle svg { width: 32.5px; height: 32.5px; overflow: visible; fill: #07100d; stroke: currentColor; stroke-width: 1; stroke-linecap: round; }
+  .filter-toggle:hover, .filter-toggle[aria-expanded='true'] { border-color: #0000FF; background: #0000FF; color: #9af57f; }
+  .filter-toggle:hover svg, .filter-toggle[aria-expanded='true'] svg { fill: #0000FF; }
+  .filter-toggle:focus-visible { outline: 3px solid #9af57f; outline-offset: 3px; }
+  .filter-pill { display: inline-flex; width: 100%; min-width: 0; height: 42px; padding: .7rem .25rem; align-items: center; justify-content: center; border: 1px solid #0000FF; border-radius: 999px; background: transparent; color: rgba(245,245,245,.5); font-size: clamp(.65rem,1.1vw,.83rem); white-space: nowrap; text-align: center; cursor: pointer; }
+  .filter-pill:hover, .filter-pill.active { border-color: #0000FF; background: #0000FF; color: #9af57f; }
+  .project-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: .6rem; padding-bottom: 3rem; }
+  .project-card { position: relative; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid #0000FF; border-radius: 24px; background: #07100d; transition: transform .2s ease, border-color .2s ease; }
+  .project-card:hover { transform: translateY(-4px); border-color: #0000FF; }
+  .project-card.is-hidden { display: none; }
+  .project-card > a { position: relative; display: flex; height: 100%; flex-direction: column; color: inherit; text-decoration: none; }
+  .project-visual { position: absolute; z-index: 1; inset: 0; display: flex; margin: 0; padding: 1rem; justify-content: space-between; overflow: hidden; background: radial-gradient(circle at 82% 18%, rgba(154,245,127,.25), transparent 34%), radial-gradient(circle at 12% 88%, rgba(0,0,255,.42), transparent 48%), linear-gradient(145deg,#0b1b16,#030908); color: #fff; transition: background .25s ease; }
+  .project-visual > span { opacity: 0; transition: opacity .2s ease; }
+  .repo-mark { position: absolute; top: 50%; left: 50%; color: #fff; font-size: clamp(2.8rem,5vw,4.5rem); font-weight: 700; letter-spacing: -.1em; transform: translate(-50%,-50%); }
+  .project-content { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(1rem,2vw,1.5rem); background: transparent; opacity: 1; transform: none; transition: opacity .25s ease, transform .25s ease; }
+  .project-card:hover .project-content, .project-card > a:focus-visible .project-content { opacity: 0; transform: translateY(12px); }
+  .project-card:hover .project-visual, .project-card > a:focus-visible .project-visual { background: #0000FF; }
+  .project-card:hover .project-visual > span, .project-card > a:focus-visible .project-visual > span { opacity: 1; }
+  .project-visual > span:first-child { color: #9af57f; }
+  .project-tags { display: flex; flex-wrap: wrap; gap: .35rem .75rem; }
+  .project-tags span { color: #9af57f; font-size: .64rem; text-transform: uppercase; letter-spacing: .14em; }
+  h3 { max-width: 100%; min-width: 0; margin: .9rem 0 .4rem; font-size: clamp(.8rem,1.7vw,1.7rem); line-height: 1.05; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
+  .project-content p { margin: 0; }
+  .github-link { margin-top: auto; padding-top: 1rem; color: #f5f5f5; font-size: .82rem; }
+  footer { padding-bottom: 2.5rem; }
+  @media (max-width: 1100px) { .project-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } .filters { grid-template-columns: repeat(5,minmax(0,1fr)); } }
+  @media (max-width: 760px) { .site-header { flex-direction: column; gap: .75rem; padding-bottom: 2rem; } .header-actions { width: 100%; justify-content: space-between; align-items: flex-start; margin-top: 0; } .site-nav { flex-wrap: wrap; justify-content: flex-end; } }
+  @media (max-width: 600px) { .filters { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+  @media (max-width: 560px) { .project-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } .site-nav { gap: .45rem; } }
+  @media (hover: none) { .project-content { opacity: 1; transform: none; } }
+</style>

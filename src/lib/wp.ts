@@ -40,6 +40,7 @@ export interface ProjectTag {
 export interface ProjectMedia {
   alt: string;
   src?: string;
+  href?: string;
   background?: string;
   fit?: 'cover' | 'contain';
   layout?: 'portrait' | 'landscape' | 'square' | 'wide' | 'large' | 'hero' | 'three-columns';
@@ -119,6 +120,10 @@ const autonomyFiles = [
   '15-Autonomy-1.jpg',
 ];
 
+const logoFiles = Array.from({ length: 16 }, (_, index) =>
+  `${String(index + 1).padStart(2, '0')}Logo.png`
+);
+
 // LISTE DES PROJETS
 // Pour ajouter un projet, duplique un bloc complet entre { et }.
 // Le slug doit être unique, sans espace ni accent.
@@ -146,9 +151,11 @@ export const fallbackProjects: ProjectItem[] = [
       return {
         src: `/projets/call-of-light/page-${page}.jpg`,
         alt: `Call of Light — page ${index + 1}`,
-        layout: index + 1 === 26
+        layout: index + 1 === 9
+          ? 'large' as const
+          : index + 1 === 26
           ? 'three-columns' as const
-          : index + 1 === 2 || index + 1 === 13 || index + 1 === 15 || index + 1 === 27
+          : index + 1 === 2 || index + 1 === 10 || index + 1 === 12 || index + 1 === 13 || index + 1 === 14 || index + 1 === 15 || index + 1 === 16 || index + 1 === 17 || index + 1 === 27
             ? 'wide' as const
             : index + 1 === 25
               ? 'square' as const
@@ -159,7 +166,7 @@ export const fallbackProjects: ProjectItem[] = [
   {
     slug: 'drmilou-app',
     title: 'DrMilou App',
-    isNew: true,
+    isNew: false,
     tags: [
       { id: 'last-work', label: 'Last work' },
       { id: 'digital', label: 'Digital' },
@@ -275,6 +282,77 @@ export const fallbackProjects: ProjectItem[] = [
         src: '/projets/Costermans/Costermans-dbl.jpg',
         alt: 'Campagne publicitaire Costermans',
         layout: 'hero',
+      },
+    ],
+  },
+  {
+    slug: 'loterie',
+    title: 'Loterie',
+    isNew: false,
+    tags: [
+      { id: 'da', label: 'DA' },
+      { id: 'print', label: 'Print' },
+    ],
+    subtitle: 'Campagne print',
+    description: 'Création d’une campagne print pour la Loterie autour de la prévention de l’assuétude.',
+    detailTitle: 'Campagne de sensibilisation',
+    detailText: 'Direction artistique et conception graphique de la campagne.',
+    role: 'Direction artistique',
+    accent: 'linear-gradient(135deg, #5f5142 0%, #8b765c 58%, #b49c78 100%)',
+    cover: '/projets/Loterie/Cover-assuetude.jpg',
+    media: [
+      {
+        src: '/projets/Loterie/assuetude-print.jpg',
+        alt: 'Campagne print Loterie — assuétude',
+        layout: 'hero',
+      },
+    ],
+  },
+  {
+    slug: 'harley',
+    title: 'Harley',
+    isNew: false,
+    tags: [
+      { id: 'da', label: 'DA' },
+      { id: 'print', label: 'Print' },
+    ],
+    subtitle: 'Campagne print',
+    description: 'Création d’une campagne print pour Harley.',
+    detailTitle: 'Harley en mouvement',
+    detailText: 'Direction artistique et conception graphique de la campagne.',
+    role: 'Direction artistique',
+    accent: 'linear-gradient(135deg, #1d1d1d 0%, #484848 58%, #8b6a45 100%)',
+    cover: '/projets/Harley/Cover-Harley.jpg',
+    media: [
+      {
+        src: '/projets/Harley/harley-move.jpg',
+        alt: 'Campagne print Harley',
+        layout: 'hero',
+      },
+    ],
+  },
+  {
+    slug: 'messieurs',
+    title: 'Messieurs',
+    isNew: false,
+    tags: [
+      { id: 'da', label: 'DA' },
+      { id: 'digital', label: 'Digital' },
+    ],
+    subtitle: 'Site web WordPress',
+    description: 'Direction artistique et design du site web WordPress de Messieurs.',
+    detailTitle: 'Une présence digitale sur mesure',
+    detailText: 'Conception de l’expérience, de l’interface et de l’univers graphique du site.',
+    role: 'Direction artistique | Web design',
+    accent: 'linear-gradient(135deg, #252525 0%, #4f4f4f 58%, #8b8b8b 100%)',
+    cover: '/projets/Messieurs/cover-Messieur.png',
+    media: [
+      {
+        src: '/projets/Messieurs/Messieurs-homepage.jpg',
+        href: 'https://www.agencemessieurs.com/',
+        alt: 'Design du site WordPress Messieurs',
+        layout: 'hero',
+        position: 'top',
       },
     ],
   },
@@ -494,6 +572,26 @@ export const fallbackProjects: ProjectItem[] = [
     })),
   },
   {
+    slug: 'logos',
+    title: 'Logos',
+    tags: [
+      { id: 'da', label: 'DA' },
+      { id: 'brand-id', label: 'Brand ID' },
+      { id: 'logo', label: 'Logo' },
+    ],
+    subtitle: 'Sélection d’identités visuelles',
+    description: 'Une sélection de logos et de signes graphiques conçus pour différents projets et univers de marque.',
+    detailTitle: 'Identités visuelles',
+    detailText: 'Une collection de créations de logos et de systèmes graphiques.',
+    accent: 'linear-gradient(135deg, #ececec 0%, #d4d4d4 55%, #b7b7b7 100%)',
+    cover: '/projets/Logos/Cover-logo.png',
+    media: logoFiles.map((filename, index) => ({
+      src: `/projets/Logos/${filename}`,
+      alt: `Logo — création ${index + 1}`,
+      layout: 'square',
+    })),
+  },
+  {
     slug: 'autonomy',
     title: 'Autonomy',
     tags: [
@@ -506,7 +604,7 @@ export const fallbackProjects: ProjectItem[] = [
     description: 'Création de l’identité visuelle et des supports de communication d’Autonomy.',
     detailTitle: 'Une identité de marque en mouvement',
     detailText: 'Direction de création, direction artistique, identité visuelle et contenus vidéo pour Autonomy.',
-    accent: 'linear-gradient(135deg, #242424 0%, #535353 58%, #8c8c8c 100%)',
+    accent: 'linear-gradient(135deg, #0000FF 0%, #535353 58%, #8c8c8c 100%)',
     cover: '/projets/Autonomy/cover-Autonomy.jpg',
     mediaType: 'video',
     videoUrl: 'https://vimeo.com/302733417?fl=pl&fe=sh',
@@ -534,7 +632,7 @@ export const filters = [
   { id: 'publicite', label: 'Publicité' },
   { id: 'digital', label: 'Digital' },
   { id: 'illustration', label: 'Illustration' },
+  { id: 'logo', label: 'Logo' },
   { id: 'print', label: 'Print' },
   { id: 'video', label: 'Vidéo' },
-  { id: 'developpement', label: 'Développement' },
 ];
