@@ -1,4 +1,5 @@
 ---
+// Décrit une icône de compétence et ses éventuelles variantes CSS.
 interface SkillLogo {
   src: string;
   label: string;
@@ -10,15 +11,18 @@ interface SkillGroup {
   logos: SkillLogo[];
 }
 
+// Accepte soit une liste simple de logos, soit des groupes de compétences.
 interface Props {
   theme?: 'light' | 'dark';
   groups?: SkillGroup[];
   logos?: SkillLogo[];
 }
 
+// Normalise les données reçues pour afficher la bonne variante de la grille.
 const { theme = 'light', groups = [], logos = [] } = Astro.props;
 ---
 
+<!-- Grille de logos affichée dans l'overlay de compétences. -->
 <section class:list={['skills-card', `skills-${theme}`]} aria-label="Compétences">
   {groups.length > 0 ? (
     <div class="skills-groups">
@@ -47,6 +51,7 @@ const { theme = 'light', groups = [], logos = [] } = Astro.props;
 </section>
 
 <style>
+  /* Cartes, grilles de logos et animations des compétences. */
   .skills-card {
     --skills-background: #fafafa;
     --skills-border: rgba(0, 0, 255, .1);

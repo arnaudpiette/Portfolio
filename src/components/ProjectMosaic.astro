@@ -1,6 +1,8 @@
 ---
+// Importe les types de données utilisés pour construire la galerie projet.
 import type { ProjectItem, ProjectMedia } from '../data/creativeProjects';
 
+// Reçoit le projet courant et l'option qui contrôle l'affichage de son introduction.
 const { project, showIntro = true } = Astro.props as { project: ProjectItem; showIntro?: boolean };
 
 const isIllustrationsProject = project.slug === 'illustrations';
@@ -21,8 +23,10 @@ const lightBackgroundIllustrations = [
   'Tintin-',
   'Pirate',
 ];
+// Sépare les images ouvrables en dialogue des médias qui mènent vers un lien externe.
 const imageGallery = project.media.filter((media) => media.src && !media.href);
 
+// Détermine le format de tuile par défaut lorsqu'aucun layout n'est fourni.
 const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
   if (media.layout) return media.layout;
   if (total === 1) return 'hero';
@@ -32,6 +36,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
 };
 ---
 
+<!-- Mosaïque principale, dont les variantes dépendent du slug et des médias du projet. -->
 <section class:list={['mosaic', { 'single-media': project.media.length === 1, 'illustrations-grid': isIllustrationsProject, 'drmilou-grid': isDrMilouApp, 'calloflight-grid': isCallOfLight, 'costermans-grid': usesSinglePrintLayout, 'messieurs-grid': isMessieurs, 'ibm-grid': isIbm, 'logos-grid': isLogosProject }]} style={`--project-background:${project.accent};`} aria-label={`Médias du projet ${project.title}`}>
   {showIntro && !isLogosProject && (
     <article class="intro-tile">
@@ -115,6 +120,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
   })}
 </section>
 
+<!-- Dialogue de galerie rendu seulement lorsqu'au moins une image est ouvrable. -->
 {imageGallery.length > 0 && (
   <div class="project-gallery" data-project-gallery data-images={JSON.stringify(imageGallery.map(({ src, alt }) => ({ src, alt })))}>
     <dialog class="gallery-dialog" aria-label={`Galerie du projet ${project.title}`}>
@@ -136,6 +142,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
 )}
 
 <script>
+  // Gère l'ouverture, la navigation clavier et les gestes tactiles de la galerie.
   document.querySelectorAll<HTMLElement>('[data-project-gallery]').forEach((gallery) => {
     const dialog = gallery.querySelector<HTMLDialogElement>('.gallery-dialog');
     const image = gallery.querySelector<HTMLImageElement>('[data-gallery-image]');
@@ -189,6 +196,7 @@ const automaticLayout = (media: ProjectMedia, index: number, total: number) => {
 </script>
 
 <style>
+  /* Grille de médias, variantes spécifiques aux projets et dialogue plein écran. */
   :root { --project-radius: clamp(16px, 2vw, 30px); --project-gap: clamp(8px, 1vw, 16px); }
   .mosaic { --project-row-height: clamp(260px, 25vw, 390px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: var(--project-row-height); grid-auto-flow: dense; gap: var(--project-gap); width: 100%; }
   .intro-tile, .media-tile { overflow: hidden; border-radius: var(--project-radius); }

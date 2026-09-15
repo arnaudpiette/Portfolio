@@ -1,11 +1,14 @@
+/* Ajuste la taille de la signature commune du header sur les pages portfolio. */
 .portfolio-brand-title {
   font-size: clamp(2.88rem, 4.8vw, 4.16rem);
 }
 
+/* Ajuste la taille du sous-titre e-mail commun du header. */
 .portfolio-brand-subtitle {
   font-size: clamp(.496rem, 1.08vw, .76rem);
 }
 
+/* Adapte la composition commune du header aux petits écrans. */
 @media (max-width: 760px) {
   .portfolio-header {
     align-items: flex-start;

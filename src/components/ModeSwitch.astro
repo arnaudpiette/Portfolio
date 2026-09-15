@@ -1,14 +1,17 @@
 ---
+// Décrit le mode actif et l'option de conservation de position du switch.
 interface Props {
   mode: 'creative' | 'dev';
   preserveScroll?: boolean;
 }
 
+// Détermine la route cible et les libellés accessibles du changement de mode.
 const { mode, preserveScroll = false } = Astro.props;
 const href = mode === 'creative' ? '/dev' : '/creative';
 const targetLabel = mode === 'creative' ? 'Passer au portfolio DEV' : 'Passer au portfolio CRÉA';
 ---
 
+<!-- Lien de navigation entre les portfolios CRÉA et DEV. -->
 <a
   class:list={['mode-switch', `is-${mode}`]}
   href={href}
@@ -21,6 +24,7 @@ const targetLabel = mode === 'creative' ? 'Passer au portfolio DEV' : 'Passer au
 </a>
 
 <script>
+  // Mémorise puis restaure la position verticale du switch après une transition Astro.
   let preservedSwitchTop: number | null = null;
   const switchPositionKey = 'portfolio-switch-top';
 
@@ -64,6 +68,7 @@ const targetLabel = mode === 'creative' ? 'Passer au portfolio DEV' : 'Passer au
 </script>
 
 <style>
+  /* Apparence commune du switch et déclinaisons propres à chaque mode. */
   .mode-switch {
     box-sizing: border-box;
     display: inline-flex;

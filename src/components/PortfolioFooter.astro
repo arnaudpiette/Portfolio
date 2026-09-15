@@ -1,4 +1,5 @@
 ---
+// Décrit le thème visuel disponible pour le footer.
 interface Props {
   theme?: 'light' | 'dark';
 }
@@ -6,11 +7,13 @@ interface Props {
 const { theme = 'light' } = Astro.props;
 ---
 
+<!-- Footer commun affichant le copyright du portfolio. -->
 <footer class:list={['portfolio-footer', `footer-${theme}`]}>
   <p>Copyright 2026 - arno.piette@gmail.com - arnaudpiette.com</p>
 </footer>
 
 <style>
+  /* Alignement et couleur du texte de copyright selon le thème. */
   .portfolio-footer {
     box-sizing: border-box;
     width: calc(100% - clamp(2rem, 5vw, 6rem));

@@ -1,4 +1,5 @@
 ---
+// Charge les données de la grille et des filtres DEV.
 import { devFilters, devProjects } from '../data/devProjects';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/portfolio-shared.css';
@@ -8,12 +9,14 @@ import PortfolioHeader from '../components/PortfolioHeader.astro';
 import PortfolioOverlays from '../components/PortfolioOverlays.astro';
 import PortfolioSignature from '../components/PortfolioSignature.astro';
 
+// Construit une entrée de logo utilisée par l'overlay de compétences DEV.
 const logo = (file: string, label: string, className?: string) => ({
   src: `/projets/Logo-dev/${file}`,
   label,
   className,
 });
 
+// Organise les compétences DEV entre les deux groupes affichés dans l'overlay.
 const devSkillGroups = [
   {
     title: 'Front-end',
@@ -52,6 +55,7 @@ const devSkillGroups = [
 ];
 ---
 
+<!-- Page DEV : header, filtres, repositories GitHub et overlays. -->
 <BaseLayout
   title="arno.piette@gmail.com — DEV"
   description="Projets de développement web d’arno.piette@gmail.com."
@@ -97,6 +101,8 @@ const devSkillGroups = [
     <PortfolioFooter theme="dark" />
     <PortfolioOverlays theme="dark" groups={devSkillGroups} />
     <script>
+      // Installe le filtrage des repositories et l'ouverture du panneau de filtres.
+      // Associe les filtres aux cartes selon leurs catégories déclarées.
       const setupProjectFilters = () => {
         const buttons = document.querySelectorAll('[data-filter]');
         const cards = document.querySelectorAll('[data-project-card]');
@@ -119,6 +125,7 @@ const devSkillGroups = [
       setupProjectFilters();
       document.addEventListener('astro:page-load', setupProjectFilters);
 
+      // Met à jour les attributs d'accessibilité du panneau repliable.
       const setupFilterToggle = () => {
         const toggle = document.querySelector<HTMLButtonElement>('[data-filter-toggle]');
         const panel = document.querySelector<HTMLElement>('[data-filter-panel]');
@@ -140,6 +147,7 @@ const devSkillGroups = [
 </BaseLayout>
 
 <style>
+  /* Thème sombre, contrôles de filtre et grille des projets DEV. */
   :root { font-family: Inter, 'Segoe UI', sans-serif; color: #f5f5f5; background: #030908; color-scheme: dark; }
   html { scrollbar-gutter: stable; }
   * { box-sizing: border-box; }

@@ -9,6 +9,7 @@ import PortfolioHeader from '../components/PortfolioHeader.astro';
 import PortfolioOverlays from '../components/PortfolioOverlays.astro';
 import PortfolioSignature from '../components/PortfolioSignature.astro';
 
+// Prépare les projets, leurs routes et les logos affichés dans l'overlay CRÉA.
 const projects = fallbackProjects;
 
 const getProjectUrl = (project: (typeof projects)[number]) => `/projets/${project.slug}`;
@@ -25,16 +26,17 @@ const creativeLogos = [
 
 ---
 
+<!-- Page CRÉA : header, filtres, grille de projets et overlays. -->
 <BaseLayout
 	title="arno.piette@gmail.com — Portfolio"
 	description="Portfolio de projets en direction artistique, identité de marque, développement et web."
 >
-		<!-- En-tête principal du portfolio -->
+		<!-- En-tête principal du portfolio. -->
 		<PortfolioHeader mode="creative" />
 
 		<main id="projects">
 			<PortfolioSignature theme="light" />
-			<!-- Boutons permettant de filtrer les cartes par expertise -->
+			<!-- Contrôles permettant de filtrer les cartes par expertise. -->
 			<div class="filter-toolbar">
 				<div class="filter-controls">
 					<ModeSwitch mode="creative" preserveScroll />
@@ -51,7 +53,7 @@ const creativeLogos = [
 				</div>
 			</div>
 
-			<!-- Grille des projets : chaque carte mène vers /projets/slug-du-projet -->
+		<!-- Grille des projets : chaque carte mène vers /projets/slug-du-projet. -->
 			<section class="project-grid" aria-label="Galerie de projets">
 				{projects.map((project) => (
 					<article
@@ -89,12 +91,12 @@ const creativeLogos = [
 		<PortfolioOverlays theme="light" logos={creativeLogos} />
 
 		<script>
-			// FILTRAGE DES PROJETS
-			// Les attributs data-* relient les boutons aux tags définis dans wp.ts.
+				// Les attributs data-* relient les boutons aux tags définis dans creativeProjects.ts.
 			const creativeFilterKey = 'portfolio-creative-filter';
 			const creativeReturnKey = 'portfolio-creative-return-to-filters';
 
-			const setupProjectFilters = () => {
+				// Installe le filtrage et restaure le dernier filtre choisi après navigation.
+				const setupProjectFilters = () => {
 				const buttons = document.querySelectorAll('[data-filter]');
 				const cards = document.querySelectorAll('[data-project-card]');
 				const toolbar = document.querySelector<HTMLElement>('.filter-toolbar');
@@ -139,7 +141,8 @@ const creativeLogos = [
 			setupProjectFilters();
 			document.addEventListener('astro:page-load', setupProjectFilters);
 
-			const setupFilterToggle = () => {
+				// Installe l'ouverture accessible du panneau de filtres.
+				const setupFilterToggle = () => {
 				const toggle = document.querySelector<HTMLButtonElement>('[data-filter-toggle]');
 				const panel = document.querySelector<HTMLElement>('[data-filter-panel]');
 				if (!toggle || !panel || toggle.dataset.toggleReady) return;

@@ -1,10 +1,12 @@
 ---
+// Charge les données et composants nécessaires aux pages détail de projets.
 import { fallbackProjects } from '../../data/creativeProjects';
 import ProjectMosaic from '../../components/ProjectMosaic.astro';
 import ExternalVideoPlayer from '../../components/ExternalVideoPlayer.astro';
 import MusicPlayButton from '../../components/MusicPlayButton.astro';
-import { ClientRouter } from 'astro:transitions';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 
+// Génère une route statique pour chaque slug déclaré dans les données créatives.
 export function getStaticPaths() {
   return fallbackProjects.map((project) => ({
     params: { slug: project.slug },
@@ -12,21 +14,17 @@ export function getStaticPaths() {
   }));
 }
 
+// Prépare le projet courant, ses vidéos et son éventuelle variante IBM.
 const { project } = Astro.props;
 const projectVideos = project.videos ?? (project.video ? [project.video] : []);
 const isIbm = project.slug === 'ibm';
 ---
 
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <ClientRouter fallback="swap" />
-    <title>{project.title} — arno.piette@gmail.com</title>
-    <meta name="description" content={project.description} />
-  </head>
-  <body>
+<!-- Page détail dans le layout partagé, avec son menu mobile propre. -->
+<BaseLayout
+  title={`${project.title} — arno.piette@gmail.com`}
+  description={project.description}
+>
     <header>
       <a class="back-link" href="/creative"><span class="chevron" aria-hidden="true"></span>Retour</a>
       <div class="header-right">
@@ -42,6 +40,7 @@ const isIbm = project.slug === 'ibm';
       </div>
     </header>
 
+    <!-- Choisit la mosaïque, le lecteur vidéo ou leur combinaison selon le projet. -->
     <main>
       {isIbm ? (
         <>
@@ -70,6 +69,7 @@ const isIbm = project.slug === 'ibm';
     </nav>
 
     <script>
+      // Gère l'ouverture et la fermeture du menu mobile de la page détail.
       const menuToggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
       const projectNavigation = document.querySelector<HTMLElement>('#project-navigation');
       const mobileMenuQuery = window.matchMedia('(max-width: 760px)');
@@ -91,10 +91,10 @@ const isIbm = project.slug === 'ibm';
       mobileMenuQuery.addEventListener('change', closeMenu);
       closeMenu();
     </script>
-  </body>
-</html>
+</BaseLayout>
 
 <style>
+  /* Mise en page de la page détail, navigation et comportements mobiles. */
   :root { font-family: Inter, 'Segoe UI', sans-serif; color: #0000FF; background: #fff; }
   * { box-sizing: border-box; }
   body { margin: 0; }

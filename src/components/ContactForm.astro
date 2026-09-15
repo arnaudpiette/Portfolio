@@ -1,14 +1,17 @@
 ---
+// Décrit les options de thème, d'ancrage et de footer du formulaire.
 interface Props {
   theme?: 'light' | 'dark';
   sectionId?: string;
   showFooter?: boolean;
 }
 
+// Lit les options reçues et conserve le texte proposé dans le champ message.
 const { theme = 'light', sectionId = 'contact', showFooter = true } = Astro.props;
 const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe des identités de marque (maintenant des sites web et des applications) et imagine des expériences digitales nationales et internationales, tant pour des Agences de Publicité, telles que PUBLICIS, MC CANN, OGILVY, LIEU COMMUN que pour des marques ou des start-up comme DECATHLON, VIGNERONS INDÉPENDANTS, L’ORÉAL, NIKE, JOUÉCLUB, OPEL, HARLEY-DAVIDSON, LOTERIE NATIONALE, AXA, CROIX-ROUGE, DR MILOU, WHEELIZ, AUTONOMY, CITYSCOOT...';
 ---
 
+<!-- Formulaire de contact envoyé au service FormSubmit sans rechargement de page. -->
 <section id={sectionId} class:list={['contact-block', `contact-${theme}`]}>
   <div class="contact-heading">
     <h2>Une question ?</h2>
@@ -42,6 +45,7 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
   </form>
 </section>
 
+<!-- Affiche facultativement le copyright lorsque le formulaire est utilisé hors overlay. -->
 {showFooter && (
   <footer class:list={['site-copyright', `copyright-${theme}`]}>
     <p>Copyright 2026 - arno.piette@gmail.com - arnaudpiette.com</p>
@@ -49,6 +53,7 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
 )}
 
 <script>
+  // Installe une seule fois les interactions du formulaire et son envoi asynchrone.
   const setupContactForms = () => {
     document.querySelectorAll<HTMLFormElement>('.contact-form').forEach((form) => {
       if (form.dataset.ready === 'true') return;
@@ -96,6 +101,7 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
 </script>
 
 <style>
+  /* Structure, thèmes et états interactifs du formulaire de contact. */
   .contact-block {
     box-sizing: border-box;
     width: calc(100% - clamp(2rem, 5vw, 6rem));

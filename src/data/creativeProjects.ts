@@ -1,4 +1,4 @@
-// STRUCTURE D'UN PROJET
+// Structure d'un projet créatif affiché dans la grille et les pages détail.
 // Cette interface indique à TypeScript les informations obligatoires.
 export interface ProjectItem {
   slug: string;
@@ -18,7 +18,6 @@ export interface ProjectItem {
   cover?: string;
   // "gallery" affiche la mosaïque. "video" affiche directement YouTube/Vimeo.
   mediaType?: 'gallery' | 'video';
-  videoUrl?: string;
   video?: ProjectVideo;
   videos?: ProjectVideo[];
   media: ProjectMedia[];
@@ -49,6 +48,7 @@ export interface ProjectMedia {
   text?: string;
 }
 
+// Noms de fichiers construisant dynamiquement la galerie Illustrations.
 const illustrationFiles = [
   '01-Vignerons.jpg',
   '02-saucisson.jpg',
@@ -101,6 +101,7 @@ const illustrationFiles = [
   '48-Pirate.png',
 ];
 
+// Noms de fichiers construisant dynamiquement la galerie Autonomy.
 const autonomyFiles = [
   '01-Autonomy.jpg',
   '02-Autonomy-metro.jpg',
@@ -120,11 +121,12 @@ const autonomyFiles = [
   '15-Autonomy-1.jpg',
 ];
 
+// Génère les noms homogènes des seize logos de la galerie dédiée.
 const logoFiles = Array.from({ length: 16 }, (_, index) =>
   `${String(index + 1).padStart(2, '0')}Logo.png`
 );
 
-// LISTE DES PROJETS
+// Liste ordonnée des projets utilisés par la grille CRÉA et les routes dynamiques.
 // Pour ajouter un projet, duplique un bloc complet entre { et }.
 // Le slug doit être unique, sans espace ni accent.
 export const fallbackProjects: ProjectItem[] = [
@@ -249,7 +251,6 @@ export const fallbackProjects: ProjectItem[] = [
     accent: 'linear-gradient(135deg, #244a75 0%, #5687bd 58%, #aebdce 100%)',
     cover: '/projets/projet-video-vimeo/cover-decathlon-dunk.jpg',
     mediaType: 'video',
-    videoUrl: 'https://vimeo.com/254131750?fl=pl&fe=sh',
     video: {
       url: 'https://vimeo.com/254131750?fl=pl&fe=sh',
       title: 'DECATHLON RH',
@@ -374,7 +375,6 @@ export const fallbackProjects: ProjectItem[] = [
     accent: 'linear-gradient(135deg, #0064c8 0%, #1687e8 55%, #65b9f4 100%)',
     cover: '/projets/Decathlon%20PPC/Cover-PPC.jpg',
     mediaType: 'video',
-    videoUrl: 'https://vimeo.com/108124257?fl=pl&fe=sh',
     video: {
       url: 'https://vimeo.com/108124257?fl=pl&fe=sh',
       title: 'Decathlon PPC',
@@ -429,7 +429,6 @@ export const fallbackProjects: ProjectItem[] = [
     accent: 'linear-gradient(135deg, #1d2929 0%, #405957 58%, #7c8f84 100%)',
     cover: '/projets/projet-video-vimeo/cover-Wheeliz-fauteuil.jpg',
     mediaType: 'video',
-    videoUrl: 'https://vimeo.com/254101554?fl=pl&fe=sh',
     video: {
       url: 'https://vimeo.com/254101554?fl=pl&fe=sh',
       title: 'Wheeliz',
@@ -502,7 +501,6 @@ export const fallbackProjects: ProjectItem[] = [
     accent: 'linear-gradient(135deg, #705033 0%, #a97345 58%, #168397 100%)',
     cover: '/projets/projet-video-vimeo/cover-Wheeliz-video.jpg',
     mediaType: 'video',
-    videoUrl: 'https://youtu.be/LNapG8E5GN8?si=z78iwI1ilNccknyG',
     video: {
       url: 'https://youtu.be/LNapG8E5GN8?si=z78iwI1ilNccknyG',
       title: 'Système D',
@@ -607,7 +605,6 @@ export const fallbackProjects: ProjectItem[] = [
     accent: 'linear-gradient(135deg, #0000FF 0%, #535353 58%, #8c8c8c 100%)',
     cover: '/projets/Autonomy/cover-Autonomy.jpg',
     mediaType: 'video',
-    videoUrl: 'https://vimeo.com/302733417?fl=pl&fe=sh',
     video: {
       url: 'https://vimeo.com/302733417?fl=pl&fe=sh',
       title: 'Autonomy',

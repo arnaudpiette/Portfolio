@@ -1,14 +1,17 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
+// Définit le nombre de traits animés derrière chaque carte de la page d'entrée.
 const cardStackLayers = Array.from({ length: 12 });
 const devCardStackLayers = Array.from({ length: 7 });
 ---
 
+<!-- Encadre la page d'entrée avec les métadonnées et transitions communes. -->
 <BaseLayout
   title="arno.piette@gmail.com — Portfolio"
   description="Les portfolios créatif et développement web d’arno.piette@gmail.com."
 >
+    <!-- Présente les deux accès principaux au portfolio. -->
     <main>
       <h1 class="sr-only">Portfolio d’arno.piette@gmail.com</h1>
 
@@ -49,6 +52,7 @@ const devCardStackLayers = Array.from({ length: 7 });
     </main>
 
     <script>
+      // Calcule les transformations nécessaires à l'animation d'expansion des cartes.
       const cardStages = document.querySelectorAll<HTMLElement>('.card-stage');
 
       const updateCardExpansion = () => {
@@ -91,18 +95,21 @@ const devCardStackLayers = Array.from({ length: 7 });
 </BaseLayout>
 
 <style>
+  /* Fondations visuelles et mise en page de la page d'entrée. */
   :root { font-family: Inter, 'Helvetica Neue', Arial, sans-serif; color: #0000FF; background: #f4f1eb; }
   * { box-sizing: border-box; }
   body { margin: 0; min-height: 100vh; overflow-x: hidden; background: #f4f1eb; }
   main { min-height: 100svh; display: grid; align-items: center; padding: clamp(3rem, 7vw, 7rem); }
   .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   .entry-grid { width: min(1120px, 100%); margin: 0 auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.25rem, 2.5vw, 2.5rem); isolation: isolate; }
+  /* Conteneur positionné qui porte les interactions de chaque carte. */
   .card-stage {
     position: relative;
     min-width: 0;
   }
   .card-stage:hover,
   .card-stage:focus-within { z-index: 30; }
+  /* Empile les traits décoratifs animés derrière les cartes. */
   .card-stack {
     position: absolute;
     inset: 0;
@@ -137,6 +144,7 @@ const devCardStackLayers = Array.from({ length: 7 });
   .card-stage--dev .card-stack { color: #68e99a; }
   .card-stage--creative .card-stack span { clip-path: inset(0 100% 0 0); }
   .card-stage--creative, .card-stage--dev { transform: none; }
+  /* Définit l'apparence et la structure commune des deux liens principaux. */
   .entry-card {
     position: relative; z-index: 10; min-height: clamp(360px, 55vh, 560px);
     padding: clamp(1.5rem, 3vw, 2.5rem); border: 0;
@@ -172,6 +180,7 @@ const devCardStackLayers = Array.from({ length: 7 });
   .dev-card .card-copy p,
   .dev-card .arrow { color: #9af57f; }
   .dev-card:focus-visible { outline-color: #9af57f; }
+  /* Active l'expansion complète uniquement pour les pointeurs précis. */
   @media (hover: hover) and (pointer: fine) {
     .card-stage:hover .entry-card::before,
     .card-stage:focus-within .entry-card::before {
@@ -245,6 +254,7 @@ const devCardStackLayers = Array.from({ length: 7 });
   .card-copy p { margin: 1.125rem 0 0; color: #ff6b3d; font-size: clamp(.65rem, 1vw, .8rem); line-height: 1.2; text-transform: uppercase; letter-spacing: .2em; }
   h2 { position: relative; z-index: 1; display: inline-block; margin: 0; font-size: clamp(4.2rem, 10vw, 9rem); line-height: .75; letter-spacing: -.075em; }
   .arrow { position: absolute; right: clamp(1.5rem, 3vw, 2.5rem); bottom: clamp(1.5rem, 3vw, 2.5rem); font-size: clamp(1.8rem, 3vw, 2.8rem); }
+  /* Empile les cartes sur les écrans étroits. */
   @media (max-width: 900px) {
     main { padding: 1rem; }
     .entry-grid { grid-template-columns: 1fr; gap: 2rem; padding: 1rem 0; }

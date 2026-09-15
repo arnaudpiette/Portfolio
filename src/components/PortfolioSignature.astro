@@ -1,4 +1,5 @@
 ---
+// Décrit le thème utilisé pour colorer la signature éditoriale.
 interface Props {
   theme?: 'light' | 'dark';
 }
@@ -6,6 +7,7 @@ interface Props {
 const { theme = 'light' } = Astro.props;
 ---
 
+<!-- Signature éditoriale affichée avant la grille de projets. -->
 <h1 class:list={['portfolio-signature', `signature-${theme}`]}>
   <span class="signature-intro"><span class="signature-intro-part">Think it.</span>{' '}<span class="signature-intro-part">Design it.</span></span>
   {' '}
@@ -13,6 +15,7 @@ const { theme = 'light' } = Astro.props;
 </h1>
 
 <style>
+  /* Typographie, dégradés et adaptation mobile de la signature. */
   .portfolio-signature {
     box-sizing: border-box;
     width: 100%;

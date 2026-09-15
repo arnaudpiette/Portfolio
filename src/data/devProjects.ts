@@ -1,3 +1,4 @@
+// Décrit les données nécessaires à l'affichage d'une carte projet DEV.
 export interface DevProject {
   name: string;
   description: string;
@@ -7,6 +8,7 @@ export interface DevProject {
   featured?: boolean;
 }
 
+// Liste ordonnée des filtres affichés sur la page DEV.
 export const devFilters = [
   ['all', 'Tous'],
   ['front-end', 'Front-end'],
@@ -19,13 +21,14 @@ export const devFilters = [
   ['vite', 'Vite'],
 ] as const;
 
+// Liste ordonnée des repositories affichés dans la grille DEV.
 export const devProjects: DevProject[] = [
   { name: 'Dev-Web-livres', description: 'Front-end du projet de gestion et de notation de livres.', url: 'https://github.com/arnaudpiette/Dev-Web-livres', stack: ['JavaScript', 'Front-end'], filters: ['front-end', 'javascript'], featured: true },
   { name: 'Kasa', description: 'Application de location d’appartements développée avec React.', url: 'https://github.com/arnaudpiette/Kasa', stack: ['React', 'JavaScript', 'CSS'], filters: ['front-end', 'react', 'javascript', 'css', 'vite'], featured: true },
   { name: 'Portfolio', description: 'Le code source de ce portfolio Creative & DEV construit avec Astro.', url: 'https://github.com/arnaudpiette/Portfolio', stack: ['Astro', 'JavaScript', 'CSS'], filters: ['front-end', 'javascript', 'css', 'vite'], featured: true },
   { name: 'product-api', description: 'API produits et logique serveur en JavaScript.', url: 'https://github.com/arnaudpiette/product-api', stack: ['Node', 'Express', 'JavaScript'], filters: ['back-end', 'javascript', 'node', 'express'], featured: true },
   { name: 'CONVERTSSEUR', description: 'Application de conversion développée en TypeScript.', url: 'https://github.com/arnaudpiette/CONVERTSSEUR', stack: ['TypeScript', 'Front-end'], filters: ['front-end', 'javascript', 'vite'] },
-  { name: 'Nina Carducci', description: 'Optimisation, accessibilité et référencement d’un site de photographe.', url: 'https://github.com/arnaudpiette/Nina-Carducci', stack: ['JavaScript', 'CSS', 'SEO'], filters: ['front-end', 'javascript', 'css'] },
+  { name: 'Nina Carducci', description: 'Optimisation, accessibilité et référencement d’un site de photographe.', url: 'https://github.com/arnaudpiette/Nina-Carducci-Dev', stack: ['JavaScript', 'CSS', 'SEO'], filters: ['front-end', 'javascript', 'css'] },
   { name: 'Sophie Bluel', description: 'Portfolio d’architecte avec galerie dynamique et authentification.', url: 'https://github.com/arnaudpiette/Portfolio-architecte-sophie-bluel', stack: ['JavaScript', 'CSS', 'API'], filters: ['front-end', 'javascript', 'css'] },
   { name: 'Booki', description: 'Intégration responsive d’une plateforme de réservation.', url: 'https://github.com/arnaudpiette/Booki_avec_Companion', stack: ['HTML', 'CSS', 'Front-end'], filters: ['front-end', 'css'] },
   { name: 'OpenClassrooms Project', description: 'Projet d’apprentissage et d’intégration web.', url: 'https://github.com/arnaudpiette/OpenclassroomsProject', stack: ['HTML', 'CSS'], filters: ['front-end', 'css'] },

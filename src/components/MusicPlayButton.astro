@@ -1,15 +1,18 @@
 ---
+// Décrit le thème et l'option de position fixe du lecteur musical.
 interface Props {
   theme: 'creative' | 'dev';
   fixed?: boolean;
 }
 
+// Sélectionne le fichier audio correspondant au portfolio affiché.
 const { theme, fixed = false } = Astro.props;
 const audioSrc = theme === 'dev'
   ? '/sounds/Hot Butter Popcorn.mp3'
   : '/sounds/Dimitri From Paris - Sacré Français.mp3';
 ---
 
+<!-- Contrôle persistant pendant les transitions Astro pour préserver la lecture audio. -->
 <div class:list={['music-player-control', `is-${theme}`, { 'is-fixed': fixed }]} transition:persist={`portfolio-music-${theme}`}>
   <button class="music-play-button" data-audio-src={audioSrc} type="button" aria-label="Lire la musique" aria-pressed="false">
     <span class="play-icon" aria-hidden="true"></span>
@@ -18,6 +21,7 @@ const audioSrc = theme === 'dev'
 </div>
 
 <script>
+  // Partage une instance audio globale et synchronise son état avec le bouton.
   const setupMusicPlayer = () => {
     const win = window as typeof window & {
       portfolioAudio?: HTMLAudioElement;
@@ -68,6 +72,7 @@ const audioSrc = theme === 'dev'
 </script>
 
 <style>
+  /* Icônes, états de lecture et couleurs du lecteur musical. */
   .music-player-control { position: relative; z-index: 20; flex: 0 0 42px; width: 42px; height: 42px; }
   .music-player-control.is-fixed { position: fixed; top: clamp(1rem, 3vw, 2rem); right: clamp(1rem, 3vw, 2rem); }
   .music-play-button { display: grid; width: 42px; height: 42px; padding: 0; place-items: center; border: 0; border-radius: 50%; background: currentColor; cursor: pointer; transition: transform .2s ease, opacity .2s ease; }

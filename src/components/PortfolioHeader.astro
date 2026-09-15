@@ -1,10 +1,13 @@
 ---
+// Réutilise le lecteur musical dans le menu rapide du header.
 import MusicPlayButton from './MusicPlayButton.astro';
 
+// Décrit le mode visuel et éditorial du header.
 interface Props {
   mode: 'creative' | 'dev';
 }
 
+// Détermine le texte, le thème et la musique du portfolio courant.
 const { mode } = Astro.props;
 const isDev = mode === 'dev';
 const title = isDev
@@ -12,6 +15,7 @@ const title = isDev
   : 'DC/DA | Graphisme | Web Design | UX-UI';
 ---
 
+<!-- Header commun : identité, accès aux overlays et lecteur musical. -->
 <header class:list={['portfolio-header', { 'is-dev': isDev }]}>
   <div class="portfolio-brand-block">
     <h1 class="portfolio-brand-title">
@@ -33,6 +37,7 @@ const title = isDev
 </header>
 
 <style>
+  /* Mise en page du header, de son identité et de ses actions rapides. */
   .portfolio-header {
     position: relative;
     box-sizing: border-box;

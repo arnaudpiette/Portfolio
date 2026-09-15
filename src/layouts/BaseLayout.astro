@@ -1,6 +1,7 @@
 ---
 import { ClientRouter } from 'astro:transitions';
 
+// Décrit les métadonnées reçues de chaque page qui utilise ce layout.
 interface Props {
   title: string;
   description?: string;
@@ -12,8 +13,10 @@ const {
 } = Astro.props;
 ---
 
+<!-- Squelette HTML partagé par les pages principales du portfolio. -->
 <html lang="fr">
   <head>
+    <!-- Métadonnées techniques et icônes communes à toutes les pages. -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
 
@@ -22,18 +25,21 @@ const {
 
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Titre et description SEO fournis par la page courante. -->
     <title>{title}</title>
 
     {description && (
       <meta name="description" content={description} />
     )}
 
+    <!-- Active les transitions Astro entre les pages utilisant ce layout. -->
     <ClientRouter fallback="swap" />
 
     <slot name="head" />
   </head>
 
   <body>
+    <!-- Emplacement du contenu propre à chaque page. -->
     <slot />
   </body>
 </html>

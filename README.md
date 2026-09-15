@@ -181,9 +181,12 @@ Portfolio/
 │   │   ├── ProjectMosaic.astro
 │   │   └── SkillsShowcase.astro
 │   │
-│   ├── lib/
-│   │   ├── dev.ts
-│   │   └── wp.ts
+│   ├── data/
+│   │   ├── creativeProjects.ts
+│   │   └── devProjects.ts
+│   │
+│   ├── layouts/
+│   │   └── BaseLayout.astro
 │   │
 │   ├── pages/
 │   │   ├── index.astro

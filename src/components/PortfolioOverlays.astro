@@ -1,7 +1,9 @@
 ---
+// Assemble les deux contenus affichés dans les dialogues du portfolio.
 import ContactForm from './ContactForm.astro';
 import SkillsShowcase from './SkillsShowcase.astro';
 
+// Décrit les données transmises aux listes de compétences des overlays.
 interface SkillLogo {
   src: string;
   label: string;
@@ -19,9 +21,11 @@ interface Props {
   groups?: SkillGroup[];
 }
 
+// Lit le thème et les compétences propres au portfolio courant.
 const { theme, logos = [], groups = [] } = Astro.props;
 ---
 
+<!-- Dialogue modal qui présente les compétences. -->
 <dialog id="portfolio-skills-dialog" class:list={['portfolio-overlay', `overlay-${theme}`]} aria-labelledby="portfolio-skills-title">
   <div class="overlay-panel">
     <button class="overlay-close" type="button" data-overlay-close aria-label="Fermer la fenêtre">×</button>
@@ -30,6 +34,7 @@ const { theme, logos = [], groups = [] } = Astro.props;
   </div>
 </dialog>
 
+<!-- Dialogue modal qui contient le formulaire de contact. -->
 <dialog id="portfolio-contact-dialog" class:list={['portfolio-overlay', `overlay-${theme}`]} aria-labelledby="portfolio-contact-title">
   <div class="overlay-panel contact-panel">
     <button class="overlay-close" type="button" data-overlay-close aria-label="Fermer la fenêtre">×</button>
@@ -39,6 +44,7 @@ const { theme, logos = [], groups = [] } = Astro.props;
 </dialog>
 
 <script>
+  // Relie les boutons d'ouverture et de fermeture aux dialogues natifs.
   const setupPortfolioOverlays = () => {
     document.querySelectorAll<HTMLButtonElement>('[data-overlay-open]').forEach((button) => {
       if (button.dataset.overlayReady) return;
@@ -64,6 +70,7 @@ const { theme, logos = [], groups = [] } = Astro.props;
 </script>
 
 <style>
+  /* Dimensionnement, thèmes et interactions des fenêtres modales. */
   .portfolio-overlay {
     width: min(1180px, calc(100% - 2rem));
     max-width: none;
