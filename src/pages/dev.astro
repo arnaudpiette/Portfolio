@@ -1,6 +1,6 @@
 ---
-import { ClientRouter } from 'astro:transitions';
 import { devFilters, devProjects } from '../lib/dev';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/portfolio-shared.css';
 import ModeSwitch from '../components/ModeSwitch.astro';
 import PortfolioFooter from '../components/PortfolioFooter.astro';
@@ -52,16 +52,10 @@ const devSkillGroups = [
 ];
 ---
 
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <ClientRouter fallback="swap" />
-    <title>arno.piette@gmail.com — DEV</title>
-    <meta name="description" content="Projets de développement web d’arno.piette@gmail.com." />
-  </head>
-  <body>
+<BaseLayout
+  title="arno.piette@gmail.com — DEV"
+  description="Projets de développement web d’arno.piette@gmail.com."
+>
     <PortfolioHeader mode="dev" />
 
     <main id="projects">
@@ -143,8 +137,7 @@ const devSkillGroups = [
       document.addEventListener('astro:page-load', setupFilterToggle);
 
     </script>
-  </body>
-</html>
+</BaseLayout>
 
 <style>
   :root { font-family: Inter, 'Segoe UI', sans-serif; color: #f5f5f5; background: #030908; color-scheme: dark; }

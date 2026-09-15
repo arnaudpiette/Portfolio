@@ -1,7 +1,7 @@
 ---
 // Données utilisées pour construire les cartes et les boutons de filtre.
 import { fallbackProjects, filters } from '../lib/wp';
-import { ClientRouter } from 'astro:transitions';
+import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/portfolio-shared.css';
 import ModeSwitch from '../components/ModeSwitch.astro';
 import PortfolioFooter from '../components/PortfolioFooter.astro';
@@ -25,21 +25,10 @@ const creativeLogos = [
 
 ---
 
-<html lang="fr">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<ClientRouter fallback="swap" />
-		<title>arno.piette@gmail.com — Portfolio</title>
-		<meta
-			name="description"
-			content="Portfolio de projets en direction artistique, identité de marque, développement et web."
-		/>
-	</head>
-	<body>
+<BaseLayout
+	title="arno.piette@gmail.com — Portfolio"
+	description="Portfolio de projets en direction artistique, identité de marque, développement et web."
+>
 		<!-- En-tête principal du portfolio -->
 		<PortfolioHeader mode="creative" />
 
@@ -168,8 +157,7 @@ const creativeLogos = [
 			document.addEventListener('astro:page-load', setupFilterToggle);
 
 		</script>
-	</body>
-</html>
+</BaseLayout>
 
 <style>
 	/* =========================

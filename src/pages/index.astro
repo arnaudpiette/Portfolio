@@ -1,17 +1,14 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
 const cardStackLayers = Array.from({ length: 12 });
 const devCardStackLayers = Array.from({ length: 7 });
 ---
 
-<html lang="fr">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width" />
-    <title>arno.piette@gmail.com — Portfolio</title>
-    <meta name="description" content="Les portfolios créatif et développement web d’arno.piette@gmail.com." />
-  </head>
-  <body>
+<BaseLayout
+  title="arno.piette@gmail.com — Portfolio"
+  description="Les portfolios créatif et développement web d’arno.piette@gmail.com."
+>
     <main>
       <h1 class="sr-only">Portfolio d’arno.piette@gmail.com</h1>
 
@@ -91,8 +88,7 @@ const devCardStackLayers = Array.from({ length: 7 });
       window.addEventListener('resize', updateCardExpansion, { passive: true });
 
     </script>
-  </body>
-</html>
+</BaseLayout>
 
 <style>
   :root { font-family: Inter, 'Helvetica Neue', Arial, sans-serif; color: #0000FF; background: #f4f1eb; }
