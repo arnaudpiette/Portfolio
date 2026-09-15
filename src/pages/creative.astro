@@ -189,97 +189,9 @@ const creativeLogos = [
 		margin: 0 auto;
 	}
 
-	/* =========================
-	   EN-TÊTE ET NAVIGATION
-	   ========================= */
-	.site-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		padding: 2rem 0 1.5rem;
-		gap: 1rem;
-	}
-
-	.brand-block h1 {
-		margin: 0 0 0.35rem;
-		line-height: 0.95;
-		letter-spacing: -0.045em;
-	}
-
-	.brand-block .eyebrow {
-		margin-bottom: 0.5rem;
-		line-height: 1.35;
-	}
-
-	.intro,
-	.hero-copy,
-	.project-content p,
-	.site-footer p {
+	.project-content p {
 		color: #bdb7b0;
 		line-height: 1.6;
-	}
-
-	.eyebrow {
-		margin: 0;
-		text-transform: uppercase;
-		letter-spacing: 0.24em;
-		font-size: 0.78rem;
-		color: #ff8a5b;
-	}
-
-	.site-nav {
-		display: flex;
-		gap: 1rem;
-	}
-
-	.header-actions {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		min-height: 42px;
-		margin-top: clamp(0.8rem, 1.5vw, 1.3rem);
-	}
-
-	.site-nav a {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 112px;
-		height: 42px;
-		color: #0000FF;
-		text-decoration: none;
-		padding: 0;
-		border: 1px solid rgba(0, 0, 255, 0.16);
-		border-radius: 999px;
-	}
-
-	/* =========================
-	   INTRODUCTION DE LA GALERIE
-	   ========================= */
-	.hero-card {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		gap: 2rem;
-		width: 100%;
-		min-width: 0;
-		padding: clamp(1.5rem, 4vw, 3rem);
-		border: 1px solid rgba(0, 0, 255, 0.1);
-		border-radius: 32px;
-		background: #fafafa;
-		margin: 2rem 0 5rem;
-	}
-
-	.hero-card h2 {
-		width: 100%;
-		max-width: 100%;
-		margin: 0;
-		padding-top: 1rem;
-	}
-
-	.hero-copy {
-		max-width: 320px;
-		margin: 0;
 	}
 
 	/* =========================
@@ -454,41 +366,6 @@ const creativeLogos = [
 	}
 
 	.project-cta { margin-top: auto; padding-top: 1rem; color: #fff; font-size: 0.82rem; }
-
-	/* Pied de page */
-	.site-footer {
-		padding: 0 0 2.5rem;
-	}
-
-	/* Adaptation pour téléphone et petite tablette */
-	@media (max-width: 760px) {
-		.site-header,
-		.hero-card {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		.site-header {
-			gap: 0.75rem;
-			padding-bottom: 2rem;
-		}
-
-		.hero-copy {
-			max-width: none;
-		}
-
-		.site-nav {
-			margin-top: 0;
-		}
-
-		.header-actions {
-			width: 100%;
-			align-items: flex-start;
-			justify-content: space-between;
-			margin-top: 0;
-		}
-
-	}
 
 	@media (max-width: 560px) {
 		.project-grid {
