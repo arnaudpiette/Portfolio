@@ -127,7 +127,8 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
   .filter-toggle:focus-visible { outline: 3px solid #9af57f; outline-offset: 3px; }
   .filter-pill { display: inline-flex; width: 100%; min-width: 0; height: 42px; padding: .7rem .25rem; align-items: center; justify-content: center; border: 1px solid #0000FF; border-radius: 999px; background: transparent; color: rgba(245,245,245,.5); font-size: clamp(.65rem,1.1vw,.83rem); white-space: nowrap; text-align: center; cursor: pointer; }
   .filter-pill:hover, .filter-pill.active { border-color: #0000FF; background: #0000FF; color: #9af57f; }
-  .project-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: .6rem; padding-bottom: 3rem; }
+  /* La grille desktop affiche quatre projets par ligne pour améliorer la lisibilité des cartes. */
+  .project-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .6rem; padding-bottom: 3rem; }
   .project-card { position: relative; aspect-ratio: 1 / 1; overflow: hidden; border: 1px solid #0000FF; border-radius: 24px; background: #07100d; transition: transform .2s ease, border-color .2s ease; }
   .project-card:hover { transform: translateY(-4px); border-color: #0000FF; }
   .project-card.is-hidden { display: none; }

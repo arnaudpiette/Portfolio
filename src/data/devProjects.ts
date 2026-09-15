@@ -75,10 +75,81 @@ export const devFilters = [
   ['node', 'Node'],
   ['express', 'Express'],
   ['vite', 'Vite'],
+  // Filtre de navigation utile au projet mobile personnel développé en TypeScript.
+  ['typescript', 'TypeScript'],
+  // Filtre dédié au cadrage, à la planification et aux spécifications Qwenta.
+  ['gestion-projet', 'Gestion de projet'],
 ] as const;
 
 // Liste ordonnée des repositories affichés dans la grille DEV.
 export const devProjects: DevProject[] = [
+  {
+    // Application personnelle Expo destinée à rendre visibles les économies liées à l'arrêt du tabac.
+    slug: 'convertsseur',
+    // Nom éditorial de l'application ; le slug et le dépôt historique restent inchangés.
+    name: 'Smokonomy',
+    description: 'Application mobile de sensibilisation au coût du tabac, transformant un budget cigarettes en économies, objectifs et projets concrets.',
+    url: 'https://github.com/arnaudpiette/CONVERTSSEUR',
+    stack: ['TypeScript', 'React Native', 'Expo', 'Expo Router', 'Zustand', 'AsyncStorage', 'Supabase', 'Jest'],
+    filters: ['front-end', 'react', 'typescript'],
+    featured: true,
+    projectType: 'Projet personnel — sensibilisation à l’arrêt du tabac',
+    context: 'CONVERTSSEUR est une application personnelle conçue pour rendre visible le coût financier du tabac. Elle transforme la consommation déclarée en budget, économies potentielles et exemples concrets de projets ou d’achats que cette somme pourrait financer.',
+    objectives: [
+      'Faire prendre conscience du coût financier du tabac.',
+      'Calculer un budget à partir de la consommation, du prix et du format du paquet.',
+      'Projeter ce budget dans le temps et le relier à des objectifs concrets.',
+      'Permettre de suivre une économie déclarée et la progression d’un objectif.',
+      'Conserver un premier résultat localement, y compris sans compte.',
+    ],
+    architectureFlow: ['Écrans Expo Router', 'Hooks et composants React Native', 'Services de calcul et d’équivalences', 'Stores Zustand', 'AsyncStorage / Supabase'],
+    architectureTitle: 'Architecture applicative',
+    architectureDescription: 'L’application sépare les écrans Expo Router, les composants React Native, les services de calcul, les données d’équivalences et les stores Zustand. Les données invité sont persistées avec AsyncStorage ; une architecture Supabase existe pour les comptes authentifiés.',
+    features: [
+      'Saisie de la consommation quotidienne, de la marque, du prix et du format du paquet.',
+      'Suggestions de produits de tabac et mode de saisie manuelle.',
+      'Calcul du budget quotidien, mensuel et des projections par période.',
+      'Suggestions d’achats ou projets, avec possibilité de choisir un objectif.',
+      'Suivi quotidien de la consommation et des économies, sans double saisie pour un même objectif et une même date.',
+      'Évolution de l’épargne visualisée par un graphique interactif.',
+      'Outil SOS financier pour visualiser le bénéfice de ne pas fumer une cigarette.',
+    ],
+    sections: [
+      {
+        title: 'Calcul et périodes',
+        status: 'current',
+        description: 'Le calcul détermine le nombre de paquets quotidiens, le budget quotidien, puis le budget mensuel sur une base de 30,4375 jours. Chaque projection correspond au budget mensuel multiplié par la durée sélectionnée.',
+        items: ['Périodes implémentées : de 1 à 11 mois, puis de 1 à 60 ans.', 'Plan invité gratuit : 1 mois, 2 mois, 3 mois et 1 an.', 'Les périodes au-delà de ces limites sont prévues dans la logique d’accès Premium ; aucune période d’une semaine n’est implémentée dans le code actuel.'],
+      },
+      {
+        title: 'Données et stockage',
+        status: 'current',
+        description: 'Le profil recueille la consommation quotidienne, la marque, le prix du paquet, le nombre de cigarettes par paquet et la devise. Les calculs, objectifs, favoris et entrées d’épargne sont conservés localement pour le parcours invité.',
+        items: ['Zustand et AsyncStorage persistent notamment le profil, la période active, les objectifs et les économies.', 'Supabase est présent comme architecture de synchronisation pour les comptes authentifiés ; la fiche ne le présente pas comme une synchronisation finalisée.'],
+      },
+      {
+        title: 'Objectifs, équivalences et visualisation',
+        status: 'current',
+        description: 'Le budget est rapproché d’un catalogue d’équivalences : expériences, loisirs, technologie, mobilité, voyages, maison ou projets personnels. L’utilisateur peut choisir un objectif et en suivre la progression.',
+        items: ['Le graphique d’évolution affiche les économies manuelles et celles liées aux cigarettes évitées.', 'Le parcours gratuit conserve un historique de sept jours et une sélection limitée de propositions par période.', 'Les projections avancées, l’historique complet et certains usages multi-objectifs sont réservés aux niveaux d’accès définis par l’application.'],
+      },
+      {
+        title: 'Expérience et accessibilité',
+        status: 'current',
+        description: 'L’interface est conçue avec React Native et adapte la largeur des cartes aux dimensions disponibles. Les actions principales utilisent des libellés d’accessibilité et des rôles de bouton lorsque nécessaires.',
+        items: ['Choix rapides pour la consommation quotidienne, recherche de marque et saisie manuelle.', 'Étapes d’onboarding, retours explicites sur les limites d’accès et actions de partage.', 'Le graphique fournit une description accessible de ses données et des libellés pour chaque barre interactive.'],
+      },
+      {
+        title: 'Tests et qualité',
+        status: 'current',
+        description: 'Le dépôt contient des tests Jest dédiés au calcul budgétaire, aux prix du tabac, aux équivalences, aux objectifs, au suivi quotidien et au stockage invité.',
+      },
+    ],
+    challenge: 'Transformer une dépense quotidienne abstraite en une projection financière compréhensible, motivante et reliée à des objectifs personnels, sans réduire l’expérience à un simple convertisseur de valeurs.',
+    solution: 'La solution combine une logique de calcul centralisée, des projections temporelles, un catalogue d’équivalences, des objectifs suivis dans le temps et un parcours local persistant. Les services isolent le calcul, les prévisions et le suivi afin de rendre les règles testables.',
+    results: ['L’application permet d’estimer le budget cigarettes, de le projeter dans le temps et de l’associer à des projets concrets.', 'Elle offre un parcours invité persistant avec objectifs, suivi quotidien, graphique d’épargne et mécanisme SOS financier.'],
+    improvements: ['Valider les achats réels sur appareils physiques avant toute activation Premium.', 'Finaliser la synchronisation Supabase et la suppression de compte côté serveur.', 'Ajouter les exports image/PDF prévus avant de les exposer.', 'Poursuivre les tests sur appareils, tailles d’écran et parcours d’accessibilité.'],
+  },
   {
     // Projet personnel principal : assistant macOS local-first en évolution interne.
     slug: 'noon',
@@ -193,7 +264,7 @@ export const devProjects: DevProject[] = [
     description: 'API REST sécurisée avec Node.js, Express et MongoDB pour gérer des livres et leurs utilisateurs.',
     url: 'https://github.com/arnaudpiette/Dev-Web-livres',
     stack: ['Node.js', 'Express', 'MongoDB', 'Mongoose', 'JavaScript', 'JWT', 'bcrypt', 'Multer', 'Sharp', 'API REST', 'Git'],
-    filters: ['front-end', 'javascript'],
+    filters: ['back-end', 'javascript', 'node', 'express'],
     featured: true,
     context: 'Mon Vieux Grimoire est une application de référencement et de notation de livres. Le projet consistait à construire l’API back-end permettant de gérer les livres, les utilisateurs et leurs interactions, avec une attention particulière portée à la sécurité et à la gestion des données.',
     objectives: [
@@ -256,9 +327,7 @@ export const devProjects: DevProject[] = [
     results: ['L’application permet de naviguer entre les logements et d’afficher leurs informations dynamiquement.', 'L’interface reste cohérente entre desktop et mobile grâce à une architecture basée sur des composants réutilisables.'],
     improvements: ['Connecter l’interface à une API réelle.', 'Ajouter des tests automatisés.', 'Améliorer encore la gestion des états de chargement et d’erreur.', 'Poursuivre les optimisations d’accessibilité.'],
   },
-  { slug: 'portfolio', name: 'Portfolio', description: 'Le code source de ce portfolio Creative & DEV construit avec Astro.', url: 'https://github.com/arnaudpiette/Portfolio', stack: ['Astro', 'JavaScript', 'CSS'], filters: ['front-end', 'javascript', 'css', 'vite'], featured: true },
-  { slug: 'product-api', name: 'product-api', description: 'API produits et logique serveur en JavaScript.', url: 'https://github.com/arnaudpiette/product-api', stack: ['Node', 'Express', 'JavaScript'], filters: ['back-end', 'javascript', 'node', 'express'], featured: true },
-  { slug: 'convertsseur', name: 'CONVERTSSEUR', description: 'Application de conversion développée en TypeScript.', url: 'https://github.com/arnaudpiette/CONVERTSSEUR', stack: ['TypeScript', 'Front-end'], filters: ['front-end', 'javascript', 'vite'] },
+  { slug: 'portfolio', name: 'Portfolio', description: 'Le code source de ce portfolio Creative & DEV construit avec Astro.', url: 'https://github.com/arnaudpiette/Portfolio', stack: ['Astro', 'JavaScript', 'CSS'], filters: ['front-end', 'javascript', 'css', 'vite'], featured: false },
   {
     // Fiche d'optimisation front-end du site de photographe Nina Carducci.
     slug: 'nina-carducci',
@@ -267,6 +336,7 @@ export const devProjects: DevProject[] = [
     url: 'https://github.com/arnaudpiette/Nina-Carducci-Dev',
     stack: ['HTML5', 'CSS3', 'JavaScript', 'Lighthouse', 'Chrome DevTools', 'SEO', 'Accessibilité', 'Git'],
     filters: ['front-end', 'javascript', 'css'],
+    featured: true,
     context: 'Nina Carducci est un site portfolio de photographe déjà existant. L’objectif du projet était d’en améliorer les performances, le référencement naturel et l’accessibilité sans reconstruire entièrement le site.',
     objectives: [
       'Analyser les performances du site existant.',
@@ -290,14 +360,14 @@ export const devProjects: DevProject[] = [
     improvements: ['Poursuivre les tests sur plusieurs appareils et connexions.', 'Automatiser certains contrôles d’accessibilité.', 'Surveiller les Core Web Vitals en production.', 'Ajouter des tests de non-régression.', 'Poursuivre l’optimisation des ressources au fil des nouveaux contenus.'],
   },
   { slug: 'sophie-bluel', name: 'Sophie Bluel', description: 'Portfolio d’architecte avec galerie dynamique et authentification.', url: 'https://github.com/arnaudpiette/Portfolio-architecte-sophie-bluel', stack: ['JavaScript', 'CSS', 'API'], filters: ['front-end', 'javascript', 'css'] },
-  { slug: 'booki', name: 'Booki', description: 'Intégration responsive d’une plateforme de réservation.', url: 'https://github.com/arnaudpiette/Booki_avec_Companion', stack: ['HTML', 'CSS', 'Front-end'], filters: ['front-end', 'css'] },
   {
     // Projet OpenClassrooms de cadrage, sans application complète développée ni dépôt GitHub associé.
     slug: 'openclassrooms-project',
     name: 'Menu Maker by Qwenta',
     description: 'Cadrage technique et gestion de projet d’une application web de création de menus pour restaurateurs.',
     stack: ['Gestion de projet', 'Kanban', 'Spécifications techniques'],
-    filters: ['front-end', 'css'],
+    filters: ['gestion-projet'],
+    featured: true,
     projectType: 'Cadrage et gestion de projet',
     seoTitle: 'Menu Maker by Qwenta — Gestion de projet web — Arnaud Piette',
     context: 'Menu Maker est un projet de cadrage et de planification d’une application permettant à des restaurateurs de créer et gérer leurs menus en ligne. L’objectif n’était pas de développer l’application complète, mais de préparer sa réalisation en définissant les besoins, les fonctionnalités, les tâches, les choix techniques et l’organisation du projet.',
@@ -337,5 +407,8 @@ export const devProjects: DevProject[] = [
       { label: 'Télécharger la présentation du projet (PDF)', href: '/documents/qwenta/Piette_Arnaud_4_presentation_08-2026.pdf', download: true },
     ],
   },
-  { slug: 'react-router', name: 'React Router', description: 'Application React multipage avec React Router.', url: 'https://github.com/arnaudpiette/8832701-creez-une-application-react-multipages-avec-react-router', stack: ['React', 'JavaScript', 'Router'], filters: ['front-end', 'react', 'javascript', 'vite'] },
-];
+].sort((firstProject, secondProject) => {
+  // Maintient l'ordre éditorial défini pour la grille DEV et les routes générées.
+  const displayOrder = ['noon', 'convertsseur', 'kasa', 'dev-web-livres', 'nina-carducci', 'openclassrooms-project', 'portfolio', 'sophie-bluel'];
+  return displayOrder.indexOf(firstProject.slug) - displayOrder.indexOf(secondProject.slug);
+});
