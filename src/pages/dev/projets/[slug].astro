@@ -22,7 +22,7 @@ const { project } = Astro.props as { project: DevProject };
 
 <!-- Fiche DEV générique : les sections éditoriales restent absentes sans donnée associée. -->
 <BaseLayout
-  title={`${project.name} — Projet développement web — Arnaud Piette`}
+  title={project.seoTitle ?? `${project.name} — Projet développement web — Arnaud Piette`}
   description={project.description}
 >
   <!-- Le libellé de marque n'est pas un titre afin de conserver un seul H1 de page. -->
@@ -37,18 +37,35 @@ const { project } = Astro.props as { project: DevProject };
 
     <!-- Introduction toujours renseignée à partir des données déjà existantes. -->
     <header class="project-intro">
-      <p class="project-kicker">Projet développement web</p>
+      <p class="project-kicker">{project.projectType ?? 'Projet développement web'}</p>
       <h1>{project.name}</h1>
       <p class="project-description">{project.description}</p>
     </header>
 
-    <!-- Stack existante, présentée comme une liste sémantique de technologies. -->
-    <section class="project-section" aria-labelledby="stack-title">
-      <h2 id="stack-title">Stack technique</h2>
-      <ul class="tag-list">
-        {project.stack.map((item) => <li>{item}</li>)}
-      </ul>
-    </section>
+    <!-- Stack réalisée ou outils et architecture proposée, selon la nature du projet. -->
+    {project.managementTools || project.proposedStack ? (
+      <>
+        {project.managementTools && project.managementTools.length > 0 && (
+          <section class="project-section" aria-labelledby="management-tools-title">
+            <h2 id="management-tools-title">Outils de gestion</h2>
+            <ul class="tag-list">{project.managementTools.map((item) => <li>{item}</li>)}</ul>
+          </section>
+        )}
+        {project.proposedStack && project.proposedStack.length > 0 && (
+          <section class="project-section" aria-labelledby="proposed-stack-title">
+            <h2 id="proposed-stack-title">Architecture technique proposée</h2>
+            <ul class="tag-list">{project.proposedStack.map((item) => <li>{item}</li>)}</ul>
+          </section>
+        )}
+      </>
+    ) : (
+      <section class="project-section" aria-labelledby="stack-title">
+        <h2 id="stack-title">Stack technique</h2>
+        <ul class="tag-list">
+          {project.stack.map((item) => <li>{item}</li>)}
+        </ul>
+      </section>
+    )}
 
     <!-- Les sections suivantes ne sont rendues que lorsque la donnée éditoriale existe. -->
     {project.context && (
@@ -63,9 +80,21 @@ const { project } = Astro.props as { project: DevProject };
         <ul>{project.objectives.map((objective) => <li>{objective}</li>)}</ul>
       </section>
     )}
+    {project.deliverables && project.deliverables.length > 0 && (
+      <section class="project-section" aria-labelledby="deliverables-title">
+        <h2 id="deliverables-title">Livrables</h2>
+        <ul>{project.deliverables.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
+    {project.projectManagement && project.projectManagement.length > 0 && (
+      <section class="project-section" aria-labelledby="project-management-title">
+        <h2 id="project-management-title">Gestion de projet</h2>
+        <ul>{project.projectManagement.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
     {(project.architecture?.length || project.architectureFlow?.length || project.architectureDescription) && (
       <section class="project-section" aria-labelledby="architecture-title">
-        <h2 id="architecture-title">Architecture et composants</h2>
+        <h2 id="architecture-title">{project.architectureTitle ?? 'Architecture et composants'}</h2>
         {project.architecture && project.architecture.length > 0 && <ul class="tag-list">{project.architecture.map((component) => <li>{component}</li>)}</ul>}
         {project.architectureFlow && project.architectureFlow.length > 0 && (
           <ol class="architecture-flow" aria-label="Cheminement de l’architecture">
@@ -111,6 +140,20 @@ const { project } = Astro.props as { project: DevProject };
         <ul>{project.accessibility.map((item) => <li>{item}</li>)}</ul>
       </section>
     )}
+    {project.specifications && project.specifications.length > 0 && (
+      <section class="project-section" aria-labelledby="specifications-title">
+        <h2 id="specifications-title">Exemples de spécifications</h2>
+        <div class="specification-list">
+          {project.specifications.map((specification) => <article><h3>{specification.title}</h3><p>{specification.description}</p></article>)}
+        </div>
+      </section>
+    )}
+    {project.technologyWatch && project.technologyWatch.length > 0 && (
+      <section class="project-section" aria-labelledby="technology-watch-title">
+        <h2 id="technology-watch-title">Veille technologique</h2>
+        <ul>{project.technologyWatch.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
     {project.challenge && (
       <section class="project-section" aria-labelledby="challenge-title">
         <h2 id="challenge-title">Challenge principal</h2>
@@ -143,11 +186,14 @@ const { project } = Astro.props as { project: DevProject };
       </section>
     )}
 
-    <!-- Actions externes explicites, avec une démo seulement lorsqu'elle existe. -->
-    <nav class="project-actions" aria-label={`Liens du projet ${project.name}`}>
-      <a class="project-action project-action-primary" href={project.url} target="_blank" rel="noopener noreferrer">Voir le code source de {project.name} sur GitHub ↗</a>
-      {project.demoUrl && <a class="project-action" href={project.demoUrl} target="_blank" rel="noopener noreferrer">Voir la démo de {project.name} ↗</a>}
-    </nav>
+    <!-- Actions externes rendues seulement lorsqu'une destination fiable est déclarée. -->
+    {(project.url || project.demoUrl || (project.resources && project.resources.length > 0)) && (
+      <nav class="project-actions" aria-label={`Liens du projet ${project.name}`}>
+        {project.url && <a class="project-action project-action-primary" href={project.url} target="_blank" rel="noopener noreferrer">Voir le code source de {project.name} sur GitHub ↗</a>}
+        {project.demoUrl && <a class="project-action" href={project.demoUrl} target="_blank" rel="noopener noreferrer">Voir la démo de {project.name} ↗</a>}
+        {project.resources?.map((resource) => <a class="project-action" href={resource.href} target={resource.download ? undefined : '_blank'} rel={resource.download ? undefined : 'noopener noreferrer'} download={resource.download ? true : undefined}>{resource.label}</a>)}
+      </nav>
+    )}
   </main>
 
   <PortfolioFooter theme="dark" />
@@ -178,6 +224,9 @@ const { project } = Astro.props as { project: DevProject };
   .architecture-flow { display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; padding: 0; list-style: none; }
   .architecture-flow li { position: relative; color: #9af57f; font-weight: 650; }
   .architecture-flow li:not(:last-child)::after { position: absolute; top: 50%; right: -1.1rem; color: rgba(245, 245, 245, .65); content: '→'; transform: translateY(-50%); }
+  .specification-list { display: grid; gap: 1.25rem; }
+  .specification-list article { padding: 1rem; border: 1px solid #213d32; border-radius: 16px; background: rgba(7, 16, 13, .65); }
+  .specification-list h3 { margin: 0 0 .5rem; color: #9af57f; font-size: 1rem; }
   .project-actions { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: clamp(2rem, 5vw, 4rem); }
   .project-action-primary { border-color: #0000FF; background: #0000FF; color: #9af57f; }
   .project-action-primary:hover { border-color: #9af57f; background: #9af57f; color: #0000FF; }

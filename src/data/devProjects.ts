@@ -4,19 +4,31 @@ export interface DevProject {
   slug: string;
   name: string;
   description: string;
-  // URL GitHub existante, affichée depuis la fiche projet détaillée.
-  url: string;
+  // URL GitHub optionnelle, affichée seulement lorsqu'un dépôt fiable existe.
+  url?: string;
   stack: string[];
   filters: string[];
   // Champs éditoriaux optionnels prévus pour les futures études de cas.
   context?: string;
   objectives?: string[];
+  // Libellé de rôle affiché au-dessus de l'introduction de la fiche.
+  projectType?: string;
+  // Livrables documentaires d'un projet de cadrage ou de gestion de projet.
+  deliverables?: string[];
+  // Éléments de pilotage du projet, distincts de l'implémentation technique.
+  projectManagement?: string[];
+  // Outils utilisés pour organiser et suivre un projet.
+  managementTools?: string[];
+  // Technologies définies comme architecture proposée, sans les présenter comme réalisées.
+  proposedStack?: string[];
   // Liste optionnelle des composants qui structurent l'interface du projet.
   architecture?: string[];
   // Étapes optionnelles utilisées pour représenter le cheminement d'une architecture technique.
   architectureFlow?: string[];
   // Explication synthétique associée au cheminement de l'architecture.
   architectureDescription?: string;
+  // Titre optionnel pour préciser qu'une architecture est proposée et non réalisée.
+  architectureTitle?: string;
   skills?: string[];
   features?: string[];
   // Constats issus d'un audit initial lorsque le projet est une optimisation existante.
@@ -27,6 +39,10 @@ export interface DevProject {
   seo?: string[];
   // Améliorations d'accessibilité effectivement documentées pour le projet.
   accessibility?: string[];
+  // Exemples de spécifications décrivant une fonctionnalité prévue.
+  specifications?: Array<{ title: string; description: string }>;
+  // Ressources de veille utilisées pour confirmer des choix ou anticiper la maintenance.
+  technologyWatch?: string[];
   challenge?: string;
   solution?: string;
   // Étapes optionnelles qui détaillent une démarche de résolution itérative.
@@ -37,6 +53,10 @@ export interface DevProject {
   improvements?: string[];
   // URL de démonstration optionnelle lorsqu'un projet en possède une.
   demoUrl?: string;
+  // Liens vers des documents ou outils externes associés au projet.
+  resources?: Array<{ label: string; href: string; download?: boolean }>;
+  // Titre SEO spécifique lorsqu'un projet n'est pas une réalisation de développement.
+  seoTitle?: string;
   featured?: boolean;
 }
 
@@ -160,6 +180,51 @@ export const devProjects: DevProject[] = [
   },
   { slug: 'sophie-bluel', name: 'Sophie Bluel', description: 'Portfolio d’architecte avec galerie dynamique et authentification.', url: 'https://github.com/arnaudpiette/Portfolio-architecte-sophie-bluel', stack: ['JavaScript', 'CSS', 'API'], filters: ['front-end', 'javascript', 'css'] },
   { slug: 'booki', name: 'Booki', description: 'Intégration responsive d’une plateforme de réservation.', url: 'https://github.com/arnaudpiette/Booki_avec_Companion', stack: ['HTML', 'CSS', 'Front-end'], filters: ['front-end', 'css'] },
-  { slug: 'openclassrooms-project', name: 'OpenClassrooms Project', description: 'Projet d’apprentissage et d’intégration web.', url: 'https://github.com/arnaudpiette/OpenclassroomsProject', stack: ['HTML', 'CSS'], filters: ['front-end', 'css'] },
+  {
+    // Projet OpenClassrooms de cadrage, sans application complète développée ni dépôt GitHub associé.
+    slug: 'openclassrooms-project',
+    name: 'Menu Maker by Qwenta',
+    description: 'Cadrage technique et gestion de projet d’une application web de création de menus pour restaurateurs.',
+    stack: ['Gestion de projet', 'Kanban', 'Spécifications techniques'],
+    filters: ['front-end', 'css'],
+    projectType: 'Cadrage et gestion de projet',
+    seoTitle: 'Menu Maker by Qwenta — Gestion de projet web — Arnaud Piette',
+    context: 'Menu Maker est un projet de cadrage et de planification d’une application permettant à des restaurateurs de créer et gérer leurs menus en ligne. L’objectif n’était pas de développer l’application complète, mais de préparer sa réalisation en définissant les besoins, les fonctionnalités, les tâches, les choix techniques et l’organisation du projet.',
+    objectives: [
+      'Analyser le besoin client et le transformer en fonctionnalités.',
+      'Rédiger les spécifications techniques et les user stories.',
+      'Construire un Kanban et découper le développement en tâches.',
+      'Définir les priorités, dépendances et estimations par story points.',
+      'Proposer une architecture technique et organiser une veille technologique.',
+    ],
+    deliverables: ['Kanban technique.', 'Spécifications techniques.', 'Présentation destinée au client ou à l’interlocuteur projet.', 'Veille technologique.'],
+    projectManagement: [
+      'Kanban organisé autour de : À faire, En cours, À tester / Valider et Terminé.',
+      'Cartes comprenant notamment user story, priorité, epic, story points, sous-tâches, critères de succès, spécifications techniques et dépendances.',
+      'Story points utilisés pour estimer une complexité relative, et non une durée exacte.',
+    ],
+    managementTools: ['Notion / Kanban'],
+    proposedStack: ['React', 'Vite', 'Node.js', 'Express', 'Prisma', 'PostgreSQL', 'Cloudinary', 'Puppeteer', 'Chromium', 'Brevo', 'GitHub Actions', 'Vercel', 'Render'],
+    architectureFlow: ['React / Vite', 'API Node.js / Express', 'Prisma ORM', 'PostgreSQL'],
+    architectureTitle: 'Flux d’architecture proposé',
+    architectureDescription: 'Cette architecture est une proposition technique retenue pour l’implémentation future. Les services complémentaires prévus sont Cloudinary pour les images, Puppeteer avec Chromium pour l’export PDF, Brevo pour les e-mails transactionnels, GitHub Actions pour la CI, Vercel pour le front-end et Render pour l’API.',
+    specifications: [
+      { title: 'Catégories', description: 'Spécification prévue : POST /api/menus/:menuId/categories, PATCH /api/categories/:id et DELETE /api/categories/:id. Le modèle prévu est Menu 1 → N Category avec un champ position ; le contrôleur devait vérifier que le menu appartient à l’utilisateur authentifié avant modification.' },
+      { title: 'Plats et images', description: 'Spécification prévue : Category 1 → N Dish, avec nom, prix, description et image. Le flux d’upload prévu était Multer, une limite de 2 Mo, Cloudinary puis l’enregistrement de l’URL dans PostgreSQL.' },
+      { title: 'Export PDF', description: 'Fonctionnalité prévue : GET /api/menus/:id/export/pdf, route protégée. Le flux prévu était React → Express → Prisma → PostgreSQL → template HTML/CSS → Puppeteer / Chromium headless → PDF A4, avec les réponses Content-Type: application/pdf et Content-Disposition: attachment.' },
+      { title: 'Déploiement', description: 'Scénario prévu : React / Vite sur Vercel, Node.js / Express sur Render, PostgreSQL avec Prisma, assets Cloudinary, e-mails Brevo et CI GitHub Actions. HTTPS devait être fourni par les plateformes et les variables sensibles placées en variables d’environnement.' },
+    ],
+    technologyWatch: ['OWASP pour suivre les évolutions de sécurité.', 'Prisma pour vérifier les choix liés à l’ORM et aux données.', 'Veille organisée pour comparer les solutions et anticiper la maintenance.'],
+    challenge: 'Transformer un besoin fonctionnel en plan de développement suffisamment précis pour qu’une équipe puisse commencer l’implémentation. Cela implique de relier le besoin utilisateur aux user stories, aux tâches techniques, aux dépendances, à l’architecture et aux critères de validation.',
+    solution: 'La solution repose sur un découpage fonctionnel, un Kanban, la priorisation, l’estimation relative, des spécifications détaillées, une architecture cohérente, l’identification des dépendances, des choix de services externes et une veille technologique.',
+    results: ['Le projet aboutit à une feuille de route technique exploitable pour lancer le développement de Menu Maker, avec une vision claire des fonctionnalités, des dépendances, de l’architecture et des critères de validation.'],
+    improvements: ['Implémenter l’application.', 'Confronter les estimations aux temps réels.', 'Compléter les tests.', 'Ajouter un environnement de staging.', 'Enrichir la documentation API.', 'Suivre les métriques de production.', 'Ajuster le backlog à partir des retours utilisateurs.'],
+    resources: [
+      { label: 'Consulter le Kanban et les spécifications sur Notion ↗', href: 'https://app.notion.com/p/3c63fe5aa75980cd86a0c63b0f3247bc?v=3c63fe5aa759804f904e000c9378247d&source=copy_link' },
+      { label: 'Télécharger les spécifications techniques (PDF)', href: '/documents/qwenta/Piette_Arnaud_1_specifications_techniques_08-2026.pdf', download: true },
+      { label: 'Télécharger la veille Inoreader (PDF)', href: '/documents/qwenta/Piette_Arnaud_3_veille_Inoreader_082026.pdf', download: true },
+      { label: 'Télécharger la présentation du projet (PDF)', href: '/documents/qwenta/Piette_Arnaud_4_presentation_08-2026.pdf', download: true },
+    ],
+  },
   { slug: 'react-router', name: 'React Router', description: 'Application React multipage avec React Router.', url: 'https://github.com/arnaudpiette/8832701-creez-une-application-react-multipages-avec-react-router', stack: ['React', 'JavaScript', 'Router'], filters: ['front-end', 'react', 'javascript', 'vite'] },
 ];
