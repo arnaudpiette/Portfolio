@@ -140,6 +140,16 @@ const { project } = Astro.props as { project: DevProject };
         <ul>{project.accessibility.map((item) => <li>{item}</li>)}</ul>
       </section>
     )}
+    {project.sections?.map((section, index) => (
+      <section class="project-section" aria-labelledby={`section-title-${index}`}>
+        <div class="section-heading">
+          <h2 id={`section-title-${index}`}>{section.title}</h2>
+          {section.status && <span class:list={['section-status', `section-status-${section.status}`]}>{section.status === 'current' ? 'V1 — existant / interne' : section.status === 'roadmap' ? 'Roadmap / prévu' : 'Vision future'}</span>}
+        </div>
+        {section.description && <p>{section.description}</p>}
+        {section.items && section.items.length > 0 && <ul>{section.items.map((item) => <li>{item}</li>)}</ul>}
+      </section>
+    ))}
     {project.specifications && project.specifications.length > 0 && (
       <section class="project-section" aria-labelledby="specifications-title">
         <h2 id="specifications-title">Exemples de spécifications</h2>
@@ -177,6 +187,27 @@ const { project } = Astro.props as { project: DevProject };
       <section class="project-section" aria-labelledby="results-title">
         <h2 id="results-title">Résultats</h2>
         <ul>{project.results.map((result) => <li>{result}</li>)}</ul>
+      </section>
+    )}
+    {project.roadmap && project.roadmap.length > 0 && (
+      <section class="project-section roadmap-section" aria-labelledby="roadmap-title">
+        <div class="section-heading">
+          <h2 id="roadmap-title">Évolution de Noon</h2>
+          <span class="section-status section-status-roadmap">Roadmap / prévu</span>
+        </div>
+        <div class="roadmap-list">
+          {project.roadmap.map((step) => (
+            <article class:list={['roadmap-card', `roadmap-card-${step.status}`]}>
+              <p class="roadmap-version">{step.version}</p>
+              <div>
+                <p class="roadmap-status">{step.status === 'roadmap' ? 'Roadmap / prévu' : 'Vision future'}</p>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+                <ul>{step.items.map((item) => <li>{item}</li>)}</ul>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     )}
     {project.improvements && project.improvements.length > 0 && (
@@ -217,7 +248,14 @@ const { project } = Astro.props as { project: DevProject };
   .project-description { max-width: 660px; margin: clamp(1rem, 3vw, 1.75rem) 0 0; color: rgba(245, 245, 245, .78); font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.55; }
   .project-section { max-width: 760px; padding: clamp(1.75rem, 4vw, 3rem) 0; border-bottom: 1px solid #213d32; }
   .project-section h2 { margin: 0 0 1rem; color: #9af57f; font-size: clamp(1.2rem, 2.4vw, 1.75rem); line-height: 1.05; }
+  .section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: 1rem; }
+  .section-heading h2 { margin: 0; }
+  .section-status { display: inline-flex; padding: .35rem .55rem; border: 1px solid currentColor; border-radius: 999px; font-size: .66rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .section-status-current { color: #9af57f; }
+  .section-status-roadmap { color: #7ba6ff; }
+  .section-status-vision { color: #d5b6ff; }
   .project-section p, .project-section ul, .project-section ol { margin: 0; color: rgba(245, 245, 245, .78); line-height: 1.6; }
+  .project-section p + ul, .project-section p + ol { margin-top: 1rem; }
   .project-section ul:not(.tag-list) { padding-left: 1.2rem; }
   .tag-list { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; list-style: none; }
   .tag-list li { padding: .45rem .7rem; border: 1px solid rgba(154, 245, 127, .48); border-radius: 999px; color: #9af57f; font-size: .78rem; letter-spacing: .06em; }
@@ -227,9 +265,20 @@ const { project } = Astro.props as { project: DevProject };
   .specification-list { display: grid; gap: 1.25rem; }
   .specification-list article { padding: 1rem; border: 1px solid #213d32; border-radius: 16px; background: rgba(7, 16, 13, .65); }
   .specification-list h3 { margin: 0 0 .5rem; color: #9af57f; font-size: 1rem; }
+  .roadmap-list { display: grid; gap: 1rem; }
+  .roadmap-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 1rem; padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid #213d32; border-left-width: 4px; border-radius: 18px; background: rgba(7, 16, 13, .65); }
+  .roadmap-card-roadmap { border-left-color: #7ba6ff; }
+  .roadmap-card-vision { border-left-color: #d5b6ff; }
+  .roadmap-version, .roadmap-status, .roadmap-card h3, .roadmap-card ul { margin: 0; }
+  .roadmap-version { color: #9af57f !important; font-size: 1.1rem; font-weight: 800; letter-spacing: .06em; }
+  .roadmap-status { color: #7ba6ff !important; font-size: .67rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+  .roadmap-card-vision .roadmap-status { color: #d5b6ff !important; }
+  .roadmap-card h3 { padding-top: .2rem; color: #fff; font-size: clamp(1.1rem, 2.2vw, 1.45rem); }
+  .roadmap-card h3 + p { margin-top: .65rem; }
+  .roadmap-card ul { margin-top: .75rem; padding-left: 1.1rem; }
   .project-actions { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: clamp(2rem, 5vw, 4rem); }
   .project-action-primary { border-color: #0000FF; background: #0000FF; color: #9af57f; }
   .project-action-primary:hover { border-color: #9af57f; background: #9af57f; color: #0000FF; }
-  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } .architecture-flow { align-items: flex-start; flex-direction: column; gap: .45rem; } .architecture-flow li:not(:last-child)::after { position: static; margin-left: .5rem; content: '↓'; } }
+  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } .architecture-flow { align-items: flex-start; flex-direction: column; gap: .45rem; } .architecture-flow li:not(:last-child)::after { position: static; margin-left: .5rem; content: '↓'; } .roadmap-card { grid-template-columns: 1fr; gap: .5rem; } }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 </style>

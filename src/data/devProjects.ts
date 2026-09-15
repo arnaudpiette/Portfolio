@@ -43,6 +43,8 @@ export interface DevProject {
   specifications?: Array<{ title: string; description: string }>;
   // Ressources de veille utilisées pour confirmer des choix ou anticiper la maintenance.
   technologyWatch?: string[];
+  // Sections éditoriales supplémentaires, avec un statut explicite lorsque nécessaire.
+  sections?: Array<{ title: string; description?: string; items?: string[]; status?: 'current' | 'roadmap' | 'vision' }>;
   challenge?: string;
   solution?: string;
   // Étapes optionnelles qui détaillent une démarche de résolution itérative.
@@ -57,6 +59,8 @@ export interface DevProject {
   resources?: Array<{ label: string; href: string; download?: boolean }>;
   // Titre SEO spécifique lorsqu'un projet n'est pas une réalisation de développement.
   seoTitle?: string;
+  // Étapes versionnées qui doivent être distinguées du périmètre actuellement réalisé.
+  roadmap?: Array<{ version: string; title: string; status: 'roadmap' | 'vision'; description: string; items: string[] }>;
   featured?: boolean;
 }
 
@@ -75,6 +79,113 @@ export const devFilters = [
 
 // Liste ordonnée des repositories affichés dans la grille DEV.
 export const devProjects: DevProject[] = [
+  {
+    // Projet personnel principal : assistant macOS local-first en évolution interne.
+    slug: 'noon',
+    name: 'Noon',
+    description: 'Assistant personnel IA local-first pour macOS, avec mémoire privée, voix, projets, intégrations et orchestration de modèles.',
+    stack: ['Electron', 'JavaScript', 'Node.js', 'SQLite', 'APIs IA', 'Architecture multi-provider', 'Mémoire locale', 'SafeStorage', 'OAuth Google', 'Git / GitHub'],
+    filters: ['front-end', 'back-end', 'javascript', 'node'],
+    featured: true,
+    projectType: 'Projet personnel phare — V1 interne',
+    seoTitle: 'Noon — Assistant personnel IA local — Arnaud Piette',
+    context: 'Noon est un assistant personnel IA local-first que je conçois et développe pour macOS. Le projet vise à réunir conversation, mémoire privée, voix, projets, automatisations et intégrations dans une seule application, tout en gardant le contrôle sur les données transmises aux fournisseurs d’intelligence artificielle.',
+    objectives: [
+      'Disposer d’un assistant personnel utilisable quotidiennement.',
+      'Conserver une mémoire privée locale et la continuité des conversations et projets.',
+      'Utiliser la voix et exploiter plusieurs fournisseurs d’IA.',
+      'Connecter des services externes de manière contrôlée.',
+      'Préparer des actions sans effectuer d’action distante sensible sans validation.',
+      'Proposer une expérience cohérente entre chat, mémoire, voix et outils.',
+    ],
+    architectureFlow: ['Interface Noon', 'Conversation / Voice / Projects', 'Model Router', 'Providers IA', 'Memory / SQLite', 'Integrations', 'macOS'],
+    architectureTitle: 'Architecture conceptuelle V1',
+    architectureDescription: 'L’interface, la logique métier, les données locales et les fournisseurs sont séparés. Noon conserve l’identité, les règles et les permissions ; les providers IA sont des moteurs consultés par le Model Router selon les besoins et les politiques appliquées.',
+    sections: [
+      {
+        title: 'Mémoire privée',
+        status: 'current',
+        description: 'Noon conserve une mémoire locale persistante pour retrouver du contexte entre les conversations, maintenir la continuité après redémarrage et permettre la correction ou l’oubli d’informations. Les données privées restent hors du dépôt Git.',
+        items: ['Les données locales privées sont distinctes des informations minimisées qui peuvent être envoyées à un fournisseur IA pour produire une réponse.', 'Les contenus privés sont chiffrés dans la base locale ; la clé est protégée par SafeStorage sur macOS.', 'Les mémoires corrigées, oubliées ou marquées local-only ne sont pas injectées dans une requête distante.'],
+      },
+      {
+        title: 'Multi-provider',
+        status: 'current',
+        description: 'Noon reste l’identité et l’interface unique. Le Model Router peut sélectionner un moteur spécialisé selon la tâche ; le fournisseur ne devient pas l’identité de l’assistant.',
+        items: ['Critères pris en compte : complexité, coût, confidentialité, qualité attendue, latence et disponibilité.', 'Les appels et outils de providers restent soumis aux règles de permissions et d’approbation de Noon.'],
+      },
+      {
+        title: 'Voix',
+        status: 'current',
+        description: 'La V1 comprend un wake word local, une entrée vocale et une synthèse vocale. La conversation vocale dépend des providers disponibles et sa validation physique complète reste à terminer.',
+        items: ['Cedar est la voix canonique prioritaire tant qu’Arbor n’est pas réellement disponible via l’API ou le provider utilisé par Noon.', 'Arbor reste une préférence future et n’est pas présenté comme opérationnel.', 'Le wake word local reste facultatif et le microphone ne démarre pas silencieusement au lancement.'],
+      },
+      {
+        title: 'Intégrations',
+        status: 'current',
+        description: 'Noon prépare des intégrations Gmail, Google Calendar, GitHub et Figma avec des permissions explicites et minimales. Les parcours OAuth et les accès distants réels qui restent en test ne sont pas présentés comme finalisés.',
+        items: ['Gmail et Calendar privilégient un accès contrôlé avec des autorisations minimales.', 'Les actions distantes sensibles nécessitent une validation utilisateur liée à l’action précise.'],
+      },
+      {
+        title: 'Projets et proactivité',
+        status: 'current',
+        description: 'Les projets regroupent des conversations et leur contexte partagé, afin de faire de Noon un espace de travail plutôt qu’une simple succession de chats. Le moteur de brief quotidien structure journée, lendemain, agenda, rappels, notes, priorités et créneaux libres.',
+        items: ['Une conversation peut être organisée dans un projet pour partager son contexte avec les sujets liés.', 'La proactivité peut proposer ou préparer ; les actions sensibles restent soumises à validation.', 'La livraison réelle du brief à heure fixe et après veille reste une validation à finaliser.'],
+      },
+      {
+        title: 'Tests, fiabilité et packaging',
+        status: 'current',
+        description: 'La démarche V1 combine tests automatisés, contrôles de lint et build, vérification des migrations SQLite, tests de continuité et mémoire, contrôles de sécurité et vérification avant packaging.',
+        items: ['Des tests E2E sont utilisés lorsqu’ils sont disponibles ; les validations physiques restent distinguées des tests automatisés.', 'Le packaging macOS x64 peut être construit pour un usage interne.', 'La V1 est une Internal Alpha : signature Developer ID, notarisation Apple et validation complète de distribution ne sont pas finalisées.'],
+      },
+      {
+        title: 'Au-delà d’un simple chatbot',
+        status: 'current',
+        description: 'Noon associe mémoire persistante, local-first, projets, proactivité, outils, intégrations, automatisations, multi-provider et continuité, tout en gardant le contrôle utilisateur pour les décisions sensibles.',
+      },
+    ],
+    challenge: 'Construire un assistant personnel capable de conserver une identité, une mémoire et des règles cohérentes tout en orchestrant plusieurs modèles, services externes et fonctionnalités locales. La difficulté est de concilier expérience utilisateur, confidentialité, IA, mémoire, automatisation, intégrations et fiabilité.',
+    solution: 'La solution repose sur une architecture modulaire, une mémoire locale, un Model Router, la séparation entre UI, logique, données et providers, des permissions explicites, des tests automatisés, la validation utilisateur pour les actions sensibles et une abstraction des fournisseurs.',
+    results: ['La V1 constitue un socle fonctionnel permettant de tester Noon comme assistant personnel macOS : conversation, mémoire persistante, continuité, voix, intégrations et orchestration IA sont réunies dans une même architecture.', 'Cette version reste une version interne et n’est pas encore une version publique distribuée.'],
+    roadmap: [
+      {
+        version: 'V2',
+        title: 'Intelligence multi-provider et proactivité',
+        status: 'roadmap',
+        description: 'Faire évoluer le socle V1 vers une orchestration plus complète de plusieurs intelligences, sans confondre les providers avec l’identité Noon.',
+        items: ['Couche d’abstraction provider et routage selon coût, qualité, confidentialité, latence et disponibilité.', 'Second avis d’un autre modèle lorsque nécessaire, fournisseurs cloud et modèles locaux, délégation vers des outils spécialisés.', 'Amélioration de la proactivité, de la compréhension des projets, de l’agenda et des priorités.'],
+      },
+      {
+        version: 'V3',
+        title: 'Continuité privée multi-appareils',
+        status: 'roadmap',
+        description: 'Étendre Noon à Mac et iPhone avec une continuité privée et une synchronisation adaptée aux données concernées.',
+        items: ['Synchronisation chiffrée des conversations, projets, rappels, préférences et contexte adapté.', 'Coffre local du Mac conservé pour les données critiques, avec séparation explicite des données synchronisées.', 'Reprise d’une tâche sur un autre appareil et raisonnement davantage orienté objectifs.'],
+      },
+      {
+        version: 'V4',
+        title: 'Plateforme d’assistants spécialisés',
+        status: 'vision',
+        description: 'Faire évoluer Noon vers une couche centrale capable d’héberger des assistants spécialisés avec des identités, mémoires, règles, outils et permissions isolés.',
+        items: ['Assistants personnel, créatif, administratif, projet ou développement.', 'Noon conserve le contrôle des identités, permissions, sécurité, mémoire et orchestration.', 'Mode DEV natif prévu avec VS Code : analyse du dépôt, règles de projet et branche Git ; modification de plusieurs fichiers et usage du terminal.', 'Boucle prévue de tests, lint, build, détection d’erreurs, correction, vérification des régressions et analyse du diff.', 'Auto Router prévu : solution locale ou gratuite lorsque suffisante, provider peu coûteux, puis modèle plus puissant selon complexité, échecs, confidentialité, qualité, latence et coût.', 'Validation humaine requise avant tout commit ou push.'],
+      },
+      {
+        version: 'V5',
+        title: 'Système personnel IA',
+        status: 'vision',
+        description: 'Vision cible d’un système personnel quotidien, multi-appareils, multimodal et proactif, capable d’orchestrer modèles, agents, mémoire et automatisations contrôlées.',
+        items: ['Mémoire longue durée structurée et compréhension des projets et objectifs.', 'Assistants spécialisés, Mode DEV avancé, intégrations profondes et confidentialité local-first.', 'L’utilisateur reste décisionnaire pour les actions sensibles.'],
+      },
+      {
+        version: 'V5+',
+        title: 'Vision long terme',
+        status: 'vision',
+        description: 'Axes de réflexion sans numéro de version formel : meilleure intelligence locale, autonomie hors ligne, personnalisation et expérience Mac/mobile cohérente.',
+        items: ['Moins de dépendance à un provider unique.', 'Automatisations plus riches et écosystème d’assistants spécialisés.', 'Amélioration continue du Mode DEV.'],
+      },
+    ],
+    improvements: ['Signature et notarisation macOS.', 'Validation réelle de certaines intégrations.', 'Amélioration continue de la voix.', 'Tests réels de sleep / wake et du comportement packagé.', 'Amélioration du routage IA.', 'Développement futur du Mode DEV.', 'Préparation du multi-device.'],
+  },
   {
     // Fiche back-end du projet OpenClassrooms de référencement et notation de livres.
     slug: 'dev-web-livres',
