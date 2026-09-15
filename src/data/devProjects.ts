@@ -88,12 +88,14 @@ export const devProjects: DevProject[] = [
     slug: 'convertsseur',
     // Nom éditorial de l'application ; le slug et le dépôt historique restent inchangés.
     name: 'Smokonomy',
-    description: 'Application mobile de sensibilisation au coût du tabac, transformant un budget cigarettes en économies, objectifs et projets concrets.',
+    description: 'Projet personnel d’Arnaud Piette : application web permettant de visualiser le coût du tabac et les économies potentielles réalisées après l’arrêt.',
     url: 'https://github.com/arnaudpiette/CONVERTSSEUR',
     stack: ['TypeScript', 'React Native', 'Expo', 'Expo Router', 'Zustand', 'AsyncStorage', 'Supabase', 'Jest'],
     filters: ['front-end', 'react', 'typescript'],
     featured: true,
     projectType: 'Projet personnel — sensibilisation à l’arrêt du tabac',
+    // Titre de fiche spécifique à l’application personnelle Smokonomy.
+    seoTitle: 'Smokonomy — Application web — Arnaud Piette',
     context: 'CONVERTSSEUR est une application personnelle conçue pour rendre visible le coût financier du tabac. Elle transforme la consommation déclarée en budget, économies potentielles et exemples concrets de projets ou d’achats que cette somme pourrait financer.',
     objectives: [
       'Faire prendre conscience du coût financier du tabac.',
@@ -116,10 +118,10 @@ export const devProjects: DevProject[] = [
     ],
     sections: [
       {
-        title: 'Calcul et périodes',
+        title: 'Logique métier et projections',
         status: 'current',
-        description: 'Le calcul détermine le nombre de paquets quotidiens, le budget quotidien, puis le budget mensuel sur une base de 30,4375 jours. Chaque projection correspond au budget mensuel multiplié par la durée sélectionnée.',
-        items: ['Périodes implémentées : de 1 à 11 mois, puis de 1 à 60 ans.', 'Plan invité gratuit : 1 mois, 2 mois, 3 mois et 1 an.', 'Les périodes au-delà de ces limites sont prévues dans la logique d’accès Premium ; aucune période d’une semaine n’est implémentée dans le code actuel.'],
+        description: 'Le calcul détermine d’abord le nombre de paquets fumés chaque jour, puis le budget quotidien et le budget mensuel sur une base de 30,4375 jours. Chaque projection correspond ensuite au budget mensuel multiplié par la durée sélectionnée.',
+        items: ['Paquets par jour = cigarettes consommées par jour ÷ nombre de cigarettes par paquet.', 'Coût quotidien = paquets par jour × prix du paquet ; coût mensuel = coût quotidien × 30,4375.', 'Projection = coût mensuel × multiplicateur de la période.', 'Périodes implémentées : de 1 à 11 mois, puis de 1 à 60 ans.', 'Plan invité gratuit : 1 mois, 2 mois, 3 mois et 1 an.', 'Les périodes au-delà de ces limites sont prévues dans la logique d’accès Premium ; aucune période d’une semaine n’est implémentée dans le code actuel.'],
       },
       {
         title: 'Données et stockage',
