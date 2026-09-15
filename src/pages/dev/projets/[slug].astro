@@ -63,10 +63,16 @@ const { project } = Astro.props as { project: DevProject };
         <ul>{project.objectives.map((objective) => <li>{objective}</li>)}</ul>
       </section>
     )}
-    {project.architecture && project.architecture.length > 0 && (
+    {(project.architecture?.length || project.architectureFlow?.length || project.architectureDescription) && (
       <section class="project-section" aria-labelledby="architecture-title">
         <h2 id="architecture-title">Architecture et composants</h2>
-        <ul class="tag-list">{project.architecture.map((component) => <li>{component}</li>)}</ul>
+        {project.architecture && project.architecture.length > 0 && <ul class="tag-list">{project.architecture.map((component) => <li>{component}</li>)}</ul>}
+        {project.architectureFlow && project.architectureFlow.length > 0 && (
+          <ol class="architecture-flow" aria-label="Cheminement de l’architecture">
+            {project.architectureFlow.map((layer) => <li>{layer}</li>)}
+          </ol>
+        )}
+        {project.architectureDescription && <p>{project.architectureDescription}</p>}
       </section>
     )}
     {project.skills && project.skills.length > 0 && (
@@ -91,6 +97,12 @@ const { project } = Astro.props as { project: DevProject };
       <section class="project-section" aria-labelledby="solution-title">
         <h2 id="solution-title">Solution apportée</h2>
         <p>{project.solution}</p>
+      </section>
+    )}
+    {project.security && project.security.length > 0 && (
+      <section class="project-section" aria-labelledby="security-title">
+        <h2 id="security-title">Sécurité</h2>
+        <ul>{project.security.map((item) => <li>{item}</li>)}</ul>
       </section>
     )}
     {project.results && project.results.length > 0 && (
@@ -138,9 +150,12 @@ const { project } = Astro.props as { project: DevProject };
   .project-section ul:not(.tag-list) { padding-left: 1.2rem; }
   .tag-list { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; list-style: none; }
   .tag-list li { padding: .45rem .7rem; border: 1px solid rgba(154, 245, 127, .48); border-radius: 999px; color: #9af57f; font-size: .78rem; letter-spacing: .06em; }
+  .architecture-flow { display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; padding: 0; list-style: none; }
+  .architecture-flow li { position: relative; color: #9af57f; font-weight: 650; }
+  .architecture-flow li:not(:last-child)::after { position: absolute; top: 50%; right: -1.1rem; color: rgba(245, 245, 245, .65); content: '→'; transform: translateY(-50%); }
   .project-actions { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: clamp(2rem, 5vw, 4rem); }
   .project-action-primary { border-color: #0000FF; background: #0000FF; color: #9af57f; }
   .project-action-primary:hover { border-color: #9af57f; background: #9af57f; color: #0000FF; }
-  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } }
+  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } .architecture-flow { align-items: flex-start; flex-direction: column; gap: .45rem; } .architecture-flow li:not(:last-child)::after { position: static; margin-left: .5rem; content: '↓'; } }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 </style>

@@ -13,10 +13,16 @@ export interface DevProject {
   objectives?: string[];
   // Liste optionnelle des composants qui structurent l'interface du projet.
   architecture?: string[];
+  // Étapes optionnelles utilisées pour représenter le cheminement d'une architecture technique.
+  architectureFlow?: string[];
+  // Explication synthétique associée au cheminement de l'architecture.
+  architectureDescription?: string;
   skills?: string[];
   features?: string[];
   challenge?: string;
   solution?: string;
+  // Points de sécurité effectivement prévus ou réalisés dans le projet.
+  security?: string[];
   results?: string[];
   improvements?: string[];
   // URL de démonstration optionnelle lorsqu'un projet en possède une.
@@ -39,7 +45,42 @@ export const devFilters = [
 
 // Liste ordonnée des repositories affichés dans la grille DEV.
 export const devProjects: DevProject[] = [
-  { slug: 'dev-web-livres', name: 'Dev-Web-livres', description: 'Front-end du projet de gestion et de notation de livres.', url: 'https://github.com/arnaudpiette/Dev-Web-livres', stack: ['JavaScript', 'Front-end'], filters: ['front-end', 'javascript'], featured: true },
+  {
+    // Fiche back-end du projet OpenClassrooms de référencement et notation de livres.
+    slug: 'dev-web-livres',
+    name: 'Mon Vieux Grimoire',
+    description: 'API REST sécurisée avec Node.js, Express et MongoDB pour gérer des livres et leurs utilisateurs.',
+    url: 'https://github.com/arnaudpiette/Dev-Web-livres',
+    stack: ['Node.js', 'Express', 'MongoDB', 'Mongoose', 'JavaScript', 'JWT', 'bcrypt', 'Multer', 'Sharp', 'API REST', 'Git'],
+    filters: ['front-end', 'javascript'],
+    featured: true,
+    context: 'Mon Vieux Grimoire est une application de référencement et de notation de livres. Le projet consistait à construire l’API back-end permettant de gérer les livres, les utilisateurs et leurs interactions, avec une attention particulière portée à la sécurité et à la gestion des données.',
+    objectives: [
+      'Développer une API REST avec Node.js et Express.',
+      'Connecter l’application à une base MongoDB.',
+      'Gérer les opérations CRUD sur les livres.',
+      'Mettre en place l’authentification utilisateur et protéger les routes sensibles.',
+      'Sécuriser les mots de passe.',
+      'Gérer l’upload et l’optimisation des images.',
+      'Vérifier que seul le propriétaire d’un livre peut le modifier ou le supprimer.',
+      'Valider les données côté serveur.',
+    ],
+    architectureFlow: ['Routes', 'Middlewares', 'Contrôleurs', 'Modèles Mongoose', 'MongoDB'],
+    architectureDescription: 'Les routes dirigent les requêtes vers les middlewares, qui appliquent notamment l’authentification. Les contrôleurs portent la logique métier et s’appuient sur les modèles Mongoose pour structurer et enregistrer les données dans MongoDB.',
+    features: [
+      'Création de compte et connexion utilisateur.',
+      'Génération d’un token JWT.',
+      'Récupération, ajout, modification et suppression de livres.',
+      'Upload et optimisation des images.',
+      'Système de notation et calcul de la note moyenne.',
+      'Contrôle du propriétaire pour les opérations sensibles.',
+    ],
+    challenge: 'Sécuriser les opérations de modification et de suppression en vérifiant à la fois l’authentification de l’utilisateur et sa propriété sur la ressource. Être connecté identifie l’utilisateur grâce au token JWT ; avoir le droit de modifier un livre précis nécessite ensuite que le contrôleur vérifie que son identifiant correspond au propriétaire de ce livre.',
+    solution: 'La solution repose sur un middleware d’authentification qui vérifie le JWT et récupère l’utilisateur authentifié. Le contrôleur vérifie ensuite le propriétaire de la ressource. Les modèles Mongoose structurent les données, bcrypt hash les mots de passe, Multer reçoit les images et Sharp les optimise, avec validation et gestion des erreurs côté serveur.',
+    security: ['Mots de passe hashés avec bcrypt.', 'Routes protégées par authentification.', 'JWT pour identifier l’utilisateur authentifié.', 'Contrôle du propriétaire avant les modifications et suppressions.', 'Validation des données côté serveur.'],
+    results: ['L’API permet de gérer les utilisateurs et les livres de manière structurée, avec des routes protégées et un contrôle d’autorisation sur les opérations sensibles.'],
+    improvements: ['Ajouter des tests automatisés d’API.', 'Renforcer la validation des entrées.', 'Centraliser davantage la gestion des erreurs.', 'Mettre en place un rate limiting.', 'Améliorer les logs et la supervision.', 'Documenter l’API avec OpenAPI / Swagger.'],
+  },
   {
     // Fiche de référence complète pour la première étude de cas DEV.
     slug: 'kasa',
