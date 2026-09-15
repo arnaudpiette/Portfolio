@@ -63,6 +63,12 @@ const { project } = Astro.props as { project: DevProject };
         <ul>{project.objectives.map((objective) => <li>{objective}</li>)}</ul>
       </section>
     )}
+    {project.architecture && project.architecture.length > 0 && (
+      <section class="project-section" aria-labelledby="architecture-title">
+        <h2 id="architecture-title">Architecture et composants</h2>
+        <ul class="tag-list">{project.architecture.map((component) => <li>{component}</li>)}</ul>
+      </section>
+    )}
     {project.skills && project.skills.length > 0 && (
       <section class="project-section" aria-labelledby="skills-title">
         <h2 id="skills-title">Compétences</h2>
