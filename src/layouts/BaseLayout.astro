@@ -32,6 +32,13 @@ const {
       <meta name="description" content={description} />
     )}
 
+    <!-- Métadonnées Open Graph textuelles partagées par les pages du portfolio. -->
+    <meta property="og:title" content={title} />
+    {description && (
+      <meta property="og:description" content={description} />
+    )}
+    <meta property="og:type" content="website" />
+
     <!-- Active les transitions Astro entre les pages utilisant ce layout. -->
     <ClientRouter fallback="swap" />
 

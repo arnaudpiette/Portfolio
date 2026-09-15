@@ -3,7 +3,7 @@
   font-size: clamp(2.88rem, 4.8vw, 4.16rem);
 }
 
-/* Ajuste la taille du sous-titre e-mail commun du header. */
+/* Ajuste la taille du sous-titre d'identité commun du header. */
 .portfolio-brand-subtitle {
   font-size: clamp(.496rem, 1.08vw, .76rem);
 }
