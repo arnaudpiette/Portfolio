@@ -87,6 +87,30 @@ const { project } = Astro.props as { project: DevProject };
         <ul>{project.features.map((feature) => <li>{feature}</li>)}</ul>
       </section>
     )}
+    {project.audit && project.audit.length > 0 && (
+      <section class="project-section" aria-labelledby="audit-title">
+        <h2 id="audit-title">Audit initial</h2>
+        <ul>{project.audit.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
+    {project.performance && project.performance.length > 0 && (
+      <section class="project-section" aria-labelledby="performance-title">
+        <h2 id="performance-title">Performance</h2>
+        <ul>{project.performance.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
+    {project.seo && project.seo.length > 0 && (
+      <section class="project-section" aria-labelledby="seo-title">
+        <h2 id="seo-title">SEO</h2>
+        <ul>{project.seo.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
+    {project.accessibility && project.accessibility.length > 0 && (
+      <section class="project-section" aria-labelledby="accessibility-title">
+        <h2 id="accessibility-title">Accessibilité</h2>
+        <ul>{project.accessibility.map((item) => <li>{item}</li>)}</ul>
+      </section>
+    )}
     {project.challenge && (
       <section class="project-section" aria-labelledby="challenge-title">
         <h2 id="challenge-title">Challenge principal</h2>
@@ -97,6 +121,7 @@ const { project } = Astro.props as { project: DevProject };
       <section class="project-section" aria-labelledby="solution-title">
         <h2 id="solution-title">Solution apportée</h2>
         <p>{project.solution}</p>
+        {project.solutionSteps && project.solutionSteps.length > 0 && <ol class="architecture-flow" aria-label="Démarche d’optimisation">{project.solutionSteps.map((step) => <li>{step}</li>)}</ol>}
       </section>
     )}
     {project.security && project.security.length > 0 && (
@@ -146,7 +171,7 @@ const { project } = Astro.props as { project: DevProject };
   .project-description { max-width: 660px; margin: clamp(1rem, 3vw, 1.75rem) 0 0; color: rgba(245, 245, 245, .78); font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.55; }
   .project-section { max-width: 760px; padding: clamp(1.75rem, 4vw, 3rem) 0; border-bottom: 1px solid #213d32; }
   .project-section h2 { margin: 0 0 1rem; color: #9af57f; font-size: clamp(1.2rem, 2.4vw, 1.75rem); line-height: 1.05; }
-  .project-section p, .project-section ul { margin: 0; color: rgba(245, 245, 245, .78); line-height: 1.6; }
+  .project-section p, .project-section ul, .project-section ol { margin: 0; color: rgba(245, 245, 245, .78); line-height: 1.6; }
   .project-section ul:not(.tag-list) { padding-left: 1.2rem; }
   .tag-list { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; list-style: none; }
   .tag-list li { padding: .45rem .7rem; border: 1px solid rgba(154, 245, 127, .48); border-radius: 999px; color: #9af57f; font-size: .78rem; letter-spacing: .06em; }
