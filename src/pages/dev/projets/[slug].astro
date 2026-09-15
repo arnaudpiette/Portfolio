@@ -1,0 +1,140 @@
+---
+// Charge le layout, les données DEV et les composants partagés de l'univers DEV.
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ModeSwitch from '../../../components/ModeSwitch.astro';
+import PortfolioFooter from '../../../components/PortfolioFooter.astro';
+import PortfolioHeader from '../../../components/PortfolioHeader.astro';
+import PortfolioOverlays from '../../../components/PortfolioOverlays.astro';
+import { devProjects, type DevProject } from '../../../data/devProjects';
+import { devSkillGroups } from '../../../data/devSkills';
+
+// Génère uniquement les routes correspondant aux slugs déclarés dans les données DEV.
+export function getStaticPaths() {
+  return devProjects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+// Récupère les données pré-générées de la fiche projet courante.
+const { project } = Astro.props as { project: DevProject };
+---
+
+<!-- Fiche DEV générique : les sections éditoriales restent absentes sans donnée associée. -->
+<BaseLayout
+  title={`${project.name} — Projet développement web — Arnaud Piette`}
+  description={project.description}
+>
+  <!-- Le libellé de marque n'est pas un titre afin de conserver un seul H1 de page. -->
+  <PortfolioHeader mode="dev" headingLevel="p" />
+
+  <main class="project-detail">
+    <!-- Navigation courte vers la liste DEV et le changement d'univers existant. -->
+    <nav class="project-navigation" aria-label="Navigation du projet">
+      <a class="back-link" href="/dev">← Retour aux projets DEV</a>
+      <ModeSwitch mode="dev" preserveScroll />
+    </nav>
+
+    <!-- Introduction toujours renseignée à partir des données déjà existantes. -->
+    <header class="project-intro">
+      <p class="project-kicker">Projet développement web</p>
+      <h1>{project.name}</h1>
+      <p class="project-description">{project.description}</p>
+    </header>
+
+    <!-- Stack existante, présentée comme une liste sémantique de technologies. -->
+    <section class="project-section" aria-labelledby="stack-title">
+      <h2 id="stack-title">Stack technique</h2>
+      <ul class="tag-list">
+        {project.stack.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+
+    <!-- Les sections suivantes ne sont rendues que lorsque la donnée éditoriale existe. -->
+    {project.context && (
+      <section class="project-section" aria-labelledby="context-title">
+        <h2 id="context-title">Contexte</h2>
+        <p>{project.context}</p>
+      </section>
+    )}
+    {project.objectives && project.objectives.length > 0 && (
+      <section class="project-section" aria-labelledby="objectives-title">
+        <h2 id="objectives-title">Objectifs</h2>
+        <ul>{project.objectives.map((objective) => <li>{objective}</li>)}</ul>
+      </section>
+    )}
+    {project.skills && project.skills.length > 0 && (
+      <section class="project-section" aria-labelledby="skills-title">
+        <h2 id="skills-title">Compétences</h2>
+        <ul class="tag-list">{project.skills.map((skill) => <li>{skill}</li>)}</ul>
+      </section>
+    )}
+    {project.features && project.features.length > 0 && (
+      <section class="project-section" aria-labelledby="features-title">
+        <h2 id="features-title">Fonctionnalités</h2>
+        <ul>{project.features.map((feature) => <li>{feature}</li>)}</ul>
+      </section>
+    )}
+    {project.challenge && (
+      <section class="project-section" aria-labelledby="challenge-title">
+        <h2 id="challenge-title">Challenge principal</h2>
+        <p>{project.challenge}</p>
+      </section>
+    )}
+    {project.solution && (
+      <section class="project-section" aria-labelledby="solution-title">
+        <h2 id="solution-title">Solution apportée</h2>
+        <p>{project.solution}</p>
+      </section>
+    )}
+    {project.results && project.results.length > 0 && (
+      <section class="project-section" aria-labelledby="results-title">
+        <h2 id="results-title">Résultats</h2>
+        <ul>{project.results.map((result) => <li>{result}</li>)}</ul>
+      </section>
+    )}
+    {project.improvements && project.improvements.length > 0 && (
+      <section class="project-section" aria-labelledby="improvements-title">
+        <h2 id="improvements-title">Améliorations possibles</h2>
+        <ul>{project.improvements.map((improvement) => <li>{improvement}</li>)}</ul>
+      </section>
+    )}
+
+    <!-- Actions externes explicites, avec une démo seulement lorsqu'elle existe. -->
+    <nav class="project-actions" aria-label={`Liens du projet ${project.name}`}>
+      <a class="project-action project-action-primary" href={project.url} target="_blank" rel="noopener noreferrer">Voir le code source de {project.name} sur GitHub ↗</a>
+      {project.demoUrl && <a class="project-action" href={project.demoUrl} target="_blank" rel="noopener noreferrer">Voir la démo de {project.name} ↗</a>}
+    </nav>
+  </main>
+
+  <PortfolioFooter theme="dark" />
+  <PortfolioOverlays theme="dark" groups={devSkillGroups} />
+</BaseLayout>
+
+<style>
+  /* Thème sombre et grille éditoriale alignés sur l'univers DEV existant. */
+  :root { font-family: Inter, 'Segoe UI', sans-serif; color: #f5f5f5; background: #030908; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: radial-gradient(circle at 75% 0%, rgba(0, 0, 255, .14), transparent 34rem), #030908; color: #f5f5f5; }
+  .project-detail { width: min(920px, calc(100% - clamp(2rem, 5vw, 6rem))); margin: 0 auto; padding: 0 0 clamp(3rem, 8vw, 7rem); }
+  .project-navigation { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 0 0 clamp(3rem, 7vw, 6rem); }
+  .back-link, .project-action { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: .75rem 1rem; border: 1px solid rgba(154, 245, 127, .48); border-radius: 999px; color: #9af57f; font-weight: 650; text-align: center; text-decoration: none; transition: background-color .2s ease, border-color .2s ease, color .2s ease; }
+  .back-link:hover, .project-action:hover { border-color: #0000FF; background: #0000FF; color: #9af57f; }
+  .back-link:focus-visible, .project-action:focus-visible { outline: 3px solid #9af57f; outline-offset: 4px; }
+  .project-intro { max-width: 760px; padding-bottom: clamp(2rem, 5vw, 4rem); border-bottom: 1px solid #213d32; }
+  .project-kicker { margin: 0 0 1rem; color: #9af57f; font-size: .75rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  h1, h2 { overflow-wrap: anywhere; }
+  h1 { margin: 0; color: #fff; font-size: clamp(2.8rem, 8vw, 6.5rem); line-height: .92; letter-spacing: -.06em; }
+  .project-description { max-width: 660px; margin: clamp(1rem, 3vw, 1.75rem) 0 0; color: rgba(245, 245, 245, .78); font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.55; }
+  .project-section { max-width: 760px; padding: clamp(1.75rem, 4vw, 3rem) 0; border-bottom: 1px solid #213d32; }
+  .project-section h2 { margin: 0 0 1rem; color: #9af57f; font-size: clamp(1.2rem, 2.4vw, 1.75rem); line-height: 1.05; }
+  .project-section p, .project-section ul { margin: 0; color: rgba(245, 245, 245, .78); line-height: 1.6; }
+  .project-section ul:not(.tag-list) { padding-left: 1.2rem; }
+  .tag-list { display: flex; flex-wrap: wrap; gap: .6rem; padding: 0; list-style: none; }
+  .tag-list li { padding: .45rem .7rem; border: 1px solid rgba(154, 245, 127, .48); border-radius: 999px; color: #9af57f; font-size: .78rem; letter-spacing: .06em; }
+  .project-actions { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: clamp(2rem, 5vw, 4rem); }
+  .project-action-primary { border-color: #0000FF; background: #0000FF; color: #9af57f; }
+  .project-action-primary:hover { border-color: #9af57f; background: #9af57f; color: #0000FF; }
+  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } }
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+</style>

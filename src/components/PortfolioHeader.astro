@@ -5,11 +5,15 @@ import MusicPlayButton from './MusicPlayButton.astro';
 // Décrit le mode visuel et éditorial du header.
 interface Props {
   mode: 'creative' | 'dev';
+  // Permet aux pages détail de réserver la hiérarchie des titres au contenu principal.
+  headingLevel?: 'h1' | 'h2' | 'p';
 }
 
 // Détermine le texte, le thème et la musique du portfolio courant.
-const { mode } = Astro.props;
+const { mode, headingLevel = 'h1' } = Astro.props;
 const isDev = mode === 'dev';
+// Rend le niveau de titre demandé sans changer l'apparence du header.
+const Heading = headingLevel;
 const title = isDev
   ? 'Front-end | Back-end | Creative developer'
   : 'DC/DA | Graphisme | Web Design | UX-UI';
@@ -18,11 +22,11 @@ const title = isDev
 <!-- Header commun : identité, accès aux overlays et lecteur musical. -->
 <header class:list={['portfolio-header', { 'is-dev': isDev }]}>
   <div class="portfolio-brand-block">
-    <h1 class="portfolio-brand-title">
+    <Heading class="portfolio-brand-title">
       <a href="/" data-astro-reload>
         {title}
       </a>
-    </h1>
+    </Heading>
     <p class="portfolio-brand-subtitle">Arnaud Piette</p>
   </div>
   <div class="portfolio-menu" aria-label="Menu rapide">

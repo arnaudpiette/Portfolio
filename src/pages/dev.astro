@@ -1,6 +1,8 @@
 ---
 // Charge les données de la grille et des filtres DEV.
 import { devFilters, devProjects } from '../data/devProjects';
+// Réutilise la liste de compétences DEV dans l'overlay de la page.
+import { devSkillGroups } from '../data/devSkills';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/portfolio-shared.css';
 import ModeSwitch from '../components/ModeSwitch.astro';
@@ -9,50 +11,6 @@ import PortfolioHeader from '../components/PortfolioHeader.astro';
 import PortfolioOverlays from '../components/PortfolioOverlays.astro';
 import PortfolioSignature from '../components/PortfolioSignature.astro';
 
-// Construit une entrée de logo utilisée par l'overlay de compétences DEV.
-const logo = (file: string, label: string, className?: string) => ({
-  src: `/projets/Logo-dev/${file}`,
-  label,
-  className,
-});
-
-// Organise les compétences DEV entre les deux groupes affichés dans l'overlay.
-const devSkillGroups = [
-  {
-    title: 'Front-end',
-    logos: [
-      logo('01-html5.svg', 'HTML5'),
-      logo('02-css3.svg', 'CSS3', 'logo-enlarged'),
-      logo('03-javascript.svg', 'JavaScript'),
-      logo('04-sass.svg', 'Sass'),
-      logo('05-react.svg', 'React'),
-      logo('06-jsx.svg', 'JSX', 'logo-extra-enlarged'),
-      logo('07-react-router.svg', 'React Router'),
-      logo('08-nextjs.svg', 'Next.js', 'logo-dev-light logo-hover-blue'),
-      logo('09-astro.svg', 'Astro'),
-      logo('19-git.svg', 'Git'),
-      logo('22-figma.svg', 'Figma', 'logo-enlarged'),
-      logo('23-lighthouse.svg', 'Lighthouse'),
-    ],
-  },
-  {
-    title: 'Back-end',
-    logos: [
-      logo('10-json.svg', 'JSON', 'logo-enlarged logo-dev-light logo-hover-blue'),
-      logo('11-nodejs.svg', 'Node.js'),
-      logo('12-expressjs.svg', 'Express.js', 'logo-extra-enlarged logo-dev-light logo-hover-blue'),
-      logo('13-jwt.svg', 'JWT'),
-      logo('14-bcrypt.svg', 'bcrypt', 'logo-extra-enlarged'),
-      logo('15-multer.svg', 'Multer'),
-      logo('16-sharp.svg', 'Sharp'),
-      logo('17-mongodb.svg', 'MongoDB'),
-      logo('18-mongoose.svg', 'Mongoose', 'logo-extra-enlarged logo-dev-light logo-hover-native'),
-      logo('20-github.svg', 'GitHub', 'logo-dev-light logo-hover-blue'),
-      logo('21-npm.svg', 'npm'),
-      logo('24-api-rest.svg', 'API REST'),
-    ],
-  },
-];
 ---
 
 <!-- Page DEV : header, filtres, repositories GitHub et overlays. -->
@@ -78,10 +36,11 @@ const devSkillGroups = [
         </div>
       </div>
 
-      <section class="project-grid" aria-label="Repositories GitHub">
+      <section class="project-grid" aria-label="Projets de développement web">
         {devProjects.map((project, index) => (
           <article class="project-card" data-project-card data-categories={project.filters.join(' ')}>
-            <a href={project.url} target="_blank" rel="noopener noreferrer" aria-label={`Voir ${project.name} sur GitHub`}>
+            <!-- La carte mène vers la fiche interne ; GitHub reste disponible sur cette fiche. -->
+            <a href={`/dev/projets/${project.slug}`} aria-label={`Voir la fiche projet ${project.name}`}>
               <div class="project-visual">
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 <span class="repo-mark">&lt;/&gt;</span>
@@ -89,7 +48,7 @@ const devSkillGroups = [
               <div class="project-content">
                 <div class="project-tags">{project.stack.map((tag) => <span>{tag}</span>)}</div>
                 <h3>{project.name}</h3>
-                <span class="github-link">Voir sur GitHub ↗</span>
+                <span class="github-link">Voir le projet →</span>
               </div>
             </a>
           </article>
