@@ -20,5 +20,8 @@ pnpm-debug.log*
 # macOS-specific files
 .DS_Store
 
+# Local raw screenshot sources kept outside the published DEV assets
+/public/projets/dev/**/*.png
+
 # jetbrains setting folder
 .idea/
