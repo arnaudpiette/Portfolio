@@ -1,0 +1,56 @@
+---
+// Charge la feuille globale dédiée à l'expérience immersive de la page d'accueil.
+import '../../styles/immersive-hero.css';
+---
+
+<!-- Hero plein écran : la photographie est décorative, les deux liens portent l'information de navigation. -->
+<section
+  class="immersive-hero is-intro"
+  data-immersive-hero
+  data-sequence-base="/images/hero/sequence/hero-sequence-37"
+  aria-labelledby="immersive-hero-title"
+>
+  <!-- La frame centrale reste affichée jusqu'au premier dessin valide de la séquence dans le canvas. -->
+  <div class="immersive-hero__scene" aria-hidden="true">
+    <!-- Image de repli statique : la frame centrale protège le rendu au chargement, sans JavaScript et en cas d'échec du canvas. -->
+    <picture>
+      <!-- Sur smartphone, la première frame de clic sert de repli avant le démarrage de la boucle canvas. -->
+      <source media="(max-width: 760px), (hover: none), (pointer: coarse)" srcset="/images/hero/sequence/hero_sequence_ready/click/hero-00.webp" />
+      <img class="immersive-hero__image immersive-hero__image--center" src="/images/hero/sequence/hero-sequence-37/hero-18.webp" alt="" fetchpriority="high" decoding="async" />
+    </picture>
+    <!-- Surface de rendu des frames décodées : elle ne devient visible qu'après le premier drawImage valide. -->
+    <canvas class="immersive-hero__canvas"></canvas>
+  </div>
+
+  <!-- Bloc éditorial visible : il porte l'identité et la description minimale de la homepage. -->
+  <div id="immersive-hero-title" class="hero-seo">
+    <h1>Arnaud Piette — Directeur artistique &amp; développeur web</h1>
+    <p>Portfolio de direction artistique, design digital et développement web.</p>
+  </div>
+
+  <!-- Les moitiés de l'écran sont de vrais liens vers les deux univers existants. -->
+  <nav class="immersive-hero__links" aria-label="Choisir un univers">
+    <a class="immersive-hero__link immersive-hero__link--creative" href="/creative">
+      <!-- Le groupe aligne le sous-titre sur les lettres du mot principal, indépendamment de la largeur de la zone cliquable. -->
+      <span class="immersive-hero__copy">
+        <span class="immersive-hero__word">CRÉA</span>
+        <span class="immersive-hero__label">Direction artistique</span>
+      </span>
+    </a>
+    <a class="immersive-hero__link immersive-hero__link--dev" href="/dev">
+      <!-- Le groupe aligne le sous-titre sur les lettres du mot principal, indépendamment de la largeur de la zone cliquable. -->
+      <span class="immersive-hero__copy">
+        <span class="immersive-hero__word">DEV</span>
+        <span class="immersive-hero__label">Développement web</span>
+      </span>
+    </a>
+  </nav>
+</section>
+
+<!-- Sans JavaScript, les liens restent immédiatement visibles et utilisables. -->
+<noscript><style>.immersive-hero__links { opacity: 1 !important; visibility: visible !important; transform: none !important; }</style></noscript>
+
+<!-- La logique de mouvement reste isolée de la page Astro. -->
+<script>
+  import '../../scripts/immersiveHero.js';
+</script>
