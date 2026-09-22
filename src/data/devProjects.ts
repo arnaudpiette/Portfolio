@@ -1,3 +1,9 @@
+export interface DevProjectImage {
+  src: string;
+  alt: string;
+  type?: 'cover' | 'desktop' | 'mobile' | 'architecture' | 'document';
+}
+
 // Décrit les données nécessaires à l'affichage d'une carte projet DEV.
 export interface DevProject {
   // Identifiant stable utilisé pour générer la route interne de la fiche projet.
@@ -8,6 +14,10 @@ export interface DevProject {
   url?: string;
   stack: string[];
   filters: string[];
+  // Visuel de synthèse utilisé par la carte de la page DEV.
+  cover?: DevProjectImage;
+  // Visuels éditoriaux complémentaires réservés à la fiche projet.
+  gallery?: DevProjectImage[];
   // Champs éditoriaux optionnels prévus pour les futures études de cas.
   context?: string;
   objectives?: string[];
@@ -155,6 +165,11 @@ export const devProjects: DevProject[] = [
   {
     // Projet personnel principal : assistant macOS local-first en évolution interne.
     slug: 'noon',
+    cover: { src: '/projets/dev/noon/cover.webp', alt: 'Interface principale de l’assistant Noon sur macOS', type: 'cover' },
+    gallery: [
+      { src: '/projets/dev/noon/detail-01.webp', alt: 'Conversation Noon avec la documentation technique Node.js', type: 'desktop' },
+      { src: '/projets/dev/noon/detail-02.webp', alt: 'Noon Control Center présentant l’état des composants de l’application', type: 'desktop' },
+    ],
     name: 'Noon',
     description: 'Assistant personnel IA local-first pour macOS, avec mémoire privée, voix, projets, intégrations et orchestration de modèles.',
     stack: ['Electron', 'JavaScript', 'Node.js', 'SQLite', 'APIs IA', 'Architecture multi-provider', 'Mémoire locale', 'SafeStorage', 'OAuth Google', 'Git / GitHub'],
@@ -262,6 +277,7 @@ export const devProjects: DevProject[] = [
   {
     // Fiche back-end du projet OpenClassrooms de référencement et notation de livres.
     slug: 'dev-web-livres',
+    cover: { src: '/projets/dev/mon-vieux-grimoire/cover.svg', alt: 'Architecture backend de Mon Vieux Grimoire avec API Express, JWT et MongoDB', type: 'architecture' },
     name: 'Mon Vieux Grimoire',
     description: 'API REST sécurisée avec Node.js, Express et MongoDB pour gérer des livres et leurs utilisateurs.',
     url: 'https://github.com/arnaudpiette/Dev-Web-livres',
@@ -298,6 +314,11 @@ export const devProjects: DevProject[] = [
   {
     // Fiche de référence complète pour la première étude de cas DEV.
     slug: 'kasa',
+    cover: { src: '/projets/dev/kasa/cover.webp', alt: 'Interface d’accueil Kasa présentant les logements', type: 'cover' },
+    gallery: [
+      { src: '/projets/dev/kasa/detail-01.webp', alt: 'Fiche détaillée d’un logement Kasa', type: 'desktop' },
+      { src: '/projets/dev/kasa/mobile-01.webp', alt: 'Fiche logement Kasa en affichage mobile', type: 'mobile' },
+    ],
     name: 'Kasa',
     description: 'Application front-end responsive de location immobilière développée avec React.',
     url: 'https://github.com/arnaudpiette/Kasa',
@@ -329,7 +350,11 @@ export const devProjects: DevProject[] = [
     results: ['L’application permet de naviguer entre les logements et d’afficher leurs informations dynamiquement.', 'L’interface reste cohérente entre desktop et mobile grâce à une architecture basée sur des composants réutilisables.'],
     improvements: ['Connecter l’interface à une API réelle.', 'Ajouter des tests automatisés.', 'Améliorer encore la gestion des états de chargement et d’erreur.', 'Poursuivre les optimisations d’accessibilité.'],
   },
-  { slug: 'portfolio', name: 'Portfolio', description: 'Le code source de ce portfolio Creative & DEV construit avec Astro.', url: 'https://github.com/arnaudpiette/Portfolio', stack: ['Astro', 'JavaScript', 'CSS'], filters: ['front-end', 'javascript', 'css', 'vite'], featured: false },
+  {
+    slug: 'portfolio', name: 'Portfolio', description: 'Le code source de ce portfolio Creative & DEV construit avec Astro.', url: 'https://github.com/arnaudpiette/Portfolio', stack: ['Astro', 'JavaScript', 'CSS'], filters: ['front-end', 'javascript', 'css', 'vite'], featured: false,
+    cover: { src: '/projets/dev/portfolio/cover.webp', alt: 'Page d’accueil actuelle du portfolio Astro', type: 'cover' },
+    gallery: [{ src: '/projets/dev/portfolio/detail-01.webp', alt: 'Page projets DEV du portfolio Astro', type: 'desktop' }],
+  },
   {
     // Fiche d'optimisation front-end du site de photographe Nina Carducci.
     slug: 'nina-carducci',
@@ -339,6 +364,11 @@ export const devProjects: DevProject[] = [
     stack: ['HTML5', 'CSS3', 'JavaScript', 'Lighthouse', 'Chrome DevTools', 'SEO', 'Accessibilité', 'Git'],
     filters: ['front-end', 'javascript', 'css'],
     featured: true,
+    cover: { src: '/projets/dev/nina-carducci/cover.webp', alt: 'Page d’accueil du site de la photographe Nina Carducci', type: 'cover' },
+    gallery: [
+      { src: '/projets/dev/nina-carducci/detail-01.webp', alt: 'Galerie photographique du site Nina Carducci', type: 'desktop' },
+      { src: '/projets/dev/nina-carducci/mobile-01.webp', alt: 'Site Nina Carducci en affichage mobile', type: 'mobile' },
+    ],
     context: 'Nina Carducci est un site portfolio de photographe déjà existant. L’objectif du projet était d’en améliorer les performances, le référencement naturel et l’accessibilité sans reconstruire entièrement le site.',
     objectives: [
       'Analyser les performances du site existant.',
@@ -361,7 +391,11 @@ export const devProjects: DevProject[] = [
     results: ['Le site a été allégé et optimisé afin d’améliorer son chargement, son référencement technique et son accessibilité, tout en conservant l’expérience et l’identité visuelle existantes.'],
     improvements: ['Poursuivre les tests sur plusieurs appareils et connexions.', 'Automatiser certains contrôles d’accessibilité.', 'Surveiller les Core Web Vitals en production.', 'Ajouter des tests de non-régression.', 'Poursuivre l’optimisation des ressources au fil des nouveaux contenus.'],
   },
-  { slug: 'sophie-bluel', name: 'Sophie Bluel', description: 'Portfolio d’architecte avec galerie dynamique et authentification.', url: 'https://github.com/arnaudpiette/Portfolio-architecte-sophie-bluel', stack: ['JavaScript', 'CSS', 'API'], filters: ['front-end', 'javascript', 'css'] },
+  {
+    slug: 'sophie-bluel', name: 'Sophie Bluel', description: 'Portfolio d’architecte avec galerie dynamique et authentification.', url: 'https://github.com/arnaudpiette/Portfolio-architecte-sophie-bluel', stack: ['JavaScript', 'CSS', 'API'], filters: ['front-end', 'javascript', 'css'],
+    cover: { src: '/projets/dev/sophie-bluel/cover.webp', alt: 'Galerie du portfolio d’architecte Sophie Bluel', type: 'cover' },
+    gallery: [{ src: '/projets/dev/sophie-bluel/mobile-01.webp', alt: 'Portfolio Sophie Bluel en affichage mobile', type: 'mobile' }],
+  },
   {
     // Projet OpenClassrooms de cadrage, sans application complète développée ni dépôt GitHub associé.
     slug: 'openclassrooms-project',
@@ -370,6 +404,8 @@ export const devProjects: DevProject[] = [
     stack: ['Gestion de projet', 'Kanban', 'Spécifications techniques'],
     filters: ['gestion-projet'],
     featured: true,
+    cover: { src: '/projets/dev/qwenta/cover.webp', alt: 'Livrables de gestion de projet Menu Maker by Qwenta', type: 'document' },
+    gallery: [{ src: '/projets/dev/qwenta/detail-01.webp', alt: 'Spécifications techniques du projet Menu Maker by Qwenta', type: 'document' }],
     projectType: 'Cadrage et gestion de projet',
     seoTitle: 'Menu Maker by Qwenta — Gestion de projet web — Arnaud Piette',
     context: 'Menu Maker est un projet de cadrage et de planification d’une application permettant à des restaurateurs de créer et gérer leurs menus en ligne. L’objectif n’était pas de développer l’application complète, mais de préparer sa réalisation en définissant les besoins, les fonctionnalités, les tâches, les choix techniques et l’organisation du projet.',

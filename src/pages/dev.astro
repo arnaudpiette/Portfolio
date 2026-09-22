@@ -42,8 +42,9 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
             <!-- La carte mène vers la fiche interne ; GitHub reste disponible sur cette fiche. -->
             <a href={`/dev/projets/${project.slug}`} aria-label={`Voir la fiche projet ${project.name}`}>
               <div class="project-visual">
+                {project.cover && <img class:list={['project-cover', `project-cover-${project.cover.type ?? 'cover'}`]} src={project.cover.src} alt={project.cover.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />}
                 <span>{String(index + 1).padStart(2, '0')}</span>
-                <span class="repo-mark">&lt;/&gt;</span>
+                {!project.cover && <span class="repo-mark">&lt;/&gt;</span>}
               </div>
               <div class="project-content">
                 <div class="project-tags">{project.stack.map((tag) => <span>{tag}</span>)}</div>
@@ -134,15 +135,20 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
   .project-card.is-hidden { display: none; }
   .project-card > a { position: relative; display: flex; height: 100%; flex-direction: column; color: inherit; text-decoration: none; }
   .project-visual { position: absolute; z-index: 1; inset: 0; display: flex; margin: 0; padding: 1rem; justify-content: space-between; overflow: hidden; background: radial-gradient(circle at 82% 18%, rgba(154,245,127,.25), transparent 34%), radial-gradient(circle at 12% 88%, rgba(0,0,255,.42), transparent 48%), linear-gradient(145deg,#0b1b16,#030908); color: #fff; transition: background .25s ease; }
+  .project-visual::after { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(3,9,8,.08) 22%, rgba(3,9,8,.88) 100%); content: ''; pointer-events: none; }
+  .project-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .82; transition: opacity .25s ease, transform .25s ease; }
+  .project-cover-architecture { padding: 1rem; object-fit: contain; background: #07100d; }
+  .project-cover-document { object-position: center top; }
   .project-visual > span { opacity: 0; transition: opacity .2s ease; }
   .repo-mark { position: absolute; top: 50%; left: 50%; color: #fff; font-size: clamp(2.8rem,5vw,4.5rem); font-weight: 700; letter-spacing: -.1em; transform: translate(-50%,-50%); }
   .project-content { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(1rem,2vw,1.5rem); background: transparent; opacity: 1; transform: none; transition: opacity .25s ease, transform .25s ease; }
   .project-card:hover .project-content, .project-card > a:focus-visible .project-content { opacity: 0; transform: translateY(12px); }
   .project-card:hover .project-visual, .project-card > a:focus-visible .project-visual { background: #0000FF; }
+  .project-card:hover .project-cover, .project-card > a:focus-visible .project-cover { opacity: .22; transform: scale(1.03); }
   .project-card:hover .project-visual > span, .project-card > a:focus-visible .project-visual > span { opacity: 1; }
   .project-visual > span:first-child { color: #9af57f; }
   .project-tags { display: flex; flex-wrap: wrap; gap: .35rem .75rem; }
-  .project-tags span { color: #9af57f; font-size: .64rem; text-transform: uppercase; letter-spacing: .14em; }
+  .project-tags span { padding: .16rem .28rem; border-radius: .28rem; background: rgba(3,9,8,.72); color: #9af57f; font-size: .64rem; text-shadow: 0 1px 5px #030908; text-transform: uppercase; letter-spacing: .14em; }
   h3 { max-width: 100%; min-width: 0; margin: .9rem 0 .4rem; font-size: clamp(.8rem,1.7vw,1.7rem); line-height: 1.05; overflow-wrap: anywhere; word-break: break-word; hyphens: auto; }
   .project-content p { margin: 0; }
   .github-link { margin-top: auto; padding-top: 1rem; color: #f5f5f5; font-size: .82rem; }

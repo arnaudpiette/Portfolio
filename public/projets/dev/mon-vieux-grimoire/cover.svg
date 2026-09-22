@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">Architecture Mon Vieux Grimoire</title>
+  <desc id="desc">Architecture Express, JWT, controllers, Mongoose MongoDB et pipeline image Multer Sharp.</desc>
+  <defs>
+    <pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="#75f56b" stroke-opacity=".09"/></pattern>
+    <linearGradient id="glow" x1="0" x2="1"><stop stop-color="#061018"/><stop offset="1" stop-color="#091137"/></linearGradient>
+    <filter id="shadow"><feGaussianBlur stdDeviation="13"/></filter>
+  </defs>
+  <rect width="1440" height="900" fill="url(#glow)"/>
+  <rect width="1440" height="900" fill="url(#grid)"/>
+  <text x="76" y="91" fill="#92ff77" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" letter-spacing="4">NODE.JS / EXPRESS / MONGODB</text>
+  <text x="76" y="151" fill="#f5f7ff" font-family="Arial, sans-serif" font-size="52" font-weight="700">Mon Vieux Grimoire</text>
+  <text x="78" y="189" fill="#b9c3dc" font-family="Arial, sans-serif" font-size="21">API de gestion de livres, utilisateurs, notes et images</text>
+  <g fill="none" stroke="#4073ff" stroke-width="2" stroke-linecap="round">
+    <path d="M290 356H398"/><path d="M570 356H680"/><path d="M850 356H958"/>
+    <path d="M765 440V548"/><path d="M765 644V692"/>
+    <path d="M765 440C765 480 1085 462 1085 516"/><path d="M1085 600V648"/>
+  </g>
+  <g fill="#92ff77"><circle cx="398" cy="356" r="5"/><circle cx="680" cy="356" r="5"/><circle cx="958" cy="356" r="5"/><circle cx="765" cy="548" r="5"/><circle cx="1085" cy="516" r="5"/></g>
+  <g font-family="Arial, sans-serif">
+    <g><rect x="76" y="292" width="214" height="128" rx="16" fill="#0d1730" stroke="#75f56b"/><text x="102" y="342" fill="#f5f7ff" font-size="25" font-weight="700">CLIENT</text><text x="102" y="377" fill="#aeb9d3" font-size="17">React frontend</text></g>
+    <g><rect x="398" y="292" width="172" height="128" rx="16" fill="#0d1730" stroke="#75f56b"/><text x="424" y="342" fill="#f5f7ff" font-size="23" font-weight="700">EXPRESS</text><text x="424" y="377" fill="#aeb9d3" font-size="17">/api/auth · /books</text></g>
+    <g><rect x="680" y="292" width="170" height="128" rx="16" fill="#0d1730" stroke="#75f56b"/><text x="706" y="342" fill="#f5f7ff" font-size="23" font-weight="700">JWT</text><text x="706" y="377" fill="#aeb9d3" font-size="17">middleware auth</text></g>
+    <g><rect x="958" y="292" width="240" height="128" rx="16" fill="#0d1730" stroke="#75f56b"/><text x="984" y="342" fill="#f5f7ff" font-size="23" font-weight="700">CONTROLLERS</text><text x="984" y="377" fill="#aeb9d3" font-size="17">users · books · ratings</text></g>
+    <g><rect x="650" y="548" width="230" height="96" rx="16" fill="#10214a" stroke="#4777ff"/><text x="678" y="590" fill="#f5f7ff" font-size="23" font-weight="700">MONGOOSE</text><text x="678" y="620" fill="#b9c3dc" font-size="17">User · Book schemas</text></g>
+    <g><rect x="650" y="692" width="230" height="96" rx="16" fill="#10214a" stroke="#4777ff"/><text x="678" y="734" fill="#f5f7ff" font-size="23" font-weight="700">MONGODB</text><text x="678" y="764" fill="#b9c3dc" font-size="17">books · users · ratings</text></g>
+    <g><rect x="972" y="516" width="226" height="84" rx="16" fill="#11233a" stroke="#75f56b"/><text x="997" y="552" fill="#f5f7ff" font-size="22" font-weight="700">MULTER</text><text x="997" y="580" fill="#b9c3dc" font-size="16">upload en mémoire</text></g>
+    <g><rect x="972" y="648" width="226" height="84" rx="16" fill="#11233a" stroke="#75f56b"/><text x="997" y="684" fill="#f5f7ff" font-size="22" font-weight="700">SHARP</text><text x="997" y="712" fill="#b9c3dc" font-size="16">optimisation WebP</text></g>
+  </g>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="16" fill="#92ff77"><text x="76" y="850">POST /signup /login</text><text x="415" y="850">GET /books</text><text x="650" y="850">POST · PUT · DELETE /books</text><text x="1048" y="850">POST /:id/rating</text></g>
+</svg>
