@@ -11,6 +11,9 @@ const {
   title,
   description = '',
 } = Astro.props;
+const canonicalPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
+const canonicalURL = new URL(canonicalPath, Astro.site ?? Astro.url);
+
 ---
 
 <!-- Squelette HTML partagé par les pages principales du portfolio. -->
@@ -27,6 +30,7 @@ const {
 
     <!-- Titre et description SEO fournis par la page courante. -->
     <title>{title}</title>
+    <link rel="canonical" href={canonicalURL} />
 
     {description && (
       <meta name="description" content={description} />
