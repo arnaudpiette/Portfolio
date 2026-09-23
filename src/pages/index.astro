@@ -11,6 +11,10 @@ import ImmersiveHero from '../components/home/ImmersiveHero.astro';
   description="Portfolio d’Arnaud Piette, directeur artistique et développeur web : direction artistique, design digital et projets de développement web."
   pageTransition="home"
 >
+  <!-- Le fallback sans JavaScript reste dans le head : style dans noscript est valide à cet emplacement. -->
+  <Fragment slot="head">
+    <noscript><style>.immersive-hero__links { opacity: 1 !important; visibility: visible !important; pointer-events: auto !important; transform: none !important; }</style></noscript>
+  </Fragment>
   <!-- Les deux accès du portfolio sont rendus par la hero, sans modifier leurs routes. -->
   <main>
     <ImmersiveHero />
