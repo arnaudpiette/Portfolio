@@ -191,7 +191,7 @@ export const fallbackProjects: ProjectItem[] = [
     ],
   },
   {
-    slug: 'LaVIE',
+    slug: 'lavie',
     title: 'LaVIE',
     isNew: false,
     tags: [{ id: 'brand-id', label: 'Brand ID' }, { id: 'da', label: 'DA' }],

@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/projets/LaVIE",
+      "destination": "/projets/lavie",
+      "permanent": true
+    }
+  ]
+}
