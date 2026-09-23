@@ -17,10 +17,12 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
 <BaseLayout
   title="Arnaud Piette — Développeur web Front-end & Back-end"
   description="Portfolio développement web d’Arnaud Piette : projets front-end et back-end en JavaScript, React, Node.js, API REST, performance et accessibilité."
+  pageTransition="dev"
 >
     <PortfolioHeader mode="dev" headingLevel="p" />
 
-    <main id="projects">
+    <!-- Racine propre à DEV : les scripts de filtre restent isolés après un swap Astro. -->
+    <main id="projects" data-projects-page="dev">
       <PortfolioSignature theme="dark" />
       <div class="filter-toolbar">
         <div class="filter-controls">
@@ -64,8 +66,12 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
       // Installe le filtrage des repositories et l'ouverture du panneau de filtres.
       // Associe les filtres aux cartes selon leurs catégories déclarées.
       const setupProjectFilters = () => {
-        const buttons = document.querySelectorAll('[data-filter]');
-        const cards = document.querySelectorAll('[data-project-card]');
+        // Évite que ce script persistant traite les contrôles CRÉA après une navigation ClientRouter.
+        const root = document.querySelector<HTMLElement>('[data-projects-page="dev"]');
+        if (!root) return;
+
+        const buttons = root.querySelectorAll('[data-filter]');
+        const cards = root.querySelectorAll('[data-project-card]');
 
         buttons.forEach((button) => {
           if (!(button instanceof HTMLButtonElement) || button.dataset.filterReady) return;
@@ -87,8 +93,12 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
 
       // Met à jour les attributs d'accessibilité du panneau repliable.
       const setupFilterToggle = () => {
-        const toggle = document.querySelector<HTMLButtonElement>('[data-filter-toggle]');
-        const panel = document.querySelector<HTMLElement>('[data-filter-panel]');
+        // Réserve le panneau de filtres à la page DEV courante.
+        const root = document.querySelector<HTMLElement>('[data-projects-page="dev"]');
+        if (!root) return;
+
+        const toggle = root.querySelector<HTMLButtonElement>('[data-filter-toggle]');
+        const panel = root.querySelector<HTMLElement>('[data-filter-panel]');
         if (!toggle || !panel || toggle.dataset.toggleReady) return;
         toggle.dataset.toggleReady = 'true';
         toggle.addEventListener('click', () => {

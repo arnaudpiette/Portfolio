@@ -1,12 +1,12 @@
 ---
-// Décrit le mode actif et l'option de conservation de position du switch.
+// Décrit le mode actif ; la navigation ne force aucun repositionnement de scroll.
 interface Props {
   mode: 'creative' | 'dev';
   preserveScroll?: boolean;
 }
 
 // Détermine la route cible et les libellés accessibles du changement de mode.
-const { mode, preserveScroll = false } = Astro.props;
+const { mode } = Astro.props;
 const href = mode === 'creative' ? '/dev' : '/creative';
 const targetLabel = mode === 'creative' ? 'Passer au portfolio DEV' : 'Passer au portfolio CRÉA';
 ---
@@ -17,55 +17,10 @@ const targetLabel = mode === 'creative' ? 'Passer au portfolio DEV' : 'Passer au
   href={href}
   aria-label={targetLabel}
   title={targetLabel}
-  data-preserve-scroll={preserveScroll ? '' : undefined}
 >
   <span class="mode-label mode-da">CRÉA</span>
   <span class="mode-label mode-dev">DEV</span>
 </a>
-
-<script>
-  // Mémorise puis restaure la position verticale du switch après une transition Astro.
-  let preservedSwitchTop: number | null = null;
-  const switchPositionKey = 'portfolio-switch-top';
-
-  const restoreSwitchPosition = () => {
-    const savedPosition = sessionStorage.getItem(switchPositionKey);
-    if (savedPosition === null) return;
-
-    sessionStorage.removeItem(switchPositionKey);
-    const switchElement = document.querySelector('[data-preserve-scroll]');
-    if (!(switchElement instanceof HTMLElement)) return;
-
-    const positionDifference = switchElement.getBoundingClientRect().top - Number(savedPosition);
-    window.scrollBy(0, positionDifference);
-  };
-
-  requestAnimationFrame(() => requestAnimationFrame(restoreSwitchPosition));
-
-  document.addEventListener('click', (event) => {
-    const target = event.target;
-    if (!(target instanceof Element)) return;
-
-    const switchElement = target.closest('[data-preserve-scroll]');
-    if (!(switchElement instanceof HTMLElement)) return;
-
-    preservedSwitchTop = switchElement.getBoundingClientRect().top;
-    sessionStorage.setItem(switchPositionKey, String(preservedSwitchTop));
-  });
-
-  document.addEventListener('astro:after-swap', () => {
-    if (preservedSwitchTop === null) return;
-
-    const switchElement = document.querySelector('[data-preserve-scroll]');
-    if (switchElement instanceof HTMLElement) {
-      const positionDifference = switchElement.getBoundingClientRect().top - preservedSwitchTop;
-      window.scrollBy(0, positionDifference);
-    }
-
-    preservedSwitchTop = null;
-    sessionStorage.removeItem(switchPositionKey);
-  });
-</script>
 
 <style>
   /* Apparence commune du switch et déclinaisons propres à chaque mode. */

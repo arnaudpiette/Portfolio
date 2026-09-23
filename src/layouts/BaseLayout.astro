@@ -1,19 +1,22 @@
 ---
 import { ClientRouter } from 'astro:transitions';
+import '../styles/page-transitions.css';
 
 // Décrit les métadonnées reçues de chaque page qui utilise ce layout.
 interface Props {
   title: string;
   description?: string;
+  pageTransition?: 'home' | 'creative' | 'dev';
 }
 
 const {
   title,
   description = '',
+  pageTransition,
 } = Astro.props;
+
 const canonicalPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
 const canonicalURL = new URL(canonicalPath, Astro.site ?? Astro.url);
-
 ---
 
 <!-- Squelette HTML partagé par les pages principales du portfolio. -->
@@ -49,8 +52,12 @@ const canonicalURL = new URL(canonicalPath, Astro.site ?? Astro.url);
     <slot name="head" />
   </head>
 
-  <body>
+  <body data-portfolio-page={pageTransition}>
     <!-- Emplacement du contenu propre à chaque page. -->
     <slot />
+    <!-- Ajoute l'entrée CSS de secours après chaque chargement ou swap Astro. -->
+    <script>
+      import '../scripts/pageTransitions.js';
+    </script>
   </body>
 </html>
