@@ -133,7 +133,12 @@ const creativeLogos = [
 				root.querySelectorAll<HTMLAnchorElement>('.project-link').forEach((link) => {
 					if (link.dataset.returnReady) return;
 					link.dataset.returnReady = 'true';
-					link.addEventListener('click', () => sessionStorage.setItem(creativeReturnKey, 'true'));
+					link.addEventListener('click', (event) => {
+						const isFirstMobileTap = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+							&& event.detail !== 0
+							&& !link.closest('.project-card')?.classList.contains('is-revealed');
+						if (!isFirstMobileTap) sessionStorage.setItem(creativeReturnKey, 'true');
+					});
 				});
 
 				if (sessionStorage.getItem(creativeReturnKey) === 'true') {
@@ -168,6 +173,25 @@ const creativeLogos = [
 
 			setupFilterToggle();
 			document.addEventListener('astro:page-load', setupFilterToggle);
+
+			// Sur smartphone, le premier tap révèle la carte et le second ouvre le projet.
+			const setupMobileProjectCards = () => {
+				const root = document.querySelector<HTMLElement>('[data-projects-page="creative"]');
+				if (!root || !window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+
+				root.querySelectorAll<HTMLAnchorElement>('.project-link').forEach((link) => {
+					if (link.dataset.mobileRevealReady) return;
+					link.dataset.mobileRevealReady = 'true';
+					link.addEventListener('click', (event) => {
+						if (event.detail === 0 || link.closest('.project-card')?.classList.contains('is-revealed')) return;
+						event.preventDefault();
+						link.closest('.project-card')?.classList.add('is-revealed');
+					});
+				});
+			};
+
+			setupMobileProjectCards();
+			document.addEventListener('astro:page-load', setupMobileProjectCards);
 
 		</script>
 </BaseLayout>
@@ -382,11 +406,13 @@ const creativeLogos = [
 
 	@media (max-width: 560px) {
 		.project-grid {
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-columns: 1fr;
 		}
 	}
 
-	@media (hover: none) {
-		.project-content { opacity: 1; transform: none; }
+	@media (hover: none) and (pointer: coarse) {
+		.project-card.is-revealed .project-content { opacity: 1; transform: none; }
+		.project-content h3 { margin: .75rem 0 .5rem; font-size: clamp(1.15rem, 6.2vw, 1.75rem); line-height: 1; letter-spacing: -.045em; white-space: nowrap; overflow-wrap: normal; word-break: normal; hyphens: none; }
+		.project-cta { padding-top: 1.25rem; font-size: 1.125rem; font-weight: 600; }
 	}
 </style>

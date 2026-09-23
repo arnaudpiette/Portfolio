@@ -1,7 +1,6 @@
 ---
 // Charge le layout, les données DEV et les composants partagés de l'univers DEV.
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import ModeSwitch from '../../../components/ModeSwitch.astro';
 import PortfolioFooter from '../../../components/PortfolioFooter.astro';
 import PortfolioHeader from '../../../components/PortfolioHeader.astro';
 import PortfolioOverlays from '../../../components/PortfolioOverlays.astro';
@@ -32,7 +31,6 @@ const { project } = Astro.props as { project: DevProject };
     <!-- Navigation courte vers la liste DEV et le changement d'univers existant. -->
     <nav class="project-navigation" aria-label="Navigation du projet">
       <a class="back-link" href="/dev">← Retour aux projets DEV</a>
-      <ModeSwitch mode="dev" preserveScroll />
     </nav>
 
     <!-- Introduction toujours renseignée à partir des données déjà existantes. -->
