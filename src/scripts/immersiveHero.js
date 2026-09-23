@@ -123,23 +123,26 @@ const setupImmersiveHero = () => {
       drawMobileClickFrame(getMobileClickFrameIndex(performance.now()));
     };
 
-    // Charge seulement les trente-sept frames de clic avant de révéler le canvas ; l'image de repli reste visible en cas d'échec.
+    // Révèle la première frame immédiatement, puis décode le reste hors du chemin critique.
     if (mobileCanvasContext) {
-      void Promise.all(clickFrameUrls.map(loadMobileClickFrame))
-        .then((frames) => {
+      void (async () => {
+        try {
+          mobileFrames[0] = await loadMobileClickFrame(clickFrameUrls[0]);
           if (mobileDestroyed) {
-            frames.forEach((frame) => frame.close?.());
+            mobileFrames[0]?.close?.();
             return;
           }
-          mobileFrames.push(...frames);
           resizeMobileCanvas();
           drawMobileClickFrame(0);
           root.classList.add('has-canvas');
           mobileFrameId = window.requestAnimationFrame(tickMobileClickLoop);
-        })
-        .catch((error) => {
+          for (let index = 1; index < clickFrameUrls.length && !mobileDestroyed; index += 1) {
+            mobileFrames[index] = await loadMobileClickFrame(clickFrameUrls[index]);
+          }
+        } catch (error) {
           if (import.meta.env.DEV) console.error('La boucle mobile de clic reste désactivée : l’image de repli est conservée.', error);
-        });
+        }
+      })();
     }
 
     root.classList.remove('is-intro');
@@ -410,9 +413,8 @@ const setupImmersiveHero = () => {
   // Charge d'abord le petit groupe central ; le reste de la séquence s'élargit ensuite au repos.
   const preloadSequence = async () => {
     try {
-      const initialFrameCount = 7;
-      await Promise.all(framePriority.slice(0, initialFrameCount).map(preloadFrame));
-      nextDeferredFrame = initialFrameCount;
+      await preloadFrame(CENTER_FRAME);
+      nextDeferredFrame = 1;
       scheduleDeferredPreload();
     } catch (error) {
       if (import.meta.env.DEV) console.error('La séquence canvas reste désactivée : la frame de repli est conservée.', error);
