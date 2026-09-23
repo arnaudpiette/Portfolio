@@ -14,16 +14,11 @@ const setupPortfolioPageEntry = () => {
 
 let switchViewportTop = null;
 const switchNavigationKey = 'portfolio-switch-viewport-top';
-const homeNavigationKey = 'portfolio-home-navigation';
-
-const restoreHomepageDestinationTop = () => {
-  if (sessionStorage.getItem(homeNavigationKey) !== 'true') return;
-  window.scrollTo({ top: 0, behavior: 'auto' });
-  sessionStorage.removeItem(homeNavigationKey);
-};
 
 const restoreSwitchViewportPosition = () => {
-  const savedTop = switchViewportTop ?? Number(sessionStorage.getItem(switchNavigationKey));
+  const storedTop = sessionStorage.getItem(switchNavigationKey);
+  if (switchViewportTop === null && storedTop === null) return;
+  const savedTop = switchViewportTop ?? Number(storedTop);
   if (!Number.isFinite(savedTop)) return;
   const target = document.querySelector('.mode-switch');
   if (target instanceof HTMLElement) {
@@ -49,6 +44,3 @@ document.addEventListener('astro:page-load', setupPortfolioPageEntry);
 document.addEventListener('astro:page-load', () => requestAnimationFrame(() => requestAnimationFrame(() => {
   restoreSwitchViewportPosition();
 })));
-// ClientRouter restaure sa position après le swap : les entrées homepage attendent
-// cette phase avant d'imposer le haut de la destination.
-document.addEventListener('astro:page-load', () => window.setTimeout(restoreHomepageDestinationTop, 100));
