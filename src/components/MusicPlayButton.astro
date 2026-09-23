@@ -9,7 +9,7 @@ interface Props {
 const { theme, fixed = false } = Astro.props;
 const audioSrc = theme === 'dev'
   ? '/sounds/Hot Butter Popcorn.mp3'
-  : '/sounds/Dimitri From Paris - Sacré Français.mp3';
+  : '/sounds/creative-theme.mp3';
 ---
 
 <!-- Contrôle persistant pendant les transitions Astro pour préserver la lecture audio. -->
@@ -47,8 +47,15 @@ const audioSrc = theme === 'dev'
 
     button.dataset.musicReady = 'true';
     button.addEventListener('click', async () => {
-      if (audio.paused) await audio.play();
-      else audio.pause();
+      if (audio.paused) {
+        try { await audio.play(); } catch (error) {
+          updateButton();
+          if (import.meta.env.DEV) console.error('Lecture audio impossible.', error);
+          return;
+        }
+      } else {
+        audio.pause();
+      }
       updateButton();
     });
     audio.addEventListener('play', updateButton);
