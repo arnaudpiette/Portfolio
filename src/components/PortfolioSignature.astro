@@ -10,7 +10,8 @@ const { theme = 'light' } = Astro.props;
 <!-- Signature éditoriale affichée avant la grille de projets. -->
 <h1 class:list={['portfolio-signature', `signature-${theme}`]}>
   <span class="signature-intro"><span class="signature-intro-part">Think it.</span>{' '}<span class="signature-intro-part">Design it.</span></span>
-  {' '}
+  <!-- Saut de ligne explicite réservé à la signature de l'univers CRÉA. -->
+  {theme === 'light' ? <br /> : ' '}
   <span class="signature-build">Build it.</span>
 </h1>
 
