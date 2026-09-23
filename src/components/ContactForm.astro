@@ -6,9 +6,8 @@ interface Props {
   showFooter?: boolean;
 }
 
-// Lit les options reçues et conserve le texte proposé dans le champ message.
+// Lit les options reçues pour afficher le formulaire dans son contexte.
 const { theme = 'light', sectionId = 'contact', showFooter = true } = Astro.props;
-const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe des identités de marque (maintenant des sites web et des applications) et imagine des expériences digitales nationales et internationales, tant pour des Agences de Publicité, telles que PUBLICIS, MC CANN, OGILVY, LIEU COMMUN que pour des marques ou des start-up comme DECATHLON, VIGNERONS INDÉPENDANTS, L’ORÉAL, NIKE, JOUÉCLUB, OPEL, HARLEY-DAVIDSON, LOTERIE NATIONALE, AXA, CROIX-ROUGE, DR MILOU, WHEELIZ, AUTONOMY, CITYSCOOT...';
 ---
 
 <!-- Formulaire de contact envoyé au service FormSubmit sans rechargement de page. -->
@@ -35,7 +34,7 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
 
     <label class="message-field">
       <span>Message</span>
-      <textarea name="message" rows="9" required data-contact-message data-default-message={quote}>{quote}</textarea>
+      <textarea name="message" rows="9" required placeholder="Dites-moi tout..."></textarea>
     </label>
 
     <div class="contact-submit-row">
@@ -59,17 +58,8 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
       if (form.dataset.ready === 'true') return;
       form.dataset.ready = 'true';
 
-      const message = form.querySelector<HTMLTextAreaElement>('[data-contact-message]');
       const status = form.querySelector<HTMLElement>('[data-form-status]');
       const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
-
-      message?.addEventListener('focus', () => {
-        if (message.value === message.dataset.defaultMessage) message.value = '';
-      });
-
-      message?.addEventListener('blur', () => {
-        if (message.value.trim() === '') message.value = message.dataset.defaultMessage ?? '';
-      });
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -85,7 +75,6 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
           });
           if (!response.ok) throw new Error('Échec de l’envoi');
           form.reset();
-          if (message) message.value = message.dataset.defaultMessage ?? '';
           if (status) status.textContent = 'Merci, votre message a bien été envoyé.';
         } catch {
           if (status) status.textContent = 'L’envoi a échoué. Réessayez ou écrivez à arno.piette@gmail.com.';
@@ -180,7 +169,8 @@ const quote = 'Depuis 20 ans, je crée des campagnes publicitaires, développe d
     transition: border-color .2s ease;
   }
   input { min-height: 52px; height: 52px; padding: 0 1.25rem; }
-  textarea { min-height: 230px; padding: 1.25rem; resize: vertical; color: var(--contact-muted); line-height: 1.65; }
+  textarea { min-height: 230px; padding: 1.25rem; resize: vertical; color: var(--contact-text); line-height: 1.65; }
+  textarea::placeholder { color: var(--contact-muted); opacity: 1; }
   input:focus, textarea:focus { border-color: var(--contact-accent); }
   .contact-submit-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
   .form-status { min-height: 1.4em; margin: 0; color: var(--contact-muted); font-size: .82rem; }

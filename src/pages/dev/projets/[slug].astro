@@ -17,6 +17,7 @@ export function getStaticPaths() {
 
 // Récupère les données pré-générées de la fiche projet courante.
 const { project } = Astro.props as { project: DevProject };
+const projectImages = [project.cover, ...(project.gallery ?? [])].filter((image): image is NonNullable<typeof image> => Boolean(image));
 ---
 
 <!-- Fiche DEV générique : les sections éditoriales restent absentes sans donnée associée. -->
@@ -42,7 +43,9 @@ const { project } = Astro.props as { project: DevProject };
 
     {project.cover && (
       <figure class:list={['project-media', 'project-media-cover', `project-media-${project.cover.type ?? 'cover'}`]}>
-        <img src={project.cover.src} alt={project.cover.alt} decoding="async" />
+        <button class="project-image-trigger" type="button" data-dev-image-open="0" aria-label={`Agrandir : ${project.cover.alt}`}>
+          <img src={project.cover.src} alt={project.cover.alt} decoding="async" />
+        </button>
       </figure>
     )}
 
@@ -88,13 +91,24 @@ const { project } = Astro.props as { project: DevProject };
       <section class="project-section project-gallery" aria-labelledby="gallery-title">
         <h2 id="gallery-title">Visuels du projet</h2>
         <div class="gallery-grid">
-          {project.gallery.map((image) => (
+          {project.gallery.map((image, index) => (
             <figure class:list={['project-media', `project-media-${image.type ?? 'desktop'}`]}>
-              <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+              <button class="project-image-trigger" type="button" data-dev-image-open={project.cover ? index + 1 : index} aria-label={`Agrandir : ${image.alt}`}>
+                <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+              </button>
             </figure>
           ))}
         </div>
       </section>
+    )}
+
+    {projectImages.length > 0 && (
+      <dialog class="dev-image-dialog" data-dev-image-dialog aria-label="Image agrandie du projet">
+        <div class="dev-image-dialog-stage">
+          <button class="dev-image-dialog-close" type="button" data-dev-image-close aria-label="Fermer l’image agrandie">×</button>
+          <img data-dev-image-dialog-image src="" alt="" decoding="async" />
+        </div>
+      </dialog>
     )}
     {project.deliverables && project.deliverables.length > 0 && (
       <section class="project-section" aria-labelledby="deliverables-title">
@@ -245,6 +259,37 @@ const { project } = Astro.props as { project: DevProject };
 
   <PortfolioFooter theme="dark" />
   <PortfolioOverlays theme="dark" groups={devSkillGroups} />
+  {projectImages.length > 0 && (
+    <script define:vars={{ images: projectImages.map(({ src, alt }) => ({ src, alt })) }}>
+      const setupDevImageDialog = () => {
+        const dialog = document.querySelector('[data-dev-image-dialog]');
+        const image = dialog?.querySelector('[data-dev-image-dialog-image]');
+        const close = dialog?.querySelector('[data-dev-image-close]');
+        if (!dialog || !image || !close || dialog.dataset.ready) return;
+        dialog.dataset.ready = 'true';
+        let trigger = null;
+
+        const closeDialog = () => dialog.close();
+        document.querySelectorAll('[data-dev-image-open]').forEach((button) => {
+          button.addEventListener('click', () => {
+            const item = images[Number(button.dataset.devImageOpen)];
+            if (!item) return;
+            trigger = button;
+            image.src = item.src;
+            image.alt = item.alt;
+            dialog.showModal();
+            close.focus();
+          });
+        });
+        close.addEventListener('click', closeDialog);
+        dialog.addEventListener('click', (event) => { if (event.target === dialog) closeDialog(); });
+        dialog.addEventListener('close', () => trigger?.focus());
+      };
+
+      setupDevImageDialog();
+      document.addEventListener('astro:page-load', setupDevImageDialog);
+    </script>
+  )}
 </BaseLayout>
 
 <style>
@@ -263,6 +308,8 @@ const { project } = Astro.props as { project: DevProject };
   h1 { margin: 0; color: #fff; font-size: clamp(2.8rem, 8vw, 6.5rem); line-height: .92; letter-spacing: -.06em; }
   .project-description { max-width: 660px; margin: clamp(1rem, 3vw, 1.75rem) 0 0; color: rgba(245, 245, 245, .78); font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.55; }
   .project-media { margin: 0; overflow: hidden; border: 1px solid #213d32; border-radius: 20px; background: #07100d; }
+  .project-image-trigger { display: block; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: zoom-in; }
+  .project-image-trigger:focus-visible { outline: 3px solid #9af57f; outline-offset: -5px; }
   .project-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .project-media-cover { width: min(100%, 920px); aspect-ratio: 16 / 10; margin: clamp(1.75rem, 5vw, 4rem) 0 0; }
   .project-media-architecture { padding: clamp(1rem, 3vw, 2rem); }
@@ -306,6 +353,13 @@ const { project } = Astro.props as { project: DevProject };
   .project-actions { display: flex; flex-wrap: wrap; gap: .75rem; padding-top: clamp(2rem, 5vw, 4rem); }
   .project-action-primary { border-color: #0000FF; background: #0000FF; color: #9af57f; }
   .project-action-primary:hover { border-color: #9af57f; background: #9af57f; color: #0000FF; }
-  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } .architecture-flow { align-items: flex-start; flex-direction: column; gap: .45rem; } .architecture-flow li:not(:last-child)::after { position: static; margin-left: .5rem; content: '↓'; } .roadmap-card { grid-template-columns: 1fr; gap: .5rem; } .gallery-grid { grid-template-columns: 1fr; } .gallery-grid .project-media-mobile { width: min(100%, 280px); justify-self: center; } }
+  .dev-image-dialog { width: min(1200px, calc(100vw - 2rem)); max-width: none; height: min(900px, calc(100dvh - 2rem)); max-height: none; margin: auto; padding: clamp(1rem, 3vw, 2.5rem); overflow: visible; border: 1px solid #213d32; border-radius: 24px; background: #07100d; color: #fff; }
+  .dev-image-dialog::backdrop { background: rgba(3, 9, 8, .84); backdrop-filter: blur(6px); }
+  .dev-image-dialog-stage { display: grid; width: 100%; height: 100%; place-items: center; }
+  .dev-image-dialog img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+  .dev-image-dialog-close { position: absolute; z-index: 1; top: .75rem; right: .75rem; display: grid; width: 46px; height: 46px; padding: 0; place-items: center; border: 1px solid rgba(154, 245, 127, .48); border-radius: 50%; background: #07100d; color: #9af57f; font: 300 2rem/1 Arial, sans-serif; cursor: pointer; }
+  .dev-image-dialog-close:hover { border-color: #0000FF; background: #0000FF; }
+  .dev-image-dialog-close:focus-visible { outline: 3px solid #9af57f; outline-offset: 3px; }
+  @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } .architecture-flow { align-items: flex-start; flex-direction: column; gap: .45rem; } .architecture-flow li:not(:last-child)::after { position: static; margin-left: .5rem; content: '↓'; } .roadmap-card { grid-template-columns: 1fr; gap: .5rem; } .gallery-grid { grid-template-columns: 1fr; } .gallery-grid .project-media-mobile { width: min(100%, 280px); justify-self: center; } .dev-image-dialog { width: calc(100vw - 1rem); height: calc(100dvh - 1rem); padding: 3.75rem 1rem 1rem; border-radius: 18px; } }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 </style>
