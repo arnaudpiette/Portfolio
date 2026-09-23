@@ -1,14 +1,15 @@
 /* Les animations root utilisent la View Transition native déclenchée par ClientRouter lorsqu'elle est disponible. */
-@keyframes portfolio-home-exit-left { to { opacity: 0; transform: translate3d(-16px, 0, 0) scale(1.005); } }
-@keyframes portfolio-home-exit-right { to { opacity: 0; transform: translate3d(16px, 0, 0) scale(1.005); } }
-@keyframes portfolio-page-entry-left { from { opacity: 0; transform: translate3d(-14px, 14px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
-@keyframes portfolio-page-entry-right { from { opacity: 0; transform: translate3d(14px, 14px, 0); } to { opacity: 1; transform: translate3d(0, 0, 0); } }
+@keyframes portfolio-home-exit-left { to { opacity: 0; } }
+@keyframes portfolio-home-exit-right { to { opacity: 0; } }
+@keyframes portfolio-page-entry-left { from { opacity: 0; } to { opacity: 1; } }
+@keyframes portfolio-page-entry-right { from { opacity: 0; } to { opacity: 1; } }
 
 /* La sortie de la home suit le choix ; l'entrée de la destination est volontairement plus douce. */
 html[data-portfolio-transition='creative']::view-transition-old(root) { animation: portfolio-home-exit-left 280ms cubic-bezier(.16, 1, .3, 1) both; }
 html[data-portfolio-transition='dev']::view-transition-old(root) { animation: portfolio-home-exit-right 280ms cubic-bezier(.16, 1, .3, 1) both; }
 html[data-portfolio-transition='creative']::view-transition-new(root) { animation: portfolio-page-entry-left 360ms cubic-bezier(.16, 1, .3, 1) both; }
 html[data-portfolio-transition='dev']::view-transition-new(root) { animation: portfolio-page-entry-right 360ms cubic-bezier(.16, 1, .3, 1) both; }
+html[data-switch-navigation]::view-transition-old(root), html[data-switch-navigation]::view-transition-new(root) { animation: none; }
 
 /* Le fallback s'applique après le swap seulement lorsque la View Transition native n'est pas disponible. */
 @supports not (view-transition-name: none) {

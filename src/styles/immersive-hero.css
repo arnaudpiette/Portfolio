@@ -56,9 +56,7 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
 .immersive-hero__link--dev { opacity: var(--dev-presence); }
 
 /* L'état de sortie reste bref : l'univers choisi gagne en présence avant la navigation Astro. */
-.immersive-hero.is-leaving { opacity: .94; transition: opacity 280ms ease-out, transform 280ms cubic-bezier(.16, 1, .3, 1); }
-.immersive-hero.is-leaving[data-selected-universe='creative'] { transform: translate3d(-12px, 0, 0); }
-.immersive-hero.is-leaving[data-selected-universe='dev'] { transform: translate3d(12px, 0, 0); }
+.immersive-hero.is-leaving { opacity: .94; transition: opacity 280ms ease-out; }
 .immersive-hero.is-leaving .immersive-hero__scene { --hero-exit-scale: 1.01; }
 .immersive-hero.is-leaving[data-selected-universe='creative'] .immersive-hero__link--creative, .immersive-hero.is-leaving[data-selected-universe='dev'] .immersive-hero__link--dev { opacity: 1; }
 .immersive-hero.is-leaving[data-selected-universe='creative'] .immersive-hero__link--dev, .immersive-hero.is-leaving[data-selected-universe='dev'] .immersive-hero__link--creative { opacity: .45; }

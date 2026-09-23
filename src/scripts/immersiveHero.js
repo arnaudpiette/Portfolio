@@ -461,6 +461,9 @@ const setupImmersiveHero = () => {
     root.dataset.selectedUniverse = link.classList.contains('immersive-hero__link--creative') ? 'creative' : 'dev';
     // Transmet le sens choisi aux pseudo-éléments View Transition d'Astro avant le swap de page.
     document.documentElement.dataset.portfolioTransition = root.dataset.selectedUniverse;
+    // Les entrées depuis la home démarrent toujours la page choisie en haut ;
+    // cette règle ne concerne pas le switch interne CRÉA / DEV.
+    sessionStorage.setItem('portfolio-home-navigation', 'true');
     root.classList.add('is-leaving');
     navigationTimer = window.setTimeout(() => link.click(), 280);
   };
