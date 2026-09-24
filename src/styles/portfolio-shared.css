@@ -8,6 +8,13 @@
   font-size: clamp(.496rem, 1.08vw, .76rem);
 }
 
+/* Invariant de la grille CRÉA après les swaps du ClientRouter : ne cible que la page active. */
+@media (min-width: 561px) {
+  [data-projects-page='creative'] .project-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 /* Adapte la composition commune du header aux petits écrans. */
 @media (max-width: 760px) {
   .portfolio-header {

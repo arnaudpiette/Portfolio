@@ -8,21 +8,12 @@ import PortfolioFooter from '../components/PortfolioFooter.astro';
 import PortfolioHeader from '../components/PortfolioHeader.astro';
 import PortfolioOverlays from '../components/PortfolioOverlays.astro';
 import PortfolioSignature from '../components/PortfolioSignature.astro';
+import { creativeLogos } from '../data/creativeSkills';
 
 // Prépare les projets, leurs routes et les logos affichés dans l'overlay CRÉA.
 const projects = fallbackProjects;
 
 const getProjectUrl = (project: (typeof projects)[number]) => `/projets/${project.slug}`;
-
-const creativeLogos = [
-	['01-photoshop.svg', 'Photoshop'],
-	['02-illustrator.svg', 'Illustrator'],
-	['03-indesign.svg', 'InDesign'],
-	['04-figma.svg', 'Figma'],
-	['05-canva.svg', 'Canva'],
-	['06-powerpoint.svg', 'PowerPoint'],
-	['07-word.svg', 'Word'],
-].map(([file, label]) => ({ src: `/projets/Logo-crea/${file}`, label }));
 
 const creativeStructuredData = {
 	'@context': 'https://schema.org',
@@ -92,7 +83,7 @@ const creativeStructuredData = {
 									{project.tags.map((tag) => <span>{tag.label}</span>)}
 								</div>
 								<h3>{project.title}</h3>
-								<span class="project-cta">Voir le projet ↗</span>
+								<span class="project-cta">Voir le projet</span>
 							</div>
 						</a>
 					</article>
@@ -300,7 +291,7 @@ const creativeStructuredData = {
 	   ========================= */
 	.project-grid {
 		display: grid;
-		grid-template-columns: repeat(5, minmax(0, 1fr));
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: .6rem;
 		padding-bottom: 2rem;
 	}
@@ -406,7 +397,7 @@ const creativeStructuredData = {
 		max-width: 100%;
 		min-width: 0;
 		margin: 0.9rem 0 0.4rem;
-		font-size: clamp(1.44rem, 3.06vw, 2.7rem);
+		font-size: clamp(1.296rem, 2.754vw, 2.43rem);
 		line-height: 1.05;
 		color: #fff;
 		overflow-wrap: normal;
@@ -415,6 +406,10 @@ const creativeStructuredData = {
 	}
 
 	.project-cta { margin-top: auto; padding-top: 1rem; color: #fff; font-size: .943rem; }
+	.project-cta::after { display: inline-block; margin-left: .35em; opacity: 0; transform: translate3d(-5px, 0, 0); transition: opacity 220ms ease, transform 220ms cubic-bezier(.16, 1, .3, 1); content: '↗'; }
+	.project-card:hover .project-cta::after,
+	.project-link:focus-visible .project-cta::after,
+	.project-card.is-revealed .project-cta::after { opacity: .85; transform: translate3d(0, 0, 0); }
 
 	@media (max-width: 560px) {
 		.project-grid {
@@ -429,7 +424,7 @@ const creativeStructuredData = {
 
 	@media (hover: none) and (pointer: coarse) {
 		.project-card.is-revealed .project-content { opacity: 1; transform: none; }
-		.project-content h3 { margin: .75rem 0 .5rem; font-size: clamp(1.92rem, 9.6vw, 2.88rem); line-height: 1; letter-spacing: -.045em; white-space: normal; overflow-wrap: normal; word-break: normal; hyphens: none; }
+		.project-content h3 { margin: .75rem 0 .5rem; font-size: clamp(1.728rem, 8.64vw, 2.592rem); line-height: 1; letter-spacing: -.045em; white-space: normal; overflow-wrap: normal; word-break: normal; hyphens: none; }
 		.project-cta { padding-top: 1.25rem; font-size: 1.294rem; font-weight: 600; }
 	}
 </style>

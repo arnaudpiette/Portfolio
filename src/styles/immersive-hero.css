@@ -17,8 +17,11 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
 
 /* Le bloc SEO est superposé à la hero : il n'entre jamais dans le flux ni dans la zone cliquable. */
 .hero-seo { position: absolute; z-index: 5; top: clamp(1.5rem, 3.2vw, 3.5rem); left: clamp(1.5rem, 4vw, 5rem); max-width: min(28rem, calc(100vw - 3rem)); color: rgba(20, 20, 20, .72); pointer-events: none; }
-.hero-seo h1 { margin: 0; font: 500 clamp(.82rem, 1.05vw, 1.05rem)/1.2 Inter, 'Helvetica Neue', Arial, sans-serif; letter-spacing: -.025em; }
-.hero-seo p { margin: .25rem 0 0; font: 400 clamp(.68rem, .8vw, .82rem)/1.35 Inter, 'Helvetica Neue', Arial, sans-serif; letter-spacing: .01em; opacity: .7; }
+.hero-seo h1 { margin: 0; font-family: Inter, 'Helvetica Neue', Arial, sans-serif; letter-spacing: -.025em; }
+.hero-seo__name, .hero-seo__role { display: block; }
+.hero-seo__name { font: 500 clamp(1.066rem, 1.365vw, 1.365rem)/1.2 Inter, 'Helvetica Neue', Arial, sans-serif; }
+.hero-seo__role { margin-top: .1em; font: 500 clamp(.943rem, 1.2075vw, 1.2075rem)/1.2 Inter, 'Helvetica Neue', Arial, sans-serif; }
+.hero-seo p { margin: .25rem 0 0; font: 400 clamp(.782rem, .92vw, .943rem)/1.35 Inter, 'Helvetica Neue', Arial, sans-serif; letter-spacing: .01em; opacity: .7; }
 
 /* Deux liens étendus sur chaque moitié, avec une typographie minimale et éditoriale. */
 .immersive-hero__links { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; min-height: 100svh; opacity: 1; visibility: visible; transition: opacity 760ms cubic-bezier(.16, 1, .3, 1), transform 760ms cubic-bezier(.16, 1, .3, 1), visibility 0s linear; }
@@ -69,8 +72,9 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
   body:has(.immersive-hero) { overflow: auto; }
   /* Le bloc éditorial gagne légèrement en lisibilité sur mobile sans empiéter sur les choix bas de page. */
   .hero-seo { top: 1rem; right: 1rem; left: 1rem; max-width: none; }
-  .hero-seo h1 { font-size: .9rem; }
-  .hero-seo p { font-size: .72rem; }
+  .hero-seo__name { font-size: 1.17rem; }
+  .hero-seo__role { font-size: 1.035rem; }
+  .hero-seo p { font-size: .828rem; }
   .immersive-hero__scene { transform: scale(1.015); }
   .immersive-hero__image { object-position: 54% 50%; }
   .immersive-hero__links, .immersive-hero.is-intro .immersive-hero__links { min-height: 100svh; opacity: 1; visibility: visible; pointer-events: auto; transform: none; }

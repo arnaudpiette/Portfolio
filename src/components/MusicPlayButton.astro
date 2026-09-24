@@ -15,8 +15,11 @@ const audioSrc = theme === 'dev'
 <!-- Contrôle persistant pendant les transitions Astro pour préserver la lecture audio. -->
 <div class:list={['music-player-control', `is-${theme}`, { 'is-fixed': fixed }]} transition:persist={`portfolio-music-${theme}`}>
   <button class="music-play-button" data-audio-src={audioSrc} type="button" aria-label="Lire la musique" aria-pressed="false">
-    <span class="play-icon" aria-hidden="true"></span>
-    <span class="pause-icon" aria-hidden="true"><i></i><i></i></span>
+    <svg class="sound-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path class="sound-speaker" d="M4 10h4l5-4v12l-5-4H4z" />
+      <path class="sound-wave sound-wave-near" d="M16 10.5a4 4 0 0 1 0 3" />
+      <path class="sound-wave sound-wave-far" d="M18.75 8a7.25 7.25 0 0 1 0 8" />
+    </svg>
   </button>
 </div>
 
@@ -87,13 +90,11 @@ const audioSrc = theme === 'dev'
   .music-play-button:focus-visible { outline: 3px solid #ff8a5b; outline-offset: 4px; }
   .is-creative { color: #0000FF; }
   .is-dev { color: #0000FF; }
-  .play-icon { width: 0; height: 0; margin-left: 2.7px; border-top: 7.2px solid transparent; border-bottom: 7.2px solid transparent; border-left: 11.7px solid #fff; }
-  .pause-icon { display: none; gap: 4.5px; }
-  .pause-icon i { display: block; width: 3.6px; height: 14.4px; border-radius: 2px; background: #fff; }
+  .sound-icon { width: 21px; height: 21px; fill: none; stroke: #fff; stroke-width: 1.55; stroke-linecap: round; stroke-linejoin: round; }
+  .sound-wave { opacity: .4; transition: opacity .2s ease, stroke-width .2s ease; }
   .is-creative .music-play-button { background: #0000FF; }
   .is-dev .music-play-button { background: #fff; }
-  .is-dev .play-icon { border-left-color: #0000FF; }
-  .is-dev .pause-icon i { background: #0000FF; }
-  .music-play-button.is-playing .play-icon { display: none; }
-  .music-play-button.is-playing .pause-icon { display: flex; }
+  .is-dev .sound-icon { stroke: #0000FF; }
+  .music-play-button.is-playing .sound-wave { opacity: 1; stroke-width: 1.8; }
+  @media (prefers-reduced-motion: reduce) { .sound-wave { transition: none; } }
 </style>
