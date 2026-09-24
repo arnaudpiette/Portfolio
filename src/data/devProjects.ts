@@ -1,7 +1,7 @@
 export interface DevProjectImage {
   src: string;
   alt: string;
-  type?: 'cover' | 'desktop' | 'mobile' | 'architecture' | 'document';
+  type?: 'cover' | 'desktop' | 'mobile' | 'architecture' | 'document' | 'screenshot';
 }
 
 // Décrit les données nécessaires à l'affichage d'une carte projet DEV.
@@ -16,6 +16,8 @@ export interface DevProject {
   filters: string[];
   // Visuel de synthèse utilisé par la carte de la page DEV.
   cover?: DevProjectImage;
+  // Visuel de carte distinct lorsque la fiche conserve un visuel de synthèse différent.
+  cardCover?: DevProjectImage;
   // Visuels éditoriaux complémentaires réservés à la fiche projet.
   gallery?: DevProjectImage[];
   // Champs éditoriaux optionnels prévus pour les futures études de cas.
@@ -287,6 +289,13 @@ export const devProjects: DevProject[] = [
     // Fiche back-end du projet OpenClassrooms de référencement et notation de livres.
     slug: 'dev-web-livres',
     cover: { src: '/projets/dev/mon-vieux-grimoire/cover.svg', alt: 'Architecture backend de Mon Vieux Grimoire avec API Express, JWT et MongoDB', type: 'architecture' },
+    cardCover: { src: '/projets/dev/mon-vieux-grimoire/home.webp', alt: 'Page d’accueil de Mon Vieux Grimoire avec la liste des livres', type: 'document' },
+    gallery: [
+      { src: '/projets/dev/mon-vieux-grimoire/home.webp', alt: 'Page d’accueil de Mon Vieux Grimoire avec la liste des livres', type: 'screenshot' },
+      { src: '/projets/dev/mon-vieux-grimoire/add-book.webp', alt: 'Formulaire d’ajout d’un livre dans Mon Vieux Grimoire', type: 'screenshot' },
+      { src: '/projets/dev/mon-vieux-grimoire/signup.webp', alt: 'Écran de connexion et d’inscription de Mon Vieux Grimoire', type: 'screenshot' },
+      { src: '/projets/dev/mon-vieux-grimoire/book-detail.webp', alt: 'Fiche détaillée d’un livre dans Mon Vieux Grimoire', type: 'screenshot' },
+    ],
     name: 'Mon Vieux Grimoire',
     description: 'API REST sécurisée avec Node.js, Express et MongoDB pour gérer des livres et leurs utilisateurs.',
     url: 'https://github.com/arnaudpiette/Dev-Web-livres',

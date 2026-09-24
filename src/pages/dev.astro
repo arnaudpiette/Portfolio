@@ -56,7 +56,7 @@ const devStructuredData = {
             <!-- La carte mène vers la fiche interne ; GitHub reste disponible sur cette fiche. -->
             <a href={`/dev/projets/${project.slug}`} aria-label={`Voir la fiche projet ${project.name}`}>
               <div class="project-visual">
-                {project.cover && <img class:list={['project-cover', `project-cover-${project.cover.type ?? 'cover'}`]} src={project.cover.src} alt={project.cover.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />}
+                {(project.cardCover ?? project.cover) && <img class:list={['project-cover', `project-cover-${(project.cardCover ?? project.cover)?.type ?? 'cover'}`]} src={(project.cardCover ?? project.cover)?.src} alt={(project.cardCover ?? project.cover)?.alt} loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />}
                 <span>{String(index + 1).padStart(2, '0')}</span>
                 {!project.cover && <span class="repo-mark">&lt;/&gt;</span>}
               </div>
