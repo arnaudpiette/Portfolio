@@ -109,6 +109,8 @@ export const devProjects: DevProject[] = [
       { src: '/projets/dev/smokonomy/calcul-objectifs.webp', alt: 'Écran mobile de Smokonomy proposant un objectif à financer après le calcul du budget cigarettes', type: 'mobile' },
       { src: '/projets/dev/smokonomy/calcul-consommation.webp', alt: 'Écran mobile de Smokonomy permettant de renseigner la consommation et la marque de cigarettes', type: 'mobile' },
       { src: '/projets/dev/smokonomy/explorer.webp', alt: 'Écran Explorer mobile de Smokonomy avec une suggestion de voyage finançable', type: 'mobile' },
+      { src: '/projets/dev/smokonomy/dashboard.webp', alt: 'Tableau de bord Explorer mobile de Smokonomy avec une suggestion de voyage', type: 'mobile' },
+      { src: '/projets/dev/smokonomy/explorer-detail.webp', alt: 'Détail mobile d’une suggestion de voyage dans Smokonomy', type: 'mobile' },
     ],
     projectType: 'Projet personnel — sensibilisation à l’arrêt du tabac',
     // Titre de fiche spécifique à l’application personnelle Smokonomy.
@@ -411,8 +413,11 @@ export const devProjects: DevProject[] = [
     stack: ['Gestion de projet', 'Kanban', 'Spécifications techniques'],
     filters: ['gestion-projet'],
     featured: true,
-    cover: { src: '/projets/dev/qwenta/cover.webp', alt: 'Livrables de gestion de projet Menu Maker by Qwenta', type: 'document' },
-    gallery: [{ src: '/projets/dev/qwenta/detail-01.webp', alt: 'Spécifications techniques du projet Menu Maker by Qwenta', type: 'document' }],
+    cover: { src: '/projets/dev/qwenta/cover.webp', alt: 'Page d’accueil de Menu Maker by Qwenta', type: 'document' },
+    gallery: [
+      { src: '/projets/dev/qwenta/detail-01.webp', alt: 'Interface Qwenta de création de menu avec ajout de plats', type: 'desktop' },
+      { src: '/projets/dev/qwenta/detail-02.webp', alt: 'Interface Qwenta de personnalisation typographique d’un menu', type: 'desktop' },
+    ],
     projectType: 'Cadrage et gestion de projet',
     seoTitle: 'Menu Maker by Qwenta — Gestion de projet web — Arnaud Piette',
     context: 'Menu Maker est un projet de cadrage et de planification d’une application permettant à des restaurateurs de créer et gérer leurs menus en ligne. L’objectif n’était pas de développer l’application complète, mais de préparer sa réalisation en définissant les besoins, les fonctionnalités, les tâches, les choix techniques et l’organisation du projet.',
