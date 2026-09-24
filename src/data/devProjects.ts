@@ -103,6 +103,13 @@ export const devProjects: DevProject[] = [
     stack: ['TypeScript', 'React Native', 'Expo', 'Expo Router', 'Zustand', 'AsyncStorage', 'Supabase', 'Jest'],
     filters: ['front-end', 'react', 'typescript'],
     featured: true,
+    cover: { src: '/projets/dev/smokonomy/cover.webp', alt: 'Écran d’accueil mobile de Smokonomy présentant le calcul du budget cigarettes', type: 'mobile' },
+    gallery: [
+      { src: '/projets/dev/smokonomy/sos.webp', alt: 'Écran SOS mobile de Smokonomy montrant la valeur récupérée en évitant une cigarette', type: 'mobile' },
+      { src: '/projets/dev/smokonomy/calcul-objectifs.webp', alt: 'Écran mobile de Smokonomy proposant un objectif à financer après le calcul du budget cigarettes', type: 'mobile' },
+      { src: '/projets/dev/smokonomy/calcul-consommation.webp', alt: 'Écran mobile de Smokonomy permettant de renseigner la consommation et la marque de cigarettes', type: 'mobile' },
+      { src: '/projets/dev/smokonomy/explorer.webp', alt: 'Écran Explorer mobile de Smokonomy avec une suggestion de voyage finançable', type: 'mobile' },
+    ],
     projectType: 'Projet personnel — sensibilisation à l’arrêt du tabac',
     // Titre de fiche spécifique à l’application personnelle Smokonomy.
     seoTitle: 'Smokonomy — Application web — Arnaud Piette',

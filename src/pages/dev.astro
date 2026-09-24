@@ -11,6 +11,15 @@ import PortfolioHeader from '../components/PortfolioHeader.astro';
 import PortfolioOverlays from '../components/PortfolioOverlays.astro';
 import PortfolioSignature from '../components/PortfolioSignature.astro';
 
+const devStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Portfolio Développement web — Arnaud Piette',
+  url: 'https://arnaudpiette.com/dev',
+  description: 'Portfolio développement web d’Arnaud Piette : projets front-end et back-end en JavaScript, React, Node.js, API REST, performance et accessibilité.',
+  creator: { '@id': 'https://arnaudpiette.com/#person' },
+};
+
 ---
 
 <!-- Page DEV : header, filtres, repositories GitHub et overlays. -->
@@ -18,6 +27,9 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
   title="Arnaud Piette — Développeur web Front-end & Back-end"
   description="Portfolio développement web d’Arnaud Piette : projets front-end et back-end en JavaScript, React, Node.js, API REST, performance et accessibilité."
   pageTransition="dev"
+  ogImage="/projets/dev/noon/cover.webp"
+  ogImageAlt="Projet Noon du portfolio développement web d’Arnaud Piette"
+  structuredData={devStructuredData}
 >
     <PortfolioHeader mode="dev" headingLevel="p" />
 
@@ -174,10 +186,10 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
   .project-content { position: absolute; z-index: 2; inset: 0; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(1rem,2vw,1.5rem); background: #0000FF; color: #fff; opacity: 0; transform: translateY(12px); transition: opacity .25s ease, transform .25s ease; }
   .project-card:hover .project-content, .project-card > a:focus-visible .project-content { opacity: 1; transform: none; }
   .project-tags { display: flex; flex-wrap: wrap; gap: .35rem .75rem; }
-  .project-tags span { color: #9af57f; font-size: clamp(.78rem,1.1vw,.9rem); text-transform: uppercase; letter-spacing: .14em; }
+  .project-tags span { color: #9af57f; font-size: clamp(.702rem,.99vw,.81rem); text-transform: uppercase; letter-spacing: .14em; }
   h3 { max-width: 100%; min-width: 0; margin: .9rem 0 .4rem; font-size: clamp(1.44rem,3.06vw,2.7rem); line-height: 1.05; overflow-wrap: normal; word-break: normal; hyphens: none; }
   .project-content p { margin: 0; }
-  .github-link { margin-top: auto; padding-top: 1rem; color: #fff; font-size: .82rem; }
+  .github-link { margin-top: auto; padding-top: 1rem; color: #fff; font-size: .943rem; }
   footer { padding-bottom: 2.5rem; }
   @media (max-width: 1100px) { .project-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } .filters { grid-template-columns: repeat(5,minmax(0,1fr)); } }
   @media (max-width: 600px) { .filters { grid-template-columns: repeat(3,minmax(0,1fr)); } }
@@ -186,6 +198,6 @@ import PortfolioSignature from '../components/PortfolioSignature.astro';
   @media (hover: none) and (pointer: coarse) {
     .project-card.is-revealed .project-content { opacity: 1; transform: none; }
     .project-content h3 { margin: .75rem 0 .5rem; font-size: clamp(1.92rem,9.6vw,2.88rem); line-height: 1; letter-spacing: -.045em; white-space: normal; overflow-wrap: normal; word-break: normal; hyphens: none; }
-    .github-link { padding-top: 1.25rem; font-size: 1.125rem; font-weight: 600; }
+    .github-link { padding-top: 1.25rem; font-size: 1.294rem; font-weight: 600; }
   }
 </style>

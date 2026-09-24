@@ -24,6 +24,15 @@ const creativeLogos = [
 	['07-word.svg', 'Word'],
 ].map(([file, label]) => ({ src: `/projets/Logo-crea/${file}`, label }));
 
+const creativeStructuredData = {
+	'@context': 'https://schema.org',
+	'@type': 'CollectionPage',
+	name: 'Portfolio Direction artistique — Arnaud Piette',
+	url: 'https://arnaudpiette.com/creative',
+	description: 'Portfolio créatif d’Arnaud Piette : direction artistique, identité de marque, publicité, graphisme, webdesign, UX/UI et illustration.',
+	creator: { '@id': 'https://arnaudpiette.com/#person' },
+};
+
 ---
 
 <!-- Page CRÉA : header, filtres, grille de projets et overlays. -->
@@ -31,6 +40,9 @@ const creativeLogos = [
 	title="Arnaud Piette — Direction artistique, Graphisme & Webdesign"
 	description="Portfolio créatif d’Arnaud Piette : direction artistique, identité de marque, publicité, graphisme, webdesign, UX/UI et illustration."
 	pageTransition="creative"
+	ogImage="/projets/call-of-light/cover.jpg"
+	ogImageAlt="Projet Call of Light du portfolio créatif d’Arnaud Piette"
+	structuredData={creativeStructuredData}
 >
 		<!-- En-tête principal du portfolio. -->
 		<PortfolioHeader mode="creative" headingLevel="p" />
@@ -384,7 +396,7 @@ const creativeLogos = [
 
 	.project-tags span {
 		margin: 0;
-		font-size: clamp(.78rem, 1.1vw, .9rem);
+		font-size: clamp(.702rem, .99vw, .81rem);
 		text-transform: uppercase;
 		letter-spacing: 0.14em;
 		color: #ff8a5b;
@@ -402,7 +414,7 @@ const creativeLogos = [
 		hyphens: none;
 	}
 
-	.project-cta { margin-top: auto; padding-top: 1rem; color: #fff; font-size: 0.82rem; }
+	.project-cta { margin-top: auto; padding-top: 1rem; color: #fff; font-size: .943rem; }
 
 	@media (max-width: 560px) {
 		.project-grid {
@@ -418,6 +430,6 @@ const creativeLogos = [
 	@media (hover: none) and (pointer: coarse) {
 		.project-card.is-revealed .project-content { opacity: 1; transform: none; }
 		.project-content h3 { margin: .75rem 0 .5rem; font-size: clamp(1.92rem, 9.6vw, 2.88rem); line-height: 1; letter-spacing: -.045em; white-space: normal; overflow-wrap: normal; word-break: normal; hyphens: none; }
-		.project-cta { padding-top: 1.25rem; font-size: 1.125rem; font-weight: 600; }
+		.project-cta { padding-top: 1.25rem; font-size: 1.294rem; font-weight: 600; }
 	}
 </style>

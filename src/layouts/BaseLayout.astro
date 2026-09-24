@@ -7,16 +7,25 @@ interface Props {
   title: string;
   description?: string;
   pageTransition?: 'home' | 'creative' | 'dev';
+  ogImage?: string;
+  ogImageAlt?: string;
+  ogType?: 'website' | 'article';
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 const {
   title,
   description = '',
   pageTransition,
+  ogImage,
+  ogImageAlt = '',
+  ogType = 'website',
+  structuredData,
 } = Astro.props;
 
 const canonicalPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
 const canonicalURL = new URL(canonicalPath, Astro.site ?? Astro.url);
+const socialImageURL = ogImage ? new URL(ogImage, canonicalURL).href : undefined;
 ---
 
 <!-- Squelette HTML partagé par les pages principales du portfolio. -->
@@ -44,7 +53,17 @@ const canonicalURL = new URL(canonicalPath, Astro.site ?? Astro.url);
     {description && (
       <meta property="og:description" content={description} />
     )}
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalURL.href} />
+    {socialImageURL && <meta property="og:image" content={socialImageURL} />}
+    {socialImageURL && ogImageAlt && <meta property="og:image:alt" content={ogImageAlt} />}
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {socialImageURL && <meta name="twitter:image" content={socialImageURL} />}
+    {socialImageURL && ogImageAlt && <meta name="twitter:image:alt" content={ogImageAlt} />}
+    {structuredData && <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />}
 
     <!-- Active les transitions Astro entre les pages utilisant ce layout. -->
     <ClientRouter fallback="swap" />

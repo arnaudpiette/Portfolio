@@ -3,6 +3,27 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 // Isole l'expérience immersive de la page d'accueil du reste des routes du portfolio.
 import ImmersiveHero from '../components/home/ImmersiveHero.astro';
+
+const siteURL = 'https://arnaudpiette.com';
+const homepageStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${siteURL}/#person`,
+    name: 'Arnaud Piette',
+    url: `${siteURL}/`,
+    jobTitle: 'Directeur artistique et développeur web',
+    sameAs: ['https://github.com/arnaudpiette'],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${siteURL}/#website`,
+    name: 'Portfolio Arnaud Piette',
+    url: `${siteURL}/`,
+    creator: { '@id': `${siteURL}/#person` },
+  },
+];
 ---
 
 <!-- Page d'entrée immersive conservant les métadonnées SEO et la navigation Astro communes. -->
@@ -10,6 +31,9 @@ import ImmersiveHero from '../components/home/ImmersiveHero.astro';
   title="Arnaud Piette — Directeur artistique & développeur web"
   description="Portfolio d’Arnaud Piette, directeur artistique et développeur web : direction artistique, design digital et projets de développement web."
   pageTransition="home"
+  ogImage="/projets/call-of-light/cover.jpg"
+  ogImageAlt="Aperçu du portfolio d’Arnaud Piette"
+  structuredData={homepageStructuredData}
 >
   <!-- Le fallback sans JavaScript reste dans le head : style dans noscript est valide à cet emplacement. -->
   <Fragment slot="head">

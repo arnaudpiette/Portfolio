@@ -18,12 +18,27 @@ export function getStaticPaths() {
 // Récupère les données pré-générées de la fiche projet courante.
 const { project } = Astro.props as { project: DevProject };
 const projectImages = [project.cover, ...(project.gallery ?? [])].filter((image): image is NonNullable<typeof image> => Boolean(image));
+const socialImage = project.cover?.src ?? '/projets/dev/noon/cover.webp';
+const projectStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.name,
+  description: project.description,
+  url: new URL(`/dev/projets/${project.slug}`, Astro.site ?? Astro.url).href,
+  image: new URL(socialImage, Astro.site ?? Astro.url).href,
+  creator: { '@id': 'https://arnaudpiette.com/#person' },
+  keywords: project.stack.join(', '),
+};
 ---
 
 <!-- Fiche DEV générique : les sections éditoriales restent absentes sans donnée associée. -->
 <BaseLayout
   title={project.seoTitle ?? `${project.name} — Projet développement web — Arnaud Piette`}
   description={project.description}
+  ogImage={socialImage}
+  ogImageAlt={project.cover?.alt ?? 'Aperçu du portfolio développement web d’Arnaud Piette'}
+  ogType="article"
+  structuredData={projectStructuredData}
 >
   <!-- Le libellé de marque n'est pas un titre afin de conserver un seul H1 de page. -->
   <PortfolioHeader mode="dev" headingLevel="p" />
@@ -312,6 +327,7 @@ const projectImages = [project.cover, ...(project.gallery ?? [])].filter((image)
   .project-image-trigger:focus-visible { outline: 3px solid #9af57f; outline-offset: -5px; }
   .project-media img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .project-media-cover { width: min(100%, 920px); aspect-ratio: 16 / 10; margin: clamp(1.75rem, 5vw, 4rem) 0 0; }
+  .project-media-cover.project-media-mobile { width: min(100%, 390px); aspect-ratio: 390 / 844; }
   .project-media-architecture { padding: clamp(1rem, 3vw, 2rem); }
   .project-media-architecture img { object-fit: contain; }
   .project-media-document img { object-position: center top; }

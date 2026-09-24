@@ -18,12 +18,27 @@ export function getStaticPaths() {
 const { project } = Astro.props;
 const projectVideos = project.videos ?? (project.video ? [project.video] : []);
 const isIbm = project.slug === 'ibm';
+const socialImage = project.cover ?? '/projets/call-of-light/cover.jpg';
+const projectStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.title,
+  description: project.description,
+  url: new URL(`/projets/${project.slug}`, Astro.site ?? Astro.url).href,
+  image: new URL(socialImage, Astro.site ?? Astro.url).href,
+  creator: { '@id': 'https://arnaudpiette.com/#person' },
+  keywords: project.tags.map((tag) => tag.label).join(', '),
+};
 ---
 
 <!-- Page détail dans le layout partagé, avec son menu mobile propre. -->
 <BaseLayout
   title={`${project.title} — Arnaud Piette`}
   description={project.description}
+  ogImage={socialImage}
+  ogImageAlt={project.cover ? `Aperçu du projet ${project.title}` : 'Aperçu du portfolio d’Arnaud Piette'}
+  ogType="article"
+  structuredData={projectStructuredData}
 >
     <header>
       <a class="back-link" href="/creative"><span class="chevron" aria-hidden="true"></span>Retour</a>
