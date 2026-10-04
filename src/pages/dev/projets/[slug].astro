@@ -59,7 +59,16 @@ const projectStructuredData = {
     {project.cover && (
       <figure class:list={['project-media', 'project-media-cover', `project-media-${project.cover.type ?? 'cover'}`]}>
         <button class="project-image-trigger" type="button" data-dev-image-open="0" aria-label={`Agrandir : ${project.cover.alt}`}>
-          <img src={project.cover.src} alt={project.cover.alt} decoding="async" />
+          <picture>
+              {project.cover.mobileSrc && (
+                <source media="(max-width: 767px)" srcset={project.cover.mobileSrc} />
+              )}
+              <img
+                src={project.cover.src}
+                alt={project.cover.alt}
+                decoding="async"
+              />
+            </picture>
         </button>
       </figure>
     )}
@@ -109,7 +118,17 @@ const projectStructuredData = {
           {project.gallery.map((image, index) => (
             <figure class:list={['project-media', `project-media-${image.type ?? 'desktop'}`]}>
               <button class="project-image-trigger" type="button" data-dev-image-open={project.cover ? index + 1 : index} aria-label={`Agrandir : ${image.alt}`}>
-                <img src={image.src} alt={image.alt} loading="lazy" decoding="async" />
+                <picture>
+                    {image.mobileSrc && (
+                      <source media="(max-width: 767px)" srcset={image.mobileSrc} />
+                    )}
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </picture>
               </button>
             </figure>
           ))}

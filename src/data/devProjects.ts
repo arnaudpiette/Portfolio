@@ -1,5 +1,6 @@
 export interface DevProjectImage {
   src: string;
+    mobileSrc?: string;
   alt: string;
   type?: 'cover' | 'desktop' | 'mobile' | 'architecture' | 'document' | 'screenshot';
 }
@@ -369,9 +370,143 @@ export const devProjects: DevProject[] = [
     improvements: ['Connecter l’interface à une API réelle.', 'Ajouter des tests automatisés.', 'Améliorer encore la gestion des états de chargement et d’erreur.', 'Poursuivre les optimisations d’accessibilité.'],
   },
   {
-    slug: 'portfolio', name: 'Portfolio', description: 'Le code source de ce portfolio Creative & DEV construit avec Astro.', url: 'https://github.com/arnaudpiette/Portfolio', stack: ['Astro', 'JavaScript', 'CSS'], filters: ['front-end', 'javascript', 'css', 'vite'], featured: false,
-    cover: { src: '/projets/dev/portfolio/cover.webp', alt: 'Page d’accueil actuelle du portfolio Astro', type: 'cover' },
-    gallery: [{ src: '/projets/dev/portfolio/detail-01.webp', alt: 'Page projets DEV du portfolio Astro', type: 'desktop' }],
+    // Projet final OpenClassrooms : portfolio professionnel responsive.
+    slug: 'portfolio',
+    name: 'Portfolio',
+    description: 'Portfolio professionnel responsive réunissant mes univers Direction Artistique et Développement Web, construit avec Astro.',
+    url: 'https://github.com/arnaudpiette/Portfolio',
+    stack: ['Astro', 'JavaScript', 'CSS', 'HTML5', 'Canvas API', 'Vite', 'SEO', 'Accessibilité', 'Git'],
+    filters: ['front-end', 'javascript', 'css', 'vite'],
+    featured: false,
+
+    cover: {
+      src: '/projets/dev/portfolio/portfolio-homepage-crea-desktop.webp',
+      mobileSrc: '/projets/dev/portfolio/portfolio-homepage-crea-mobile.webp',
+      alt: 'Homepage du portfolio avec l’entrée CRÉA active',
+      type: 'cover',
+    },
+
+    gallery: [
+      {
+        src: '/projets/dev/portfolio/portfolio-homepage-dev-desktop.webp',
+        mobileSrc: '/projets/dev/portfolio/portfolio-homepage-dev-mobile.webp',
+        alt: 'Homepage du portfolio avec l’entrée DEV active',
+        type: 'desktop',
+      },
+      {
+        src: '/projets/dev/portfolio/portfolio-creative-page-desktop.webp',
+        mobileSrc: '/projets/dev/portfolio/portfolio-creative-page-mobile.webp',
+        alt: 'Page principale du portfolio Creative',
+        type: 'desktop',
+      },
+      {
+        src: '/projets/dev/portfolio/portfolio-dev-page-desktop.webp',
+        mobileSrc: '/projets/dev/portfolio/portfolio-dev-page-mobile.webp',
+        alt: 'Page principale du portfolio Développement Web',
+        type: 'desktop',
+      },
+      {
+        src: '/projets/dev/portfolio/portfolio-project-nina-carducci-desktop.webp',
+        mobileSrc: '/projets/dev/portfolio/portfolio-project-nina-carducci-mobile.webp',
+        alt: 'Fiche projet DEV Nina Carducci dans le portfolio',
+        type: 'desktop',
+      },
+      {
+        src: '/projets/dev/portfolio/portfolio-project-lavie-desktop.webp',
+        mobileSrc: '/projets/dev/portfolio/portfolio-project-lavie-mobile.webp',
+        alt: 'Fiche projet Creative LaVIE dans le portfolio',
+        type: 'desktop',
+      },
+    ],
+
+    context: 'Ce portfolio constitue le projet final de ma formation Développeur Web OpenClassrooms. Le brief demandait de concevoir et publier un portfolio professionnel responsive permettant de présenter mes compétences et plusieurs projets réalisés pendant la formation. J’ai choisi d’aller plus loin en construisant une identité commune à mes deux métiers : directeur artistique et développeur web.',
+
+    objectives: [
+      'Présenter clairement mon parcours, mes compétences et mes projets de développement web.',
+      'Mettre en valeur plusieurs projets réalisés pendant la formation OpenClassrooms.',
+      'Réunir mes univers Direction Artistique et Développement Web dans un même site.',
+      'Créer une expérience responsive adaptée au desktop, à la tablette et au mobile.',
+      'Développer une architecture simple à maintenir et à enrichir.',
+      'Travailler le référencement naturel, l’accessibilité et les performances.',
+      'Mettre en ligne une version publique utilisable comme véritable portfolio professionnel.',
+    ],
+
+    architecture: [
+      'Homepage immersive',
+      'Portfolio Creative',
+      'Portfolio DEV',
+      'Routes projets dynamiques',
+      'Composants Astro réutilisables',
+      'Données projets centralisées',
+    ],
+
+    architectureDescription: 'L’architecture repose sur Astro et trois espaces principaux : la homepage immersive à la racine, /creative pour mon travail de direction artistique et /dev pour mes projets de développement web. Les projets DEV sont centralisés dans un fichier de données TypeScript puis leurs fiches sont générées automatiquement par une route dynamique Astro avec getStaticPaths(). Les éléments communs du site sont isolés dans des composants réutilisables afin de faciliter leur maintenance.',
+
+    features: [
+      'Homepage immersive reliant les univers CRÉA et DEV.',
+      'Séquence de 19 images animée dans un canvas.',
+      'Interaction desktop pilotée par le pointeur.',
+      'Animation automatique adaptée aux tablettes et smartphones.',
+      'Interface mobile spécifique en trois blocs superposés au hero.',
+      'Pages Creative et DEV visuellement distinctes mais cohérentes.',
+      'Fiches projets DEV générées à partir de données centralisées.',
+      'Navigation responsive.',
+      'Gestion de prefers-reduced-motion.',
+      'Métadonnées SEO et structure HTML sémantique.',
+    ],
+
+    challenge: 'Le principal défi était de concevoir une homepage suffisamment forte graphiquement pour représenter mon métier de directeur artistique sans sacrifier les exigences d’un projet de développement web : performances, responsive, accessibilité, référencement et maintenabilité. Il fallait également faire fonctionner une animation immersive sur desktop, tablette et mobile malgré des modes d’interaction différents.',
+
+    solution: 'J’ai choisi Astro afin de générer principalement du HTML statique et de limiter le JavaScript aux interactions nécessaires. Le hero utilise une séquence de 19 frames rendues dans un canvas. Sur desktop, l’animation répond à l’interaction du pointeur ; sur tablette et mobile, elle fonctionne automatiquement. Une image de fallback est affichée avant le premier rendu valide du canvas afin d’éviter les flashs de chargement. Les projets sont centralisés dans des données TypeScript et les pages sont générées automatiquement afin de conserver une architecture cohérente et extensible.',
+
+    performance: [
+      'Génération statique des pages avec Astro.',
+      'JavaScript limité aux interactions nécessitant réellement un comportement client.',
+      'Préchargement des ressources critiques du hero.',
+      'Fallback immédiat avant affichage du canvas.',
+      'Premier dessin valide avant révélation de l’animation.',
+      'Pause de l’animation lorsque le hero sort du viewport.',
+      'Pause lorsque l’onglet du navigateur est masqué.',
+      'Optimisation progressive des images et des ressources.',
+    ],
+
+    seo: [
+      'Balises title et meta description.',
+      'Structure HTML sémantique.',
+      'URLs propres.',
+      'Canonical.',
+      'Sitemap XML.',
+      'Descriptions textuelles des projets.',
+      'Hiérarchie cohérente des titres.',
+      'Contenu principal disponible indépendamment des effets visuels.',
+    ],
+
+    accessibility: [
+      'Navigation basée sur de vrais liens HTML.',
+      'Navigation clavier.',
+      'États focus visibles.',
+      'Textes alternatifs associés aux images.',
+      'Gestion de prefers-reduced-motion.',
+      'Contrôle des contrastes avec des outils comme WAVE.',
+      'Contenu utilisable même lorsque l’animation est désactivée.',
+    ],
+
+    results: [
+      'Un portfolio professionnel réunissant Direction Artistique et Développement Web dans une seule architecture.',
+      'Une homepage immersive adaptée aux différents types d’écrans et d’interactions.',
+      'Un système de données permettant de créer et maintenir facilement les fiches projets DEV.',
+      'Un site statique performant et adapté au référencement naturel.',
+      'Une base évolutive pouvant accueillir progressivement de nouveaux projets et contenus.',
+    ],
+
+    improvements: [
+      'Ajouter une CI GitHub exécutant automatiquement le build et les contrôles qualité.',
+      'Ajouter davantage de tests automatisés sur les interactions du hero.',
+      'Continuer les audits Lighthouse et WAVE.',
+      'Poursuivre l’optimisation du poids des médias.',
+      'Automatiser davantage la création des fiches projet.',
+      'Continuer les tests responsive sur davantage d’appareils physiques.',
+    ],
   },
   {
     // Fiche d'optimisation front-end du site de photographe Nina Carducci.
