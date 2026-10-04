@@ -211,7 +211,7 @@ export const fallbackProjects: ProjectItem[] = [
   },
   {
     slug: 'cet-55-ans',
-    title: 'CET 55 ans',
+    title: 'CET 55ans',
     tags: [{ id: 'da', label: 'DA' }, { id: 'illustration', label: 'Illustration' }, { id: 'print', label: 'Print' }],
     subtitle: 'Identité anniversaire',
     description: 'Création d’une identité visuelle et d’un magazine hors-série pour célébrer les 55 ans du CET.',
@@ -385,7 +385,7 @@ export const fallbackProjects: ProjectItem[] = [
   },
   {
     slug: 'decathlon-19-secondes-chrono',
-    title: 'Decathlon 19 secondes chrono',
+    title: 'Decathlon 19 sec. chrono',
     isNew: false,
     tags: [
       { id: 'dc', label: 'DC' },

@@ -68,6 +68,13 @@ const socialImageURL = ogImage ? new URL(ogImage, canonicalURL).href : undefined
     <!-- Active les transitions Astro entre les pages utilisant ce layout. -->
     <ClientRouter fallback="swap" />
 
+    {pageTransition === 'home' && (
+      <>
+        <link rel="preload" as="image" href="/images/hero/sequence/hero-sequence-1920/hero-18.webp" fetchpriority="high" />
+        <style is:inline>{`@media (hover: hover) and (pointer: fine) { html, body { background: #e8e8e8; } }`}</style>
+      </>
+    )}
+
     <slot name="head" />
   </head>
 

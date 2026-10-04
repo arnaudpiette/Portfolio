@@ -11,6 +11,15 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
 .immersive-hero__canvas { z-index: 1; display: block; opacity: 0; background: #fff; pointer-events: none; transition: opacity 160ms ease-out; }
 .immersive-hero.has-canvas .immersive-hero__canvas { opacity: 1; }
 .immersive-hero.has-canvas .immersive-hero__image--center { opacity: 0; }
+.immersive-hero.is-canvas-ready .immersive-hero__canvas { opacity: 1; }
+.immersive-hero.is-canvas-ready .immersive-hero__image--center { opacity: 0; }
+
+/* Le handoff desktop commence seulement après le premier dessin canvas valide ; les deux couches se croisent sans exposer le fond blanc. */
+@media (hover: hover) and (pointer: fine) {
+  :root:has(.immersive-hero), body:has(.immersive-hero), .immersive-hero, .immersive-hero__scene, .immersive-hero__canvas { background: #e8e8e8; }
+  .immersive-hero__image--center { transition: opacity 120ms ease-out; }
+  .immersive-hero__canvas { transition-duration: 120ms; }
+}
 
 /* Voile discret pour préserver la lecture sans transformer la photographie en carte. */
 .immersive-hero::before { position: absolute; z-index: 1; inset: 0; background: linear-gradient(90deg, rgba(0, 0, 0, .34), transparent 42%, transparent 58%, rgba(0, 0, 0, .34)); pointer-events: none; content: ''; }
@@ -25,9 +34,6 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
 
 /* Deux liens étendus sur chaque moitié, avec une typographie minimale et éditoriale. */
 .immersive-hero__links { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; min-height: 100svh; opacity: 1; visibility: visible; transition: opacity 760ms cubic-bezier(.16, 1, .3, 1), transform 760ms cubic-bezier(.16, 1, .3, 1), visibility 0s linear; }
-.immersive-hero.is-intro .immersive-hero__links { opacity: 0; visibility: hidden; pointer-events: none; transform: translate3d(0, 12px, 0); }
-.immersive-hero.is-intro .immersive-hero__link--creative { transform: translate3d(-14px, 8px, 0); }
-.immersive-hero.is-intro .immersive-hero__link--dev { transform: translate3d(14px, 8px, 0); }
 .immersive-hero__link { position: relative; display: flex; min-width: 0; padding: clamp(1.5rem, 5vw, 5.5rem); flex-direction: column; justify-content: flex-end; gap: .65rem; color: #fff; text-decoration: none; transition: background-color 240ms ease, opacity 240ms ease, transform 760ms cubic-bezier(.16, 1, .3, 1); }
 .immersive-hero__link--creative { align-items: flex-start; text-align: left; }
 .immersive-hero__link--dev { align-items: flex-end; text-align: right; }
@@ -86,6 +92,49 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
 
 /* Les tablettes tactiles réactivent le déplacement du ressort et bloquent le défilement pendant le scrub horizontal. */
 @media (min-width: 600px) and (min-height: 600px) and (hover: none) and (pointer: coarse) {
+  /*
+   * Tablette uniquement :
+   * composition agrandie d'environ 30 % et davantage éloignée des bords.
+   * Les règles mobile et desktop restent inchangées.
+   */
+  .hero-seo {
+    top: 1.3rem;
+    right: 1.3rem;
+    left: 1.3rem;
+  }
+
+  .hero-seo__name {
+    font-size: 1.521rem;
+  }
+
+  .hero-seo__role {
+    font-size: 1.346rem;
+  }
+
+  .hero-seo p {
+    margin-top: .325rem;
+    font-size: 1.076rem;
+  }
+
+  .immersive-hero__link {
+    padding: 1.95rem;
+    gap: .845rem;
+  }
+
+  .immersive-hero__copy {
+    gap: .845rem;
+  }
+
+  .immersive-hero__word {
+    font-size: clamp(3.445rem, 18.2vw, 5.85rem);
+  }
+
+  .immersive-hero__label {
+    max-width: 10.4rem;
+    font-size: .806rem;
+    letter-spacing: .14em;
+  }
+
   body:has(.immersive-hero.is-touch-scrub) { overflow: hidden; }
   .immersive-hero.is-touch-scrub { touch-action: none; }
   .immersive-hero.is-touch-scrub .immersive-hero__scene { transform: translate3d(var(--hero-x), var(--hero-y), 0) rotateZ(var(--hero-rotation-z)) scale(calc(var(--hero-scale) * var(--hero-exit-scale))); }
@@ -99,3 +148,156 @@ body:has(.immersive-hero) { min-width: 0; margin: 0; overflow: hidden; backgroun
   .immersive-hero__link { transition: none; }
   .immersive-hero__copy::after { display: none; }
 }
+
+/* ===== HOMEPAGE TABLET + MOBILE CARDS ===== */
+
+/*
+ * TABLETTE
+ * DIRECTION ARTISTIQUE reste sur une seule ligne.
+ */
+@media (min-width: 600px) and (min-height: 600px) and (hover: none) and (pointer: coarse) {
+  .immersive-hero__link--creative .immersive-hero__label {
+    max-width: none;
+    white-space: nowrap;
+  }
+}
+
+/*
+ * MOBILE
+ * L'animation reste en arrière-plan.
+ * L'interface devient une colonne de trois cartes :
+ * 1. présentation
+ * 2. CRÉA
+ * 3. DEV
+ */
+@media (max-width: 599px), (max-height: 599px) and (hover: none) and (pointer: coarse) {
+  .immersive-hero {
+    display: grid;
+    box-sizing: border-box;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: .75rem;
+    padding: 1rem;
+  }
+
+  /*
+   * Carte 1 — présentation
+   */
+  .hero-seo {
+    position: relative;
+    top: auto;
+    right: auto;
+    left: auto;
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 1.25rem;
+
+    border: 1px solid rgba(255, 255, 255, .95);
+    border-radius: 1.25rem;
+
+    background: rgba(255, 255, 255, .85);
+  }
+
+  /*
+   * Les cartes restent au-dessus du canvas animé.
+   */
+  .immersive-hero__links,
+  .immersive-hero.is-intro .immersive-hero__links {
+    position: relative;
+    display: grid;
+
+    width: 100%;
+    min-height: 0;
+
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, minmax(0, 1fr));
+    gap: .75rem;
+
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  /*
+   * Cartes 2 et 3 — CRÉA / DEV
+   */
+  .immersive-hero__link {
+    min-height: 0;
+    box-sizing: border-box;
+
+    padding: 1.25rem;
+
+    justify-content: flex-end;
+    align-items: flex-start;
+
+    border: 1px solid rgba(255, 255, 255, .95);
+    border-radius: 1.25rem;
+
+    text-align: left;
+    opacity: 1;
+  }
+
+  .immersive-hero__link--creative {
+    background: rgba(255, 106, 0, .20);
+  }
+
+  .immersive-hero__link--dev {
+    background: rgba(0, 0, 255, .20);
+  }
+
+  .immersive-hero__link--creative,
+  .immersive-hero__link--dev {
+    align-items: flex-start;
+    text-align: left;
+    opacity: 1;
+  }
+
+  .immersive-hero__link--creative .immersive-hero__copy,
+  .immersive-hero__link--dev .immersive-hero__copy {
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .immersive-hero__word {
+    font-size: clamp(2.65rem, 15vw, 4.25rem);
+  }
+
+  .immersive-hero__label {
+    max-width: none;
+    font-size: .68rem;
+    letter-spacing: .12em;
+    white-space: nowrap;
+  }
+
+  /*
+   * Suppression des anciens décalages optiques :
+   * dans les cartes mobiles, les textes sont alignés proprement.
+   */
+  .immersive-hero__label,
+  .immersive-hero__link--creative .immersive-hero__label,
+  .immersive-hero__link--dev .immersive-hero__label {
+    transform: none;
+  }
+
+  .immersive-hero__copy::after {
+    display: none;
+  }
+}
+
+
+/* MOBILE — contenu des cartes CRÉA / DEV agrandi de 50 % */
+@media (max-width: 599px), (max-height: 599px) and (hover: none) and (pointer: coarse) {
+  .immersive-hero__link--creative .immersive-hero__word,
+  .immersive-hero__link--dev .immersive-hero__word {
+    font-size: clamp(3.975rem, 22.5vw, 6.375rem);
+  }
+
+  .immersive-hero__link--creative .immersive-hero__label,
+  .immersive-hero__link--dev .immersive-hero__label {
+    font-size: 1.02rem;
+  }
+}
+
+/* ===== END HOMEPAGE TABLET + MOBILE CARDS ===== */

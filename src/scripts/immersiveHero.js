@@ -7,9 +7,9 @@ const FRAME_COUNT = 37;
 const LAST_FRAME = FRAME_COUNT - 1;
 const CENTER_FRAME = Math.floor(LAST_FRAME / 2);
 const MOBILE_CLICK_FIRST_FRAME = 0;
-const MOBILE_CLICK_FRAME_COUNT = 37;
+const MOBILE_CLICK_FRAME_COUNT = 19;
 const MOBILE_CLICK_LAST_FRAME = MOBILE_CLICK_FRAME_COUNT - 1;
-const MOBILE_CLICK_FRAME_DURATION = 1000 / 12;
+const MOBILE_CLICK_FRAME_DURATION = 1000 / 5;
 
 // Installe une unique boucle RAF après chaque chargement Astro et nettoie l'instance précédente.
 const setupImmersiveHero = () => {
@@ -23,21 +23,26 @@ const setupImmersiveHero = () => {
   const heroLinks = root?.querySelectorAll('.immersive-hero__link');
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const desktopPointer = window.matchMedia('(hover: hover) and (pointer: fine)');
-  const touchTablet = window.matchMedia('(min-width: 600px) and (min-height: 600px) and (hover: none) and (pointer: coarse)');
   if (!(root instanceof HTMLElement) || !(scene instanceof HTMLElement) || !(heroImage instanceof HTMLImageElement) || !(heroCanvas instanceof HTMLCanvasElement)) return;
 
-  // Les préférences de mouvement réduit conservent l'image de repli sans aucun téléchargement de séquence.
-  if (reducedMotion.matches) {
+  const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const constrainedConnection = connection?.saveData || ['slow-2g', '2g'].includes(connection?.effectiveType);
+  // Le média desktop du layout distingue les appareils auto-loop des laptops tactiles avec pointeur fin.
+  const desktopInteractive = desktopPointer.matches;
+  const autoLoopDevice = !desktopInteractive;
+
+  // Les préférences de mouvement réduit et les connexions contraintes conservent l'image de repli sans séquence.
+  if (reducedMotion.matches || constrainedConnection) {
     root.classList.remove('is-intro');
     root.classList.add('is-ready');
     return;
   }
 
-  // Seules les tablettes tactiles conservent le scrub ; les smartphones bouclent exclusivement la séquence de clic.
-  const touchScrubEnabled = touchTablet.matches;
-  if (!desktopPointer.matches && !touchScrubEnabled) {
-    const clickSequenceBase = '/images/hero/sequence/hero_sequence_ready/click';
-    const clickFrameUrls = Array.from({ length: MOBILE_CLICK_FRAME_COUNT }, (_, index) => `${clickSequenceBase}/hero-${String(MOBILE_CLICK_FIRST_FRAME + index).padStart(2, '0')}.webp`);
+  // Les smartphones et tablettes sans pointeur fin lisent la séquence automatiquement.
+  if (autoLoopDevice) {
+    const clickSequenceBase = root.dataset.mobileSequenceBase;
+    if (!clickSequenceBase) return;
+    const clickFrameUrls = Array.from({ length: MOBILE_CLICK_FRAME_COUNT }, (_, index) => `${clickSequenceBase}/hero-${String(MOBILE_CLICK_FIRST_FRAME + index * 2).padStart(2, '0')}.webp`);
     const mobileCanvasContext = heroCanvas.getContext('2d', { alpha: false, desynchronized: true });
     const mobileFrames = [];
     let mobileFrameId = 0;
@@ -45,9 +50,23 @@ const setupImmersiveHero = () => {
     let mobileCanvasWidth = 0;
     let mobileCanvasHeight = 0;
     let mobileDestroyed = false;
+    let mobileIsVisible = true;
+    let mobileDocumentVisible = !document.hidden;
+    let mobilePausedAt = mobileDocumentVisible ? 0 : performance.now();
+    let mobilePausedDuration = 0;
+    const getMobileAnimationTime = (now) => now - mobilePausedDuration - (mobilePausedAt ? now - mobilePausedAt : 0);
 
     // Réutilise le pipeline fetch → blob → ImageBitmap, sans créer de ressource dans la boucle d'animation.
-    const loadMobileClickFrame = async (src) => {
+    const loadMobileClickFrame = async (src, frameIndex) => {
+      if (frameIndex === 0 && heroImage.currentSrc.endsWith(clickFrameUrls[0])) {
+        if (typeof heroImage.decode === 'function') {
+          try { await heroImage.decode(); } catch { /* The browser has already retained the fallback. */ }
+        }
+        if (typeof window.createImageBitmap === 'function') {
+          try { return await window.createImageBitmap(heroImage); } catch { /* Use the element below. */ }
+        }
+        return heroImage;
+      }
       if (typeof window.createImageBitmap === 'function') {
         const response = await fetch(src);
         if (!response.ok) throw new Error(`Chargement impossible : ${response.status}`);
@@ -69,7 +88,7 @@ const setupImmersiveHero = () => {
     // Ajuste la résolution uniquement au redimensionnement ; aucun calcul de layout n'a lieu dans la RAF.
     const resizeMobileCanvas = () => {
       if (!mobileCanvasContext) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       mobileCanvasWidth = Math.max(1, Math.round(window.innerWidth * dpr));
       mobileCanvasHeight = Math.max(1, Math.round(window.innerHeight * dpr));
       if (heroCanvas.width === mobileCanvasWidth && heroCanvas.height === mobileCanvasHeight) return;
@@ -103,31 +122,61 @@ const setupImmersiveHero = () => {
       displayedMobileFrameIndex = frameIndex;
     };
 
-    // Convertit la progression temporelle en lecture aller-retour pour éviter toute coupure entre la dernière et la première frame.
+    // Convertit la progression temporelle en boucle continue 00 → 36 → 00 à cinq images par seconde.
     const getMobileClickFrameIndex = (timestamp) => {
-      const cycleLength = MOBILE_CLICK_LAST_FRAME * 2;
-      const cyclePosition = Math.floor(timestamp / MOBILE_CLICK_FRAME_DURATION) % cycleLength;
-      return cyclePosition <= MOBILE_CLICK_LAST_FRAME ? cyclePosition : cycleLength - cyclePosition;
+      return Math.floor(timestamp / MOBILE_CLICK_FRAME_DURATION) % (MOBILE_CLICK_LAST_FRAME + 1);
     };
 
     // Une seule RAF mobile sélectionne et dessine une frame déjà décodée de la boucle de clic.
     const tickMobileClickLoop = (now) => {
-      if (mobileDestroyed) return;
-      drawMobileClickFrame(getMobileClickFrameIndex(now));
+      if (mobileDestroyed || !mobileIsVisible || !mobileDocumentVisible) {
+        mobileFrameId = 0;
+        return;
+      }
+      drawMobileClickFrame(getMobileClickFrameIndex(getMobileAnimationTime(now)));
       mobileFrameId = window.requestAnimationFrame(tickMobileClickLoop);
     };
+
+    const pauseMobileAnimation = () => {
+      if (mobileFrameId) {
+        window.cancelAnimationFrame(mobileFrameId);
+        mobileFrameId = 0;
+      }
+      if (!mobilePausedAt) mobilePausedAt = performance.now();
+    };
+
+    const resumeMobileAnimation = () => {
+      if (mobileDestroyed || !mobileIsVisible || !mobileDocumentVisible) return;
+      if (mobilePausedAt) {
+        mobilePausedDuration += performance.now() - mobilePausedAt;
+        mobilePausedAt = 0;
+      }
+      if (!mobileFrameId) mobileFrameId = window.requestAnimationFrame(tickMobileClickLoop);
+    };
+
+    const handleMobileVisibilityChange = () => {
+      mobileDocumentVisible = !document.hidden;
+      if (mobileDocumentVisible) resumeMobileAnimation();
+      else pauseMobileAnimation();
+    };
+
+    const mobileVisibilityObserver = new IntersectionObserver(([entry]) => {
+      mobileIsVisible = entry.isIntersecting;
+      if (mobileIsVisible) resumeMobileAnimation();
+      else pauseMobileAnimation();
+    }, { threshold: 0.01 });
 
     // Redessine la frame courante à la nouvelle résolution sans modifier l'animation ou les zones CRÉA / DEV.
     const handleMobileResize = () => {
       resizeMobileCanvas();
-      drawMobileClickFrame(getMobileClickFrameIndex(performance.now()));
+      drawMobileClickFrame(getMobileClickFrameIndex(getMobileAnimationTime(performance.now())));
     };
 
     // Révèle la première frame immédiatement, puis décode le reste hors du chemin critique.
     if (mobileCanvasContext) {
       void (async () => {
         try {
-          mobileFrames[0] = await loadMobileClickFrame(clickFrameUrls[0]);
+          mobileFrames[0] = await loadMobileClickFrame(clickFrameUrls[0], 0);
           if (mobileDestroyed) {
             mobileFrames[0]?.close?.();
             return;
@@ -135,10 +184,15 @@ const setupImmersiveHero = () => {
           resizeMobileCanvas();
           drawMobileClickFrame(0);
           root.classList.add('has-canvas');
-          mobileFrameId = window.requestAnimationFrame(tickMobileClickLoop);
-          for (let index = 1; index < clickFrameUrls.length && !mobileDestroyed; index += 1) {
-            mobileFrames[index] = await loadMobileClickFrame(clickFrameUrls[index]);
-          }
+          resumeMobileAnimation();
+          const loadRemainingFrames = async () => {
+            for (let index = 1; index < clickFrameUrls.length && !mobileDestroyed; index += 1) {
+              mobileFrames[index] = await loadMobileClickFrame(clickFrameUrls[index], index);
+            }
+          };
+          // La RAF continue peut priver requestIdleCallback de créneau sur mobile : le délai maximal garantit que les frames animées deviennent disponibles.
+          if ('requestIdleCallback' in window) window.requestIdleCallback(() => { void loadRemainingFrames(); }, { timeout: 600 });
+          else window.setTimeout(() => { void loadRemainingFrames(); }, 800);
         } catch (error) {
           if (import.meta.env.DEV) console.error('La boucle mobile de clic reste désactivée : l’image de repli est conservée.', error);
         }
@@ -148,20 +202,21 @@ const setupImmersiveHero = () => {
     root.classList.remove('is-intro');
     root.classList.add('is-ready');
     window.addEventListener('resize', handleMobileResize, { passive: true });
+    document.addEventListener('visibilitychange', handleMobileVisibilityChange);
+    mobileVisibilityObserver.observe(root);
 
     // Nettoie la boucle et les trente-sept bitmaps de clic lors d'une navigation Astro.
     disposeImmersiveHero = () => {
       mobileDestroyed = true;
       window.cancelAnimationFrame(mobileFrameId);
       window.removeEventListener('resize', handleMobileResize);
+      document.removeEventListener('visibilitychange', handleMobileVisibilityChange);
+      mobileVisibilityObserver.disconnect();
       mobileFrames.forEach((frame) => frame.close?.());
       disposeImmersiveHero = () => {};
     };
     return;
   }
-
-  // Marque la tablette tactile pour restaurer le transform piloté par le ressort malgré les styles smartphone partagés.
-  if (touchScrubEnabled) root.classList.add('is-touch-scrub');
 
   // Construit les URLs ordonnées de gauche à droite, avec la frame centrale comme point de départ.
   const sequenceBase = root.dataset.sequenceBase;
@@ -240,11 +295,10 @@ const setupImmersiveHero = () => {
     root.style.setProperty('--dev-presence', String(clamp(.75 + currentX * .3, .45, 1)));
   };
 
-  // Ajuste la résolution interne hors RAF, avec un DPR maximal de 2 ou 1,5 sur une très grande surface.
+  // Ajuste la résolution interne hors RAF, avec un DPR maximal de 1,5 pour borner le coût GPU/CPU desktop.
   const resizeCanvas = () => {
     if (!canvasContext) return;
-    const maximumDpr = Math.max(viewportWidth, viewportHeight) > 2400 ? 1.5 : 2;
-    const devicePixelRatio = Math.min(window.devicePixelRatio || 1, maximumDpr);
+    const devicePixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
     canvasWidth = Math.max(1, Math.round(viewportWidth * devicePixelRatio));
     canvasHeight = Math.max(1, Math.round(viewportHeight * devicePixelRatio));
     if (heroCanvas.width === canvasWidth && heroCanvas.height === canvasHeight) return;
@@ -318,6 +372,23 @@ const setupImmersiveHero = () => {
     if (availableFrameIndex !== null) drawFrame(availableFrameIndex);
   };
 
+  // Réutilise la frame centrale déjà demandée par le HTML : aucun fetch concurrent n'est nécessaire.
+  const loadCenterFrame = async () => {
+    if (!heroImage.complete || !heroImage.naturalWidth) {
+      await new Promise((resolve, reject) => {
+        heroImage.addEventListener('load', resolve, { once: true });
+        heroImage.addEventListener('error', reject, { once: true });
+      });
+    }
+    if (typeof heroImage.decode === 'function') {
+      try { await heroImage.decode(); } catch { /* The loaded image remains a compatible fallback. */ }
+    }
+    if (typeof window.createImageBitmap === 'function') {
+      try { return await window.createImageBitmap(heroImage); } catch { /* Use the decoded element below. */ }
+    }
+    return heroImage;
+  };
+
   // Préfère les ImageBitmap déjà décodés, directement exploitables par drawImage.
   const loadImageBitmapFrame = async (src) => {
     const response = await fetch(src);
@@ -340,7 +411,8 @@ const setupImmersiveHero = () => {
   };
 
   // Charge une frame une seule fois en mémoire ; Image est utilisé seulement si ImageBitmap ne peut pas être produit.
-  const loadFrame = async (src) => {
+  const loadFrame = async (src, frameIndex) => {
+    if (frameIndex === CENTER_FRAME) return loadCenterFrame();
     if (typeof window.createImageBitmap === 'function') {
       try { return await loadImageBitmapFrame(src); } catch (error) {
         if (import.meta.env.DEV) console.warn(`ImageBitmap indisponible pour ${src}, repli Image utilisé.`, error);
@@ -354,7 +426,7 @@ const setupImmersiveHero = () => {
     if (decodedFrames[frameIndex] || failedFrames.has(frameIndex)) return decodedFrames[frameIndex];
     if (frameLoadPromises[frameIndex]) return frameLoadPromises[frameIndex];
 
-    frameLoadPromises[frameIndex] = loadFrame(frameUrls[frameIndex])
+    frameLoadPromises[frameIndex] = loadFrame(frameUrls[frameIndex], frameIndex)
       .then((frame) => {
         if (destroyed) {
           frame.close?.();
@@ -367,7 +439,7 @@ const setupImmersiveHero = () => {
         if (frameIndex === CENTER_FRAME && !sequenceReady) {
           sequenceReady = true;
           resizeCanvas();
-          if (drawFrame(CENTER_FRAME, true)) root.classList.add('has-canvas');
+          if (drawFrame(CENTER_FRAME, true)) root.classList.add('is-canvas-ready');
           else sequenceReady = false;
         }
 
@@ -392,7 +464,7 @@ const setupImmersiveHero = () => {
     if (upperIndex <= LAST_FRAME) framePriority.push(upperIndex);
   }
 
-  // Planifie les frames restantes durant les périodes disponibles, sans ajouter de travail dans la RAF.
+  // Planifie les frames restantes seulement lorsque le navigateur rapporte un vrai temps d'inactivité.
   const scheduleDeferredPreload = () => {
     if (destroyed || nextDeferredFrame >= framePriority.length) return;
 
@@ -403,18 +475,21 @@ const setupImmersiveHero = () => {
       void preloadFrame(frameIndex).finally(scheduleDeferredPreload);
     };
 
-    if ('requestIdleCallback' in window) {
-      idleLoadHandle = window.requestIdleCallback(loadNextFrame, { timeout: 1200 });
-    } else {
-      idleLoadHandle = window.setTimeout(loadNextFrame, 120);
-    }
+    if ('requestIdleCallback' in window) idleLoadHandle = window.requestIdleCallback((deadline) => {
+      if (deadline.timeRemaining() < 8) {
+        scheduleDeferredPreload();
+        return;
+      }
+      loadNextFrame();
+    });
   };
 
-  // Charge d'abord le petit groupe central ; le reste de la séquence s'élargit ensuite au repos.
+  // Charge d'abord un petit groupe central ; le reste de la séquence s'élargit ensuite au repos.
   const preloadSequence = async () => {
     try {
       await preloadFrame(CENTER_FRAME);
-      nextDeferredFrame = 1;
+      await Promise.all([preloadFrame(CENTER_FRAME - 1), preloadFrame(CENTER_FRAME + 1)]);
+      nextDeferredFrame = 3;
       scheduleDeferredPreload();
     } catch (error) {
       if (import.meta.env.DEV) console.error('La séquence canvas reste désactivée : la frame de repli est conservée.', error);
@@ -433,12 +508,16 @@ const setupImmersiveHero = () => {
 
   // Conserve les calculs de pointeur hors de l'écouteur afin qu'il ne provoque aucun travail visuel.
   const handlePointerMove = (event) => {
-    // Autorise la souris sur desktop et le glissement au doigt uniquement sur tablette.
-    if (event.pointerType && event.pointerType !== 'mouse' && !(touchScrubEnabled && event.pointerType === 'touch')) return;
+    // La branche interactive est réservée au pointeur fin desktop.
+    if (event.pointerType && event.pointerType !== 'mouse') return;
     pointerX = event.clientX;
     pointerY = event.clientY;
     lastPointerAt = performance.now();
     pointerWasSeen = true;
+    const direction = pointerX / viewportWidth < .5 ? -1 : 1;
+    const requestedFrame = Math.round(((clamp((pointerX / viewportWidth - .5) * 2, -1, 1) + 1) / 2) * LAST_FRAME);
+    const preferredFrame = Math.max(0, Math.min(LAST_FRAME, requestedFrame + direction));
+    void preloadFrame(preferredFrame);
   };
 
   // Redimensionne hors RAF, puis redessine immédiatement la dernière frame valide à la nouvelle résolution.
@@ -446,9 +525,8 @@ const setupImmersiveHero = () => {
     viewportWidth = window.innerWidth;
     viewportHeight = window.innerHeight;
     if (!sequenceReady) return;
-    root.classList.remove('has-canvas');
     resizeCanvas();
-    if (drawFrame(displayedFrameIndex, true)) root.classList.add('has-canvas');
+    if (!drawFrame(displayedFrameIndex, true)) root.classList.remove('is-canvas-ready');
   };
 
   // Laisse le lien fonctionner sans JavaScript, puis ajoute un départ visuel très court lorsqu'il est disponible.
@@ -479,9 +557,30 @@ const setupImmersiveHero = () => {
     diagnosticWindowStartedAt = now;
   };
 
+  let heroIsVisible = true;
+  let documentIsVisible = !document.hidden;
+  const shouldAnimate = () => !destroyed && heroIsVisible && documentIsVisible;
+  const resumeAnimation = () => {
+    if (shouldAnimate() && !frameId) frameId = window.requestAnimationFrame(tick);
+  };
+  const handleVisibilityChange = () => {
+    documentIsVisible = !document.hidden;
+    if (!documentIsVisible) {
+      window.cancelAnimationFrame(frameId);
+      frameId = 0;
+    } else resumeAnimation();
+  };
+  const visibilityObserver = new IntersectionObserver(([entry]) => {
+    heroIsVisible = entry.isIntersecting;
+    if (!heroIsVisible) {
+      window.cancelAnimationFrame(frameId);
+      frameId = 0;
+    } else resumeAnimation();
+  }, { threshold: 0.01 });
+
   // Une seule boucle anime le ressort, l'introduction, l'idle, le scrub et la micro-transformation.
   const tick = (now) => {
-    if (destroyed) return;
+    if (!shouldAnimate()) { frameId = 0; return; }
     const elapsed = now - startedAt;
     const delta = lastTimestamp === 0 ? 1 / 60 : Math.min((now - lastTimestamp) / 1000, 1 / 20);
     const frameScale = delta * 60;
@@ -510,6 +609,8 @@ const setupImmersiveHero = () => {
   // Lance les écouteurs non visuels, le préchargement unique et l'unique boucle de rendu.
   root.addEventListener('pointermove', handlePointerMove, { passive: true });
   window.addEventListener('resize', handleResize, { passive: true });
+  document.addEventListener('visibilitychange', handleVisibilityChange);
+  visibilityObserver.observe(root);
   heroLinks?.forEach((link) => link.addEventListener('click', handleHeroLinkClick));
   // Évite tout préchargement inutile si le navigateur ne fournit pas de contexte canvas utilisable.
   if (canvasContext) void preloadSequence();
@@ -527,6 +628,8 @@ const setupImmersiveHero = () => {
     }
     root.removeEventListener('pointermove', handlePointerMove);
     window.removeEventListener('resize', handleResize);
+    document.removeEventListener('visibilitychange', handleVisibilityChange);
+    visibilityObserver.disconnect();
     heroLinks?.forEach((link) => link.removeEventListener('click', handleHeroLinkClick));
     decodedFrames.forEach((frame) => frame?.close?.());
     diagnosticsElement?.remove();

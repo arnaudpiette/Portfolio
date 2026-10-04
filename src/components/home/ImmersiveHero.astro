@@ -5,9 +5,10 @@ import '../../styles/immersive-hero.css';
 
 <!-- Hero plein écran : la photographie est décorative, les deux liens portent l'information de navigation. -->
 <section
-  class="immersive-hero is-intro"
+  class="immersive-hero"
   data-immersive-hero
-  data-sequence-base="/images/hero/sequence/hero-sequence-37"
+  data-sequence-base="/images/hero/sequence/hero-sequence-1920"
+  data-mobile-sequence-base="/images/hero/sequence/hero-sequence-mobile"
   aria-labelledby="immersive-hero-title"
 >
   <!-- La frame centrale reste affichée jusqu'au premier dessin valide de la séquence dans le canvas. -->
@@ -15,8 +16,8 @@ import '../../styles/immersive-hero.css';
     <!-- Image de repli statique : la frame centrale protège le rendu au chargement, sans JavaScript et en cas d'échec du canvas. -->
     <picture>
       <!-- Sur smartphone, la première frame de clic sert de repli avant le démarrage de la boucle canvas. -->
-      <source media="(max-width: 760px), (hover: none), (pointer: coarse)" srcset="/images/hero/sequence/hero_sequence_ready/click/hero-00.webp" />
-      <img class="immersive-hero__image immersive-hero__image--center" src="/images/hero/sequence/hero-sequence-37/hero-18.webp" alt="" fetchpriority="high" decoding="async" />
+      <source media="(max-width: 760px)" srcset="/images/hero/sequence/hero-sequence-mobile/hero-00.webp" />
+      <img class="immersive-hero__image immersive-hero__image--center" src="/images/hero/sequence/hero-sequence-1920/hero-18.webp" alt="" width="1920" height="931" fetchpriority="high" decoding="async" />
     </picture>
     <!-- Surface de rendu des frames décodées : elle ne devient visible qu'après le premier drawImage valide. -->
     <canvas class="immersive-hero__canvas"></canvas>
