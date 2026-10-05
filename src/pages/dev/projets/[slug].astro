@@ -289,7 +289,12 @@ const projectStructuredData = {
         {project.resources?.map((resource) => <a class="project-action" href={resource.href} target={resource.download ? undefined : '_blank'} rel={resource.download ? undefined : 'noopener noreferrer'} download={resource.download ? true : undefined}>{resource.label}</a>)}
       </nav>
     )}
-  </main>
+  
+      <!-- Navigation de retour répétée en bas de fiche pour éviter de remonter en haut de page. -->
+      <nav class="project-navigation project-navigation-bottom" aria-label="Retour aux projets DEV">
+        <a class="back-link" href="/dev">← Retour aux projets DEV</a>
+      </nav>
+</main>
 
   <PortfolioFooter theme="dark" />
   <PortfolioOverlays theme="dark" groups={devSkillGroups} />
@@ -399,4 +404,51 @@ const projectStructuredData = {
   .dev-image-dialog-close:focus-visible { outline: 3px solid #9af57f; outline-offset: 3px; }
   @media (max-width: 560px) { .project-navigation { align-items: flex-start; flex-direction: column-reverse; } .project-actions { align-items: stretch; flex-direction: column; } .project-action { width: 100%; } .architecture-flow { align-items: flex-start; flex-direction: column; gap: .45rem; } .architecture-flow li:not(:last-child)::after { position: static; margin-left: .5rem; content: '↓'; } .roadmap-card { grid-template-columns: 1fr; gap: .5rem; } .gallery-grid { grid-template-columns: 1fr; } .gallery-grid .project-media-mobile { width: min(100%, 280px); justify-self: center; } .dev-image-dialog { width: calc(100vw - 1rem); height: calc(100dvh - 1rem); padding: 3.75rem 1rem 1rem; border-radius: 18px; } }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+  .project-navigation-bottom {
+    margin-top: 50px;
+  }
+
+
+  /* Responsive image viewer fix */
+
+  /* Image viewer : s'adapte aux visuels paysage comme portrait */
+  .dev-image-dialog {
+    width: min(96vw, 1400px);
+    max-width: 96vw;
+    height: min(94dvh, 1000px);
+    max-height: 94dvh;
+    padding: 3.5rem 1.25rem 1.25rem;
+    box-sizing: border-box;
+  }
+
+  .dev-image-dialog-stage {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dev-image-dialog-stage img {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  @media (max-width: 560px) {
+    .dev-image-dialog {
+      width: calc(100vw - 1rem);
+      max-width: calc(100vw - 1rem);
+      height: calc(100dvh - 1rem);
+      max-height: calc(100dvh - 1rem);
+      padding: 3.75rem .75rem .75rem;
+    }
+  }
+  /* End responsive image viewer fix */
+
 </style>

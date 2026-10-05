@@ -69,7 +69,12 @@ const projectStructuredData = {
       ) : (
         <ProjectMosaic project={project} />
       )}
-    </main>
+    
+      <!-- Navigation de retour répétée en bas de fiche pour éviter de remonter en haut de page. -->
+      <nav class="project-navigation project-navigation-bottom" aria-label="Retour aux projets CRÉA">
+        <a class="back-link" href="/creative">← Retour aux projets CRÉA</a>
+      </nav>
+</main>
 
     <PortfolioOverlays theme="light" logos={creativeLogos} />
 </BaseLayout>
@@ -92,4 +97,9 @@ const projectStructuredData = {
   .ibm-videos { display: grid; grid-template-columns: 1fr; gap: clamp(10px, 1vw, 16px); margin-top: clamp(10px, 1vw, 16px); }
   @media (max-width: 760px) { .additional-videos { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+
+  .project-navigation-bottom {
+    margin-top: 50px;
+  }
+
 </style>
