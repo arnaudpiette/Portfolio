@@ -95,7 +95,7 @@ export const devFilters = [
 ] as const;
 
 // Liste ordonnée des repositories affichés dans la grille DEV.
-export const devProjects: DevProject[] = [
+export const devProjects = ([
   {
     // Application personnelle Expo destinée à rendre visibles les économies liées à l'arrêt du tabac.
     slug: 'convertsseur',
@@ -601,7 +601,7 @@ export const devProjects: DevProject[] = [
       { label: 'Télécharger la présentation du projet (PDF)', href: '/documents/qwenta/Piette_Arnaud_4_presentation_08-2026.pdf', download: true },
     ],
   },
-].sort((firstProject, secondProject) => {
+] satisfies DevProject[]).sort((firstProject, secondProject) => {
   // Maintient l'ordre éditorial défini pour la grille DEV et les routes générées.
   const displayOrder = ['noon', 'convertsseur', 'kasa', 'dev-web-livres', 'nina-carducci', 'openclassrooms-project', 'portfolio', 'sophie-bluel'];
   return displayOrder.indexOf(firstProject.slug) - displayOrder.indexOf(secondProject.slug);
